@@ -1,0 +1,734 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// -----------------------------
+/// User & Roles
+/// -----------------------------
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  school    School?     @relation(fields: [schoolId], references: [id])
+  schoolId  String?
+
+  StudentProfile Student?
+  SchoolAdminProfile SchoolAdmin?
+  TeacherProfile Teacher?
+  notifications Notification[]
+  reviewedLessonPlans LessonPlan[]
+  approvedExams Exam[] @relation("ExamApprover")
+
+  @@map("users")
+}
+
+enum Role {
+  SUPER_ADMIN
+  SCHOOL_ADMIN
+  TEACHER
+  STUDENT
+}
+
+enum SchoolStatus {
+  PENDING
+  APPROVED
+  SUSPENDED
+  REJECTED
+}
+
+/// -----------------------------
+/// School & Management
+/// -----------------------------
+model School {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  email     String   @unique
+  phone     String?
+  logoUrl   String?
+  status    SchoolStatus @default(PENDING)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  users       User[]
+  admins      SchoolAdmin[]
+  teachers    Teacher[]
+  students    Student[]
+  classes     Class[]
+  exams       Exam[]
+  payments    Payment[]
+  subjects    Subject[]
+  assignments Assignment[]
+  lessonPlans LessonPlan[]
+
+  @@map("schools")
+}
+
+/// School Admin profile (links to User)
+model SchoolAdmin {
+  id      String @id @default(uuid())
+  userId  String @unique
+  schoolId String
+  user    User   @relation(fields: [userId], references: [id])
+  school  School @relation(fields: [schoolId], references: [id])
+
+  @@map("school_admins")
+}
+
+/// Teacher profile (links to User)
+model Teacher {
+  id          String @id @default(uuid())
+  userId      String @unique
+  schoolId    String
+  employeeId  String @unique
+  
+  // Professional Information
+  qualification String?
+  specialization String?
+  experience    Int? // years of experience
+  phone         String?
+  address       String?
+  avatar        String?
+  
+  // Status and Activity
+  status        TeacherStatus @default(ACTIVE)
+  hireDate      DateTime?
+  lastLogin     DateTime?
+  
+  // Relations
+  user          User   @relation(fields: [userId], references: [id])
+  school        School @relation(fields: [schoolId], references: [id])
+  classes       Class[]
+  subjects      TeacherSubject[]
+  classSubjects ClassSubject[]
+  assignments   Assignment[]
+  lessonPlans   LessonPlan[]
+  gradedSubmissions AssignmentSubmission[]
+  exams         Exam[]
+  
+  @@map("teachers")
+}
+
+/// Class model for organizing students and teachers
+model Class {
+  id          String @id @default(uuid())
+  schoolId    String
+  name        String // e.g., "SS 1", "JSS 2", "Grade 5"
+  section     String? // e.g., "A", "B", "C"
+  academicYear String // e.g., "2024/2025"
+  
+  // Class Information
+  description String?
+  maxStudents Int @default(40)
+  room        String? // classroom number/name
+  
+  // Status and Metadata
+  status      ClassStatus @default(ACTIVE)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  school      School    @relation(fields: [schoolId], references: [id])
+  students    Student[]
+  teachers    Teacher[]
+  exams       Exam[]
+  subjects    ClassSubject[]
+  assignments Assignment[]
+  lessonPlans LessonPlan[]
+  
+  @@unique([schoolId, name, section, academicYear])
+  @@map("classes")
+}
+
+/// Student profile (links to User)
+model Student {
+  id       String @id @default(uuid())
+  userId   String @unique
+  schoolId String
+  regNumber String @unique // Changed from regNo to regNumber for clarity
+  
+  // Personal Information
+  gender       Gender?
+  classId      String?
+  parentPhone  String?
+  parentEmail  String?
+  dateOfBirth  String?
+  address      String?
+  avatar       String?
+  
+  // Status and Activity
+  status         StudentStatus @default(ACTIVE)
+  lastLogin      DateTime?
+  lastExamTaken  DateTime?
+  
+  // Relations
+  user     User   @relation(fields: [userId], references: [id])
+  school   School @relation(fields: [schoolId], references: [id])
+  class    Class? @relation(fields: [classId], references: [id])
+  answers  Answer[]
+  results  Result[]
+  examAttempts ExamAttempt[]
+  submissions AssignmentSubmission[]
+
+  @@map("students")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum StudentStatus {
+  ACTIVE
+  SUSPENDED
+  GRADUATED
+  ALUMNI
+  PENDING
+}
+
+enum TeacherStatus {
+  ACTIVE
+  SUSPENDED
+  TERMINATED
+  ON_LEAVE
+}
+
+enum ClassStatus {
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}
+
+/// -----------------------------
+/// Exams & Questions
+/// -----------------------------
+model Exam {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  startTime   DateTime
+  endTime     DateTime
+  duration    Int       // in minutes
+  shuffle     Boolean   @default(false)
+  negativeMarking Boolean @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Teacher and approval fields
+  teacherId   String?
+  teacher     Teacher?  @relation(fields: [teacherId], references: [id])
+  
+  // Subject and class assignment
+  subjectId   String?
+  subject     Subject?  @relation(fields: [subjectId], references: [id])
+  
+  // Exam configuration
+  totalMarks  Int?
+  passingMarks Int?
+  status      ExamStatus @default(DRAFT)
+  publishedAt DateTime?
+  approvedBy  String?
+  approver    User?     @relation("ExamApprover", fields: [approvedBy], references: [id])
+  approvedAt  DateTime?
+  rejectionReason String?
+  
+  // Assignment options
+  assignmentType ExamAssignmentType @default(CLASS_WIDE)
+  assignedStudentIds Json? // Array of student IDs for specific assignment
+  
+  // Additional settings
+  allowPreview Boolean @default(false)
+  showResultsImmediately Boolean @default(false)
+  maxAttempts Int @default(1)
+  hasMediaAttachments Boolean @default(false)
+  aiGenerated Boolean @default(false)
+
+  // Relations
+  schoolId String
+  school   School   @relation(fields: [schoolId], references: [id])
+  classId  String?
+  class    Class?   @relation(fields: [classId], references: [id])
+  questions Question[]
+  answers   Answer[]
+  results   Result[]
+  attempts  ExamAttempt[]
+
+  @@map("exams")
+}
+
+model Question {
+  id        String    @id @default(uuid())
+  text      String    // Keep as 'text' to match existing database
+  type      QuestionType
+  options   Json?     // for MCQ/TrueFalse
+  correctAnswer Json? // correct choice(s) or essay guidelines
+  points    Float     @default(1)
+  order     Int?      // Question order in exam
+  imageUrl  String?   // Media attachments
+  audioUrl  String?
+  videoUrl  String?
+  explanation String? // Explanation for correct answer
+  difficulty QuestionDifficulty @default(MEDIUM)
+  tags      Json?     // Array of tags
+
+  // Relations
+  examId String
+  exam   Exam      @relation(fields: [examId], references: [id])
+  answers Answer[]
+
+  @@map("questions")
+}
+
+enum QuestionType {
+  MCQ
+  TRUE_FALSE
+  ESSAY
+  SHORT_ANSWER
+  FILL_IN_BLANK
+  MATCHING
+}
+
+enum QuestionDifficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum ExamStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  PUBLISHED
+  SCHEDULED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  REJECTED
+}
+
+enum ExamAssignmentType {
+  CLASS_WIDE
+  SPECIFIC_STUDENTS
+}
+
+enum AttemptStatus {
+  STARTED
+  IN_PROGRESS
+  SUBMITTED
+  ABANDONED
+}
+
+/// -----------------------------
+/// Exam Attempts, Answers & Results
+/// -----------------------------
+model ExamAttempt {
+  id          String   @id @default(uuid())
+  examId      String
+  studentId   String
+  attemptNumber Int    @default(1)
+  startedAt   DateTime @default(now())
+  submittedAt DateTime?
+  timeSpent   Int?     // in minutes
+  status      AttemptStatus @default(STARTED)
+  ipAddress   String?
+  userAgent   String?
+
+  // Relations
+  exam     Exam     @relation(fields: [examId], references: [id])
+  student  Student  @relation(fields: [studentId], references: [id])
+
+  @@unique([studentId, examId, attemptNumber])
+  @@map("exam_attempts")
+}
+
+model Answer {
+  id        String   @id @default(uuid())
+  studentId String
+  questionId String
+  examId    String
+  attemptId String?
+  response  Json?
+  isCorrect Boolean?
+  pointsAwarded Float?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  student  Student  @relation(fields: [studentId], references: [id])
+  question Question @relation(fields: [questionId], references: [id])
+  exam     Exam     @relation(fields: [examId], references: [id])
+
+  @@unique([studentId, questionId, examId])
+  @@map("answers")
+}
+
+model Result {
+  id        String   @id @default(uuid())
+  studentId String
+  examId    String
+  score     Float
+  gradedAt  DateTime @default(now())
+
+  // Relations
+  student Student @relation(fields: [studentId], references: [id])
+  exam    Exam    @relation(fields: [examId], references: [id])
+
+  @@unique([studentId, examId])
+  @@map("results")
+}
+
+/// -----------------------------
+/// Payments
+/// -----------------------------
+model Payment {
+  id        String   @id @default(uuid())
+  schoolId  String
+  amount    Float
+  currency  String   @default("NGN")
+  status    PaymentStatus
+  reference String   @unique
+  createdAt DateTime @default(now())
+
+  // Relations
+  school School @relation(fields: [schoolId], references: [id])
+
+  @@map("payments")
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+/// -----------------------------
+/// Notifications
+/// -----------------------------
+model Notification {
+  id        String   @id @default(uuid())
+  title     String
+  message   String
+  type      NotificationType
+  isRead    Boolean  @default(false)
+  userId    String   // Super admin user ID
+  metadata  Json?    // Additional data (schoolId, etc.)
+  createdAt DateTime @default(now())
+  
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+  
+  @@map("notifications")
+}
+
+enum NotificationType {
+  SCHOOL_REGISTRATION
+  SCHOOL_APPROVED
+  SCHOOL_REJECTED
+  PAYMENT_RECEIVED
+  SYSTEM_ALERT
+  ASSIGNMENT_CREATED
+  ASSIGNMENT_SUBMITTED
+  ASSIGNMENT_GRADED
+  LESSON_PLAN_SUBMITTED
+  LESSON_PLAN_APPROVED
+  LESSON_PLAN_REJECTED
+  LESSON_PLAN_NEEDS_REVISION
+  EXAM_CREATED
+  EXAM_SUBMITTED_FOR_APPROVAL
+  EXAM_APPROVED
+  EXAM_REJECTED
+  EXAM_PUBLISHED
+  EXAM_REMINDER
+  EXAM_STARTED
+  EXAM_SUBMITTED
+  EXAM_GRADED
+  EXAM_RESULTS_AVAILABLE
+}
+
+/// -----------------------------
+/// Subjects & Relationships
+/// -----------------------------
+model Subject {
+  id          String @id @default(uuid())
+  schoolId    String
+  name        String // e.g., "Mathematics", "English Language"
+  code        String? // e.g., "MATH101", "ENG101"
+  description String?
+  
+  // Status and Metadata
+  status      SubjectStatus @default(ACTIVE)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  school        School @relation(fields: [schoolId], references: [id])
+  teachers      TeacherSubject[]
+  classSubjects ClassSubject[]
+  assignments   Assignment[]
+  lessonPlans   LessonPlan[]
+  exams         Exam[]
+  
+  @@unique([schoolId, name])
+  @@unique([schoolId, code])
+  @@map("subjects")
+}
+
+enum SubjectStatus {
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}
+
+/// Many-to-many relationship between Teachers and Subjects
+model TeacherSubject {
+  id        String @id @default(uuid())
+  teacherId String
+  subjectId String
+  createdAt DateTime @default(now())
+  
+  // Relations
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  
+  @@unique([teacherId, subjectId])
+  @@map("teacher_subjects")
+}
+
+/// Many-to-many relationship between Classes, Teachers, and Subjects
+model ClassSubject {
+  id        String @id @default(uuid())
+  classId   String
+  teacherId String
+  subjectId String
+  createdAt DateTime @default(now())
+  
+  // Relations
+  class   Class   @relation(fields: [classId], references: [id], onDelete: Cascade)
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  
+  @@unique([classId, teacherId, subjectId])
+  @@map("class_subjects")
+}
+
+/// -----------------------------
+/// Assignments & Notes
+/// -----------------------------
+model Assignment {
+  id          String @id @default(uuid())
+  title       String
+  description String?
+  instructions String?
+  type        AssignmentType @default(ASSIGNMENT)
+  
+  // Scheduling
+  dueDate     DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Grading
+  maxScore    Float @default(100)
+  status      AssignmentStatus @default(DRAFT)
+  
+  // Relations
+  schoolId    String
+  teacherId   String
+  classId     String?
+  subjectId   String?
+  
+  school      School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  teacher     Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  class       Class? @relation(fields: [classId], references: [id], onDelete: SetNull)
+  subject     Subject? @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  
+  // Assignment content
+  attachments AssignmentAttachment[]
+  submissions AssignmentSubmission[]
+  
+  @@map("assignments")
+}
+
+enum AssignmentType {
+  ASSIGNMENT
+  NOTE
+  RESOURCE
+  HOMEWORK
+  PROJECT
+  QUIZ
+  TEST
+}
+
+enum AssignmentStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+  ARCHIVED
+}
+
+model AssignmentAttachment {
+  id           String @id @default(uuid())
+  assignmentId String
+  fileName     String
+  originalName String
+  filePath     String
+  fileSize     Int
+  mimeType     String
+  uploadedAt   DateTime @default(now())
+  
+  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  
+  @@map("assignment_attachments")
+}
+
+model AssignmentSubmission {
+  id           String @id @default(uuid())
+  assignmentId String
+  studentId    String
+  
+  // Submission content
+  textContent  String?
+  submittedAt  DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  // Grading
+  score        Float?
+  feedback     String?
+  gradedAt     DateTime?
+  gradedBy     String? // Teacher ID
+  status       SubmissionStatus @default(SUBMITTED)
+  
+  // Relations
+  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  student      Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  grader       Teacher? @relation(fields: [gradedBy], references: [id], onDelete: SetNull)
+  
+  // Submission files
+  attachments  SubmissionAttachment[]
+  
+  @@unique([assignmentId, studentId])
+  @@map("assignment_submissions")
+}
+
+enum SubmissionStatus {
+  SUBMITTED
+  LATE
+  GRADED
+  RETURNED
+  MISSING
+}
+
+model SubmissionAttachment {
+  id           String @id @default(uuid())
+  submissionId String
+  fileName     String
+  originalName String
+  filePath     String
+  fileSize     Int
+  mimeType     String
+  uploadedAt   DateTime @default(now())
+  
+  submission   AssignmentSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  
+  @@map("submission_attachments")
+}
+
+/// -----------------------------
+/// Lesson Plans
+/// -----------------------------
+model LessonPlan {
+  id          String @id @default(uuid())
+  title       String
+  topic       String?
+  duration    Int // in minutes
+  
+  // Content
+  objectives  String[] // JSON array of learning objectives
+  materials   String[] // JSON array of materials needed
+  activities  String[] // JSON array of lesson activities
+  assessment  String? // Assessment method
+  homework    String? // Homework assignment
+  notes       String? // Additional notes
+  
+  // Scheduling
+  scheduledDate DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Status and approval
+  status        LessonPlanStatus @default(DRAFT)
+  reviewStatus  ReviewStatus @default(PENDING)
+  reviewNotes   String?
+  reviewedAt    DateTime?
+  reviewedBy    String? // Admin/HOD user ID
+  
+  // Relations
+  schoolId      String
+  teacherId     String
+  classId       String?
+  subjectId     String?
+  
+  school        School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  teacher       Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  class         Class? @relation(fields: [classId], references: [id], onDelete: SetNull)
+  subject       Subject? @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  reviewer      User? @relation(fields: [reviewedBy], references: [id], onDelete: SetNull)
+  
+  // Resources
+  resources     LessonPlanResource[]
+  
+  @@map("lesson_plans")
+}
+
+enum LessonPlanStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  NEEDS_REVISION
+}
+
+model LessonPlanResource {
+  id           String @id @default(uuid())
+  lessonPlanId String
+  fileName     String
+  originalName String
+  filePath     String
+  fileSize     Int
+  mimeType     String
+  resourceType ResourceType @default(DOCUMENT)
+  uploadedAt   DateTime @default(now())
+  
+  lessonPlan   LessonPlan @relation(fields: [lessonPlanId], references: [id], onDelete: Cascade)
+  
+  @@map("lesson_plan_resources")
+}
+
+enum ResourceType {
+  DOCUMENT
+  VIDEO
+  AUDIO
+  IMAGE
+  PRESENTATION
+  SPREADSHEET
+  OTHER
+}

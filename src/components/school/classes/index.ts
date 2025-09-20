@@ -1,0 +1,7 @@
+export { AddClassModal } from './AddClassModal'
+export { EditClassModal } from './EditClassModal'
+export { ClassesAnalytics } from './ClassesAnalytics'
+export { ClassesFilters } from './ClassesFilters'
+export { ClassesHeader } from './ClassesHeader'
+export { ClassesTable } from './ClassesTable'
+export { ClassProfileDrawer } from './ClassProfileDrawer'

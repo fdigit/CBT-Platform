@@ -1,0 +1,511 @@
+'use client'
+
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { TeacherDashboardLayout } from '@/components/teacher/TeacherDashboardLayout'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useToast } from '@/hooks/use-toast'
+import { 
+  Plus, 
+  Search, 
+  Filter, 
+  Eye, 
+  Edit, 
+  Trash2, 
+  Send, 
+  Clock, 
+  Users, 
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  Calendar,
+  BookOpen,
+  GraduationCap
+} from 'lucide-react'
+
+interface Exam {
+  id: string
+  title: string
+  description?: string
+  startTime: string
+  endTime: string
+  duration: number
+  totalMarks: number
+  passingMarks?: number
+  status: string
+  dynamicStatus: string
+  createdAt: string
+  updatedAt: string
+  subject?: {
+    name: string
+    code: string
+  }
+  class?: {
+    name: string
+    section?: string
+  }
+  approver?: {
+    name: string
+  }
+  totalQuestions: number
+  studentsAttempted: number
+  studentsCompleted: number
+  questionsByType: Record<string, number>
+  questionsByDifficulty: Record<string, number>
+}
+
+interface Filters {
+  status: string
+  subject: string
+  classId: string
+  search: string
+}
+
+export default function TeacherExams() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
+  const [exams, setExams] = useState<Exam[]>([])
+  const [loading, setLoading] = useState(true)
+  const [filters, setFilters] = useState<Filters>({
+    status: 'all',
+    subject: 'all',
+    classId: 'all',
+    search: ''
+  })
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    total: 0,
+    pages: 0
+  })
+  const { toast } = useToast()
+
+  useEffect(() => {
+    if (status === 'loading') return
+    
+    if (!session || session.user.role !== 'TEACHER') {
+      router.push('/auth/signin')
+      return
+    }
+
+    fetchExams()
+  }, [session, status, router, filters, pagination.page])
+
+  const fetchExams = async () => {
+    try {
+      setLoading(true)
+      const queryParams = new URLSearchParams({
+        page: pagination.page.toString(),
+        limit: pagination.limit.toString(),
+        ...(filters.status !== 'all' && { status: filters.status }),
+        ...(filters.subject !== 'all' && { subject: filters.subject }),
+        ...(filters.classId !== 'all' && { classId: filters.classId }),
+        ...(filters.search && { search: filters.search }),
+      })
+
+      const response = await fetch(`/api/teacher/exams?${queryParams}`)
+      
+      if (response.ok) {
+        const data = await response.json()
+        setExams(data.exams || [])
+        setPagination(prev => ({
+          ...prev,
+          total: data.pagination?.total || 0,
+          pages: data.pagination?.pages || 0
+        }))
+      } else {
+        const error = await response.json()
+        toast({
+          title: 'Error',
+          description: error.error || 'Failed to fetch exams',
+          variant: 'destructive',
+        })
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'An error occurred while fetching exams',
+        variant: 'destructive',
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleFilterChange = (key: keyof Filters, value: string) => {
+    setFilters(prev => ({ ...prev, [key]: value }))
+    setPagination(prev => ({ ...prev, page: 1 }))
+  }
+
+  const handleDeleteExam = async (examId: string, examTitle: string) => {
+    if (!confirm(`Are you sure you want to delete "${examTitle}"? This action cannot be undone.`)) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/teacher/exams/${examId}`, {
+        method: 'DELETE',
+      })
+
+      if (response.ok) {
+        toast({
+          title: 'Success',
+          description: 'Exam deleted successfully!',
+        })
+        fetchExams()
+      } else {
+        const error = await response.json()
+        toast({
+          title: 'Error',
+          description: error.error || 'Failed to delete exam',
+          variant: 'destructive',
+        })
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'An error occurred while deleting exam',
+        variant: 'destructive',
+      })
+    }
+  }
+
+  const handleSubmitForApproval = async (examId: string, examTitle: string) => {
+    if (!confirm(`Submit "${examTitle}" for admin approval? You won't be able to edit it after submission.`)) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/teacher/exams/${examId}/submit-for-approval`, {
+        method: 'POST',
+      })
+
+      if (response.ok) {
+        toast({
+          title: 'Success',
+          description: 'Exam submitted for approval successfully!',
+        })
+        fetchExams()
+      } else {
+        const error = await response.json()
+        toast({
+          title: 'Error',
+          description: error.error || 'Failed to submit exam for approval',
+          variant: 'destructive',
+        })
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'An error occurred while submitting exam',
+        variant: 'destructive',
+      })
+    }
+  }
+
+  const getStatusBadge = (status: string, dynamicStatus?: string) => {
+    const displayStatus = dynamicStatus || status
+    
+    switch (displayStatus) {
+      case 'DRAFT':
+        return <Badge variant="outline" className="text-gray-600"><Edit className="h-3 w-3 mr-1" />Draft</Badge>
+      case 'PENDING_APPROVAL':
+        return <Badge variant="outline" className="text-yellow-600 border-yellow-600"><AlertCircle className="h-3 w-3 mr-1" />Pending Approval</Badge>
+      case 'APPROVED':
+        return <Badge variant="outline" className="text-green-600 border-green-600"><CheckCircle className="h-3 w-3 mr-1" />Approved</Badge>
+      case 'PUBLISHED':
+        return <Badge className="bg-blue-600"><Calendar className="h-3 w-3 mr-1" />Published</Badge>
+      case 'SCHEDULED':
+        return <Badge className="bg-purple-600"><Clock className="h-3 w-3 mr-1" />Scheduled</Badge>
+      case 'ACTIVE':
+        return <Badge className="bg-green-600"><Users className="h-3 w-3 mr-1" />Active</Badge>
+      case 'COMPLETED':
+        return <Badge className="bg-gray-600"><CheckCircle className="h-3 w-3 mr-1" />Completed</Badge>
+      case 'REJECTED':
+        return <Badge variant="destructive"><XCircle className="h-3 w-3 mr-1" />Rejected</Badge>
+      case 'CANCELLED':
+        return <Badge variant="outline" className="text-red-600 border-red-600"><XCircle className="h-3 w-3 mr-1" />Cancelled</Badge>
+      default:
+        return <Badge variant="outline">{displayStatus}</Badge>
+    }
+  }
+
+  const formatDateTime = (dateString: string) => {
+    return new Date(dateString).toLocaleString()
+  }
+
+  const canEdit = (exam: Exam) => {
+    return ['DRAFT', 'REJECTED'].includes(exam.status)
+  }
+
+  const canDelete = (exam: Exam) => {
+    return ['DRAFT', 'REJECTED'].includes(exam.status) && exam.studentsAttempted === 0
+  }
+
+  const canSubmitForApproval = (exam: Exam) => {
+    return exam.status === 'DRAFT' && exam.totalQuestions > 0
+  }
+
+  if (status === 'loading' || loading) {
+    return (
+      <TeacherDashboardLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading exams...</p>
+          </div>
+        </div>
+      </TeacherDashboardLayout>
+    )
+  }
+
+  return (
+    <TeacherDashboardLayout>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">My Exams</h1>
+            <p className="text-gray-600">Create and manage your examinations</p>
+          </div>
+          <Button 
+            onClick={() => router.push('/teacher/exams/create')}
+            className="bg-blue-600 hover:bg-blue-700"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Create New Exam
+          </Button>
+        </div>
+
+        {/* Filters */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center">
+              <Filter className="h-5 w-5 mr-2" />
+              Filters
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Search</label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Input
+                    placeholder="Search exams..."
+                    value={filters.search}
+                    onChange={(e) => handleFilterChange('search', e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Status</label>
+                <Select value={filters.status} onValueChange={(value) => handleFilterChange('status', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Statuses" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Statuses</SelectItem>
+                    <SelectItem value="DRAFT">Draft</SelectItem>
+                    <SelectItem value="PENDING_APPROVAL">Pending Approval</SelectItem>
+                    <SelectItem value="APPROVED">Approved</SelectItem>
+                    <SelectItem value="PUBLISHED">Published</SelectItem>
+                    <SelectItem value="REJECTED">Rejected</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Subject</label>
+                <Select value={filters.subject} onValueChange={(value) => handleFilterChange('subject', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Subjects" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Subjects</SelectItem>
+                    {/* TODO: Load subjects dynamically */}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Class</label>
+                <Select value={filters.classId} onValueChange={(value) => handleFilterChange('classId', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Classes" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Classes</SelectItem>
+                    {/* TODO: Load classes dynamically */}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Exams List */}
+        {exams.length === 0 ? (
+          <Card>
+            <CardContent className="text-center py-12">
+              <div className="mb-4">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <GraduationCap className="h-8 w-8 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">No Exams Yet</h3>
+                <p className="text-gray-600 mb-6">
+                  Create your first exam to get started with testing your students
+                </p>
+                <Button 
+                  onClick={() => router.push('/teacher/exams/create')}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Your First Exam
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid gap-6">
+            {exams.map((exam) => (
+              <Card key={exam.id} className="hover:shadow-md transition-shadow">
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <CardTitle className="text-xl">{exam.title}</CardTitle>
+                        {getStatusBadge(exam.status, exam.dynamicStatus)}
+                      </div>
+                      {exam.description && (
+                        <CardDescription className="mb-2">{exam.description}</CardDescription>
+                      )}
+                      <div className="flex items-center space-x-4 text-sm text-gray-600">
+                        <div className="flex items-center">
+                          <BookOpen className="h-4 w-4 mr-1" />
+                          {exam.subject?.name || 'General'}
+                        </div>
+                        <div className="flex items-center">
+                          <GraduationCap className="h-4 w-4 mr-1" />
+                          {exam.class ? `${exam.class.name} ${exam.class.section || ''}` : 'All Classes'}
+                        </div>
+                        <div className="flex items-center">
+                          <Clock className="h-4 w-4 mr-1" />
+                          {exam.duration} minutes
+                        </div>
+                        <div className="flex items-center">
+                          <Users className="h-4 w-4 mr-1" />
+                          {exam.studentsAttempted} attempted
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex space-x-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => router.push(`/teacher/exams/${exam.id}`)}
+                      >
+                        <Eye className="h-4 w-4 mr-1" />
+                        View
+                      </Button>
+                      {canEdit(exam) && (
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => router.push(`/teacher/exams/${exam.id}/edit`)}
+                        >
+                          <Edit className="h-4 w-4 mr-1" />
+                          Edit
+                        </Button>
+                      )}
+                      {canSubmitForApproval(exam) && (
+                        <Button 
+                          variant="default" 
+                          size="sm"
+                          onClick={() => handleSubmitForApproval(exam.id, exam.title)}
+                          className="bg-green-600 hover:bg-green-700"
+                        >
+                          <Send className="h-4 w-4 mr-1" />
+                          Submit for Approval
+                        </Button>
+                      )}
+                      {canDelete(exam) && (
+                        <Button 
+                          variant="destructive" 
+                          size="sm"
+                          onClick={() => handleDeleteExam(exam.id, exam.title)}
+                        >
+                          <Trash2 className="h-4 w-4 mr-1" />
+                          Delete
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid md:grid-cols-3 gap-4 text-sm">
+                    <div>
+                      <p className="font-medium text-gray-700">Exam Details</p>
+                      <p className="text-gray-600">{exam.totalQuestions} questions • {exam.totalMarks} marks</p>
+                      {exam.passingMarks && (
+                        <p className="text-gray-600">Passing: {exam.passingMarks} marks</p>
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-700">Schedule</p>
+                      <p className="text-gray-600">Start: {formatDateTime(exam.startTime)}</p>
+                      <p className="text-gray-600">End: {formatDateTime(exam.endTime)}</p>
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-700">Statistics</p>
+                      <p className="text-gray-600">Attempted: {exam.studentsAttempted}</p>
+                      <p className="text-gray-600">Completed: {exam.studentsCompleted}</p>
+                      {exam.approver && (
+                        <p className="text-gray-600">Approved by: {exam.approver.name}</p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {exam.status === 'REJECTED' && (
+                    <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                      <p className="text-sm text-red-800">
+                        <strong>Rejection Reason:</strong> This exam was rejected by the admin. Please review and resubmit.
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        {/* Pagination */}
+        {pagination.pages > 1 && (
+          <div className="flex justify-center space-x-2">
+            <Button
+              variant="outline"
+              disabled={pagination.page === 1}
+              onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
+            >
+              Previous
+            </Button>
+            <span className="py-2 px-4 text-sm text-gray-600">
+              Page {pagination.page} of {pagination.pages}
+            </span>
+            <Button
+              variant="outline"
+              disabled={pagination.page === pagination.pages}
+              onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
+            >
+              Next
+            </Button>
+          </div>
+        )}
+      </div>
+    </TeacherDashboardLayout>
+  )
+}
