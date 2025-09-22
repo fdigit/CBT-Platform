@@ -3,11 +3,11 @@
 import { useSession } from 'next-auth/react'
 import { useRouter, useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { TeacherDashboardLayout } from '@/components/teacher/TeacherDashboardLayout'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { useToast } from '@/hooks/use-toast'
+import { TeacherDashboardLayout } from '../../../../components/teacher/TeacherDashboardLayout'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../../components/ui/card'
+import { Button } from '../../../../components/ui/button'
+import { Badge } from '../../../../components/ui/badge'
+import { useToast } from '../../../../hooks/use-toast'
 import { 
   ArrowLeft,
   Edit,

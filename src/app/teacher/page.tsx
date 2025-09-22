@@ -3,8 +3,8 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
-import { TeacherDashboardLayout } from '@/components/teacher/TeacherDashboardLayout'
-import { TeacherDashboardOverview } from '@/components/teacher/TeacherDashboardOverview'
+import { TeacherDashboardLayout } from '../../components/teacher/TeacherDashboardLayout'
+import { TeacherDashboardOverview } from '../../components/teacher/TeacherDashboardOverview'
 
 export default function TeacherDashboard() {
   const { data: session, status } = useSession()
