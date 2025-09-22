@@ -3,12 +3,12 @@
 import { useSession } from 'next-auth/react'
 import { useRouter, useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { StudentDashboardLayout } from '@/components/student/StudentDashboardLayout'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { useToast } from '@/hooks/use-toast'
+import { StudentDashboardLayout } from '../../../../../components/student/StudentDashboardLayout'
+import { Card, CardContent, CardHeader, CardTitle } from '../../../../../components/ui/card'
+import { Button } from '../../../../../components/ui/button'
+import { Badge } from '../../../../../components/ui/badge'
+import { Progress } from '../../../../../components/ui/progress'
+import { useToast } from '../../../../../hooks/use-toast'
 import { 
   ArrowLeft,
   Trophy,
