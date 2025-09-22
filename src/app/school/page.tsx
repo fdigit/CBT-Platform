@@ -3,13 +3,13 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { SchoolDashboardLayout } from '@/components/school/SchoolDashboardLayout'
-import { StatsCard } from '@/components/school/StatsCard'
-import { QuickActions } from '@/components/school/QuickActions'
-import { DashboardCharts } from '@/components/school/DashboardCharts'
-import { RecentActivities } from '@/components/school/RecentActivities'
+import { SchoolDashboardLayout } from '../../components/school/SchoolDashboardLayout'
+import { StatsCard } from '../../components/school/StatsCard'
+import { QuickActions } from '../../components/school/QuickActions'
+import { DashboardCharts } from '../../components/school/DashboardCharts'
+import { RecentActivities } from '../../components/school/RecentActivities'
 import { Users, BookOpen, GraduationCap, CreditCard } from 'lucide-react'
-import { useToast } from '@/hooks/use-toast'
+import { useToast } from '../../hooks/use-toast'
 
 interface SchoolStats {
   students: number

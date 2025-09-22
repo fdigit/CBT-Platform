@@ -3,14 +3,14 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { SchoolDashboardLayout } from '@/components/school/SchoolDashboardLayout'
-import { ClassesHeader } from '@/components/school/classes/ClassesHeader'
-import { ClassesFilters } from '@/components/school/classes/ClassesFilters'
-import { ClassesTable } from '@/components/school/classes/ClassesTable'
-import { ClassesAnalytics } from '@/components/school/classes/ClassesAnalytics'
-import { ClassProfileDrawer } from '@/components/school/classes/ClassProfileDrawer'
-import { AddClassModal } from '@/components/school/classes/AddClassModal'
-import { useToast } from '@/hooks/use-toast'
+import { SchoolDashboardLayout } from '../../../components/school/SchoolDashboardLayout'
+import { ClassesHeader } from '../../../components/school/classes/ClassesHeader'
+import { ClassesFilters } from '../../../components/school/classes/ClassesFilters'
+import { ClassesTable } from '../../../components/school/classes/ClassesTable'
+import { ClassesAnalytics } from '../../../components/school/classes/ClassesAnalytics'
+import { ClassProfileDrawer } from '../../../components/school/classes/ClassProfileDrawer'
+import { AddClassModal } from '../../../components/school/classes/AddClassModal'
+import { useToast } from '../../../hooks/use-toast'
 
 export interface Class {
   id: string
