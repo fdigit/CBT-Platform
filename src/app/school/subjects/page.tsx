@@ -3,7 +3,7 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useRef } from 'react'
-import { SchoolDashboardLayout } from '@/components/school/SchoolDashboardLayout'
+import { SchoolDashboardLayout } from '../../../components/school/SchoolDashboardLayout'
 import {
   SubjectsHeader,
   CreateSubjectForm,
@@ -13,10 +13,10 @@ import {
   TeacherSubjectsTable,
   AssignClassesForm,
   ClassSubjectsTable
-} from '@/components/school/subjects'
-import type { CreateSubjectFormRef } from '@/components/school/subjects/CreateSubjectForm'
-import { useToast } from '@/hooks/use-toast'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+} from '../../../components/school/subjects'
+import type { CreateSubjectFormRef } from '../../../components/school/subjects/CreateSubjectForm'
+import { useToast } from '../../../hooks/use-toast'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../components/ui/tabs'
 
 interface Subject {
   id: string
