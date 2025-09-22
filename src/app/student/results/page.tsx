@@ -3,10 +3,10 @@
 import { useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState, Suspense } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../components/ui/card'
+import { Button } from '../../../components/ui/button'
+import { Badge } from '../../../components/ui/badge'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../components/ui/tabs'
 import { 
   LineChart, 
   Line, 
@@ -30,12 +30,12 @@ import {
   BarChart3,
   FileText
 } from 'lucide-react'
-import { useToast } from '@/hooks/use-toast'
+import { useToast } from '../../../hooks/use-toast'
 import { 
-  StudentDashboardLayout, 
+  StudentDashboardLayout,
   ResultsTable,
   StatsCard
-} from '@/components/student'
+} from '../../../components/student'
 
 interface Result {
   id: string

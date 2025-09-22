@@ -3,13 +3,13 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../components/ui/card'
+import { Button } from '../../../components/ui/button'
+import { Input } from '../../../components/ui/input'
+import { Label } from '../../../components/ui/label'
+import { Textarea } from '../../../components/ui/textarea'
+import { Badge } from '../../../components/ui/badge'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../components/ui/tabs'
 import { 
   HelpCircle, 
   MessageCircle, 
@@ -26,8 +26,8 @@ import {
   FileText,
   ExternalLink
 } from 'lucide-react'
-import { useToast } from '@/hooks/use-toast'
-import { StudentDashboardLayout } from '@/components/student'
+import { useToast } from '../../../hooks/use-toast'
+import { StudentDashboardLayout } from '../../../components/student'
 
 interface SupportTicket {
   id: string
