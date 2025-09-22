@@ -3,17 +3,17 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card'
+import { Button } from '../../components/ui/button'
+import { Badge } from '../../components/ui/badge'
 import { BookOpen, Clock, CheckCircle, AlertCircle, TrendingUp, Calendar, Target } from 'lucide-react'
-import { useToast } from '@/hooks/use-toast'
+import { useToast } from '../../hooks/use-toast'
 import { 
   StudentDashboardLayout, 
   StatsCard, 
   ExamCard, 
   ResultsTable 
-} from '@/components/student'
+} from '../../components/student'
 
 interface Exam {
   id: string
