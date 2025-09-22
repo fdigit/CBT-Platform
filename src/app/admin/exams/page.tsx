@@ -3,11 +3,11 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useCallback } from 'react'
-import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
-import { Button } from '@/components/ui/button'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { DashboardLayout } from '../../../components/dashboard/DashboardLayout'
+import { Button } from '../../../components/ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../components/ui/tabs'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../components/ui/card'
+import { Badge } from '../../../components/ui/badge'
 import { Download, RefreshCw, BarChart3, List, Users, Clock, CheckCircle, AlertCircle } from 'lucide-react'
 
 interface ExamData {
