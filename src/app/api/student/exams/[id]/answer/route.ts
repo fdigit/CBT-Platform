@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { canSaveAnswers } from '@/lib/exam-status'
 
 export async function POST(
   request: NextRequest,
@@ -63,32 +64,67 @@ export async function POST(
       }, { status: 400 })
     }
 
-    // Check if exam time has expired
+    // Get exam with attempts and results for status calculation
     const exam = await prisma.exam.findUnique({
-      where: { id: examId }
+      where: { id: examId },
+      include: {
+        attempts: {
+          where: { studentId: student.id },
+          orderBy: { startedAt: 'desc' }
+        },
+        results: {
+          where: { studentId: student.id }
+        }
+      }
     })
 
     if (!exam) {
       return NextResponse.json({ error: 'Exam not found' }, { status: 404 })
     }
 
+    // Use relaxed logic to check if answers can be saved
     const now = new Date()
-    if (now > new Date(exam.endTime)) {
+    const canSave = canSaveAnswers({
+      id: exam.id,
+      startTime: exam.startTime,
+      endTime: exam.endTime,
+      duration: exam.duration,
+      maxAttempts: exam.maxAttempts,
+      manualControl: exam.manualControl,
+      isLive: exam.isLive,
+      isCompleted: exam.isCompleted,
+      status: exam.status,
+      attempts: exam.attempts,
+      results: exam.results
+    }, now)
+
+    if (!canSave) {
       return NextResponse.json({ 
-        error: 'Exam time has expired' 
+        error: 'Cannot save answers at this time. Exam may be completed or not yet started.' 
       }, { status: 400 })
     }
 
     // Auto-grade the answer for objective questions
     let isCorrect = null
     let pointsAwarded = 0
+    let studentAnswer = response // Default to original response
 
     if (['MCQ', 'TRUE_FALSE'].includes(question.type) && response) {
       const correctAnswer = question.correctAnswer
+      
+      // For MCQ, convert index to actual option value if needed
+      if (question.type === 'MCQ' && question.options && Array.isArray(question.options)) {
+        const optionIndex = parseInt(response)
+        if (!isNaN(optionIndex) && optionIndex >= 0 && optionIndex < question.options.length) {
+          studentAnswer = question.options[optionIndex]
+        }
+      }
+      
+      // Compare the actual option value with correct answer
       if (correctAnswer && typeof correctAnswer === 'object' && 'answer' in correctAnswer) {
-        isCorrect = response === (correctAnswer as any).answer
+        isCorrect = studentAnswer === (correctAnswer as any).answer
       } else if (typeof correctAnswer === 'string') {
-        isCorrect = response === correctAnswer
+        isCorrect = studentAnswer === correctAnswer
       }
 
       if (isCorrect) {
@@ -108,7 +144,7 @@ export async function POST(
         }
       },
       update: {
-        response,
+        response: studentAnswer || response, // Store the actual option value for MCQ
         isCorrect,
         pointsAwarded,
         updatedAt: now,
@@ -119,7 +155,7 @@ export async function POST(
         questionId,
         examId,
         attemptId,
-        response,
+        response: studentAnswer || response, // Store the actual option value for MCQ
         isCorrect,
         pointsAwarded
       }

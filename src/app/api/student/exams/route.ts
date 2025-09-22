@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { calculateExamStatus } from '@/lib/exam-status'
 
 export async function GET(request: NextRequest) {
   try {
@@ -105,52 +106,29 @@ export async function GET(request: NextRequest) {
     })
 
 
-    // Calculate exam statistics and student status
+    // Calculate exam statistics and student status using unified logic
     const examsWithStatus = exams.map(exam => {
-      const startTime = new Date(exam.startTime)
-      const endTime = new Date(exam.endTime)
       const totalMarks = exam.questions.reduce((sum, q) => sum + q.points, 0)
       
-      // Determine exam status for student
-      let examStatus = 'upcoming'
-      let canTake = false
-      let timeRemaining = 0
+      // Use unified status calculation
+      const statusInfo = calculateExamStatus({
+        id: exam.id,
+        startTime: exam.startTime,
+        endTime: exam.endTime,
+        duration: exam.duration,
+        maxAttempts: exam.maxAttempts,
+        manualControl: exam.manualControl,
+        isLive: exam.isLive,
+        isCompleted: exam.isCompleted,
+        status: exam.status,
+        attempts: exam.attempts,
+        results: exam.results
+      }, now)
 
-      if (now < startTime) {
-        examStatus = 'upcoming'
-        timeRemaining = startTime.getTime() - now.getTime()
-      } else if (now >= startTime && now <= endTime) {
-        examStatus = 'active'
-        canTake = true
-        timeRemaining = endTime.getTime() - now.getTime()
-      } else {
-        examStatus = 'completed'
-      }
-
-      // Check student's attempts and results
-      const latestAttempt = exam.attempts[0]
+      // Get score from latest result
       const result = exam.results[0]
-      
-      let studentStatus = 'not_started'
-      let score = null
-      let attemptCount = exam.attempts.length
-
-      if (result) {
-        studentStatus = 'completed'
-        score = result.score
-      } else if (latestAttempt) {
-        if (latestAttempt.status === 'IN_PROGRESS') {
-          studentStatus = 'in_progress'
-          canTake = true // Can resume
-        } else if (latestAttempt.status === 'SUBMITTED') {
-          studentStatus = 'submitted'
-        }
-      }
-
-      // Check if student can take/retake exam
-      if (examStatus === 'active' && attemptCount < exam.maxAttempts && studentStatus !== 'in_progress') {
-        canTake = true
-      }
+      const score = result ? result.score : null
+      const attemptCount = exam.attempts.length
 
       return {
         id: exam.id,
@@ -164,10 +142,12 @@ export async function GET(request: NextRequest) {
         maxAttempts: exam.maxAttempts,
         allowPreview: exam.allowPreview,
         showResultsImmediately: exam.showResultsImmediately,
-        examStatus,
-        studentStatus,
-        canTake,
-        timeRemaining,
+        examStatus: statusInfo.examStatus,
+        studentStatus: statusInfo.studentStatus,
+        canTake: statusInfo.canTake,
+        canResume: statusInfo.canResume,
+        timeRemaining: statusInfo.timeRemaining,
+        isExpired: statusInfo.isExpired,
         score,
         attemptCount,
         totalQuestions: exam.questions.length,

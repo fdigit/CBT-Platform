@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { getDynamicStatus } from '@/lib/exam-status'
 
 export async function GET(request: NextRequest) {
   try {
@@ -88,6 +89,21 @@ export async function GET(request: NextRequest) {
             difficulty: true
           }
         },
+        attempts: {
+          select: {
+            id: true,
+            status: true,
+            startedAt: true,
+            submittedAt: true
+          }
+        },
+        results: {
+          select: {
+            id: true,
+            score: true,
+            gradedAt: true
+          }
+        },
         _count: {
           select: {
             results: true,
@@ -103,23 +119,24 @@ export async function GET(request: NextRequest) {
       take: limit
     })
 
-    // Calculate additional fields for each exam
+    // Calculate additional fields for each exam using unified logic
     const examsWithStats = exams.map(exam => {
       const now = new Date()
-      const startTime = new Date(exam.startTime)
-      const endTime = new Date(exam.endTime)
       
-      // Dynamic status based on current time and exam status
-      let dynamicStatus = exam.status
-      if (exam.status === 'PUBLISHED' || exam.status === 'APPROVED') {
-        if (now < startTime) {
-          dynamicStatus = 'SCHEDULED'
-        } else if (now >= startTime && now <= endTime) {
-          dynamicStatus = 'ACTIVE'
-        } else if (now > endTime) {
-          dynamicStatus = 'COMPLETED'
-        }
-      }
+      // Use unified status calculation
+      const dynamicStatus = getDynamicStatus({
+        id: exam.id,
+        startTime: exam.startTime,
+        endTime: exam.endTime,
+        duration: exam.duration,
+        maxAttempts: exam.maxAttempts,
+        manualControl: exam.manualControl,
+        isLive: exam.isLive,
+        isCompleted: exam.isCompleted,
+        status: exam.status,
+        attempts: exam.attempts,
+        results: exam.results
+      }, now)
 
       // Determine exam type based on questions
       let examType = 'MIXED'

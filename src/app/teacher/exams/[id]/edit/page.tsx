@@ -613,9 +613,13 @@ export default function EditExamPage() {
                   id="maxAttempts"
                   type="number"
                   min="1"
+                  max="999"
                   value={examData.maxAttempts}
                   onChange={(e) => handleInputChange('maxAttempts', parseInt(e.target.value) || 1)}
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  Set to 999 for unlimited retakes (testing)
+                </p>
               </div>
             </div>
           </CardContent>

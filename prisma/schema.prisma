@@ -257,6 +257,11 @@ model Exam {
   maxAttempts Int @default(1)
   hasMediaAttachments Boolean @default(false)
   aiGenerated Boolean @default(false)
+  
+  // Manual control settings
+  manualControl Boolean @default(false) // If true, admin controls exam status manually
+  isLive Boolean @default(false) // Manual live status (overrides time-based)
+  isCompleted Boolean @default(false) // Manual completion status (overrides time-based)
 
   // Relations
   schoolId String

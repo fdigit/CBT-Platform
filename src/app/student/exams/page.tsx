@@ -261,21 +261,21 @@ export default function StudentExams() {
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
+        <div>
             <h1 className="text-2xl font-bold text-gray-900">My Exams</h1>
             <p className="text-gray-600">View and take your assigned examinations</p>
           </div>
         </div>
 
         {/* Filters */}
-        <Card>
+          <Card>
           <CardHeader>
             <CardTitle className="text-lg flex items-center">
               <Filter className="h-5 w-5 mr-2" />
               Filters
             </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </CardHeader>
+            <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium mb-2 block">Search</label>
@@ -304,8 +304,8 @@ export default function StudentExams() {
                 </Select>
               </div>
             </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
         {/* Exams List */}
         {exams.length === 0 ? (
@@ -370,8 +370,8 @@ export default function StudentExams() {
                       {getActionButton(exam)}
                     </div>
                   </div>
-                </CardHeader>
-                <CardContent>
+            </CardHeader>
+            <CardContent>
                   <div className="grid md:grid-cols-3 gap-4 text-sm">
                     <div>
                       <p className="font-medium text-gray-700">Schedule</p>
@@ -401,7 +401,7 @@ export default function StudentExams() {
                         ))}
                       </div>
                     </div>
-                  </div>
+        </div>
 
                   {exam.examStatus === 'upcoming' && (
                     <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
@@ -410,13 +410,13 @@ export default function StudentExams() {
                         <p className="text-sm text-yellow-800">
                           This exam will be available on {formatDateTime(exam.startTime)}
                         </p>
-                      </div>
-                    </div>
+                </div>
+              </div>
                   )}
                 </CardContent>
               </Card>
-            ))}
-          </div>
+                ))}
+              </div>
         )}
       </div>
     </StudentDashboardLayout>

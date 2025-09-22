@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { getDynamicStatus } from '@/lib/exam-status'
 
 export async function GET(request: NextRequest) {
   try {
@@ -74,6 +75,21 @@ export async function GET(request: NextRequest) {
               difficulty: true
             }
           },
+          attempts: {
+            select: {
+              id: true,
+              status: true,
+              startedAt: true,
+              submittedAt: true
+            }
+          },
+          results: {
+            select: {
+              id: true,
+              score: true,
+              gradedAt: true
+            }
+          },
           _count: {
             select: {
               results: true,
@@ -96,17 +112,36 @@ export async function GET(request: NextRequest) {
       prisma.exam.count({ where })
     ])
 
-    // Add computed fields
-    const examsWithStats = exams.map(exam => ({
-      ...exam,
-      totalQuestions: exam.questions.length,
-      totalMarks: exam.questions.reduce((sum, q) => sum + q.points, 0),
-      studentsAttempted: exam._count.attempts || 0,
-      studentsCompleted: exam._count.results || 0,
-      subjectName: exam.subject?.name || 'General',
-      className: exam.class ? `${exam.class.name} ${exam.class.section || ''}` : 'All Classes',
-      approverName: exam.approver?.name || null
-    }))
+    // Add computed fields using unified logic
+    const now = new Date()
+    const examsWithStats = exams.map(exam => {
+      // Use unified status calculation
+      const dynamicStatus = getDynamicStatus({
+        id: exam.id,
+        startTime: exam.startTime,
+        endTime: exam.endTime,
+        duration: exam.duration,
+        maxAttempts: exam.maxAttempts,
+        manualControl: exam.manualControl,
+        isLive: exam.isLive,
+        isCompleted: exam.isCompleted,
+        status: exam.status,
+        attempts: exam.attempts,
+        results: exam.results
+      }, now)
+
+      return {
+        ...exam,
+        totalQuestions: exam.questions.length,
+        totalMarks: exam.questions.reduce((sum, q) => sum + q.points, 0),
+        studentsAttempted: exam._count.attempts || 0,
+        studentsCompleted: exam._count.results || 0,
+        subjectName: exam.subject?.name || 'General',
+        className: exam.class ? `${exam.class.name} ${exam.class.section || ''}` : 'All Classes',
+        approverName: exam.approver?.name || null,
+        dynamicStatus
+      }
+    })
 
     return NextResponse.json({
       exams: examsWithStats,

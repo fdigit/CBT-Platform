@@ -42,6 +42,9 @@ interface Exam {
   subjectName: string
   className: string
   approverName?: string
+  manualControl?: boolean
+  isLive?: boolean
+  isCompleted?: boolean
   teacher?: {
     user: {
       name: string
@@ -227,6 +230,50 @@ export default function ExamsPage() {
     }
   }
 
+  const handleManualControl = async (examId: string, action: string, examTitle: string) => {
+    const actionText = action === 'make_live' ? 'make live' : 
+                      action === 'make_completed' ? 'mark as completed' : 
+                      'toggle manual control'
+    
+    if (!confirm(`Are you sure you want to ${actionText} "${examTitle}"?`)) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/school/exams/${examId}/manual-control`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          action,
+          enableManualControl: action === 'toggle_manual_control' ? true : undefined
+        }),
+      })
+
+      if (response.ok) {
+        toast({
+          title: 'Success',
+          description: `Exam ${actionText}d successfully!`,
+        })
+        fetchExams()
+      } else {
+        const error = await response.json()
+        toast({
+          title: 'Error',
+          description: error.error || `Failed to ${actionText} exam`,
+          variant: 'destructive',
+        })
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: `An error occurred while ${actionText}ing exam`,
+        variant: 'destructive',
+      })
+    }
+  }
+
   const getStatusBadge = (status: string, dynamicStatus?: string) => {
     const displayStatus = dynamicStatus || status
     
@@ -321,6 +368,12 @@ export default function ExamsPage() {
                         <div className="flex items-center space-x-2 mb-2">
                           <CardTitle className="text-xl">{exam.title}</CardTitle>
                         {getStatusBadge(exam.status, exam.dynamicStatus)}
+                        {exam.manualControl && (
+                          <Badge variant="outline" className="border-purple-600 text-purple-600">
+                            <Clock className="h-3 w-3 mr-1" />
+                            Manual Control
+                          </Badge>
+                        )}
                         </div>
                         {exam.description && (
                           <CardDescription className="mb-2">{exam.description}</CardDescription>
@@ -413,6 +466,61 @@ export default function ExamsPage() {
                           <Trash2 className="h-4 w-4 mr-1" />
                           Delete
                         </Button>
+                      )}
+
+                      {/* Manual Control Buttons for Published/Approved Exams */}
+                      {['PUBLISHED', 'APPROVED'].includes(exam.status) && (
+                        <>
+                          {!exam.manualControl && (
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleManualControl(exam.id, 'toggle_manual_control', exam.title)}
+                              className="border-purple-600 text-purple-600 hover:bg-purple-50"
+                            >
+                              <Clock className="h-4 w-4 mr-1" />
+                              Enable Manual Control
+                            </Button>
+                          )}
+                          
+                          {exam.manualControl && (
+                            <>
+                              {!exam.isLive && !exam.isCompleted && (
+                                <Button 
+                                  variant="default" 
+                                  size="sm"
+                                  onClick={() => handleManualControl(exam.id, 'make_live', exam.title)}
+                                  className="bg-green-600 hover:bg-green-700"
+                                >
+                                  <Users className="h-4 w-4 mr-1" />
+                                  Make Live
+                                </Button>
+                              )}
+                              
+                              {exam.isLive && !exam.isCompleted && (
+                                <Button 
+                                  variant="default" 
+                                  size="sm"
+                                  onClick={() => handleManualControl(exam.id, 'make_completed', exam.title)}
+                                  className="bg-gray-600 hover:bg-gray-700"
+                                >
+                                  <CheckCircle className="h-4 w-4 mr-1" />
+                                  Mark Completed
+                                </Button>
+                              )}
+                              
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => handleManualControl(exam.id, 'toggle_manual_control', exam.title)}
+                                className="border-red-600 text-red-600 hover:bg-red-50"
+                              >
+                                <XCircle className="h-4 w-4 mr-1" />
+                                Disable Manual Control
+                              </Button>
+                            </>
+                          )}
+                        </>
                       )}
                       </div>
                     </div>

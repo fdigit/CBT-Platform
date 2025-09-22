@@ -25,7 +25,8 @@ import {
   AlertCircle,
   Calendar,
   BookOpen,
-  GraduationCap
+  GraduationCap,
+  BarChart3
 } from 'lucide-react'
 
 interface Exam {
@@ -112,6 +113,7 @@ export default function TeacherExams() {
       
       if (response.ok) {
         const data = await response.json()
+        console.log('Teacher exams data:', data.exams) // Debug log
         setExams(data.exams || [])
         setPagination(prev => ({
           ...prev,
@@ -377,10 +379,14 @@ export default function TeacherExams() {
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <CardTitle className="text-xl">{exam.title}</CardTitle>
+                        <div className="flex items-center space-x-2 mb-2">
+                          <CardTitle className="text-xl">{exam.title}</CardTitle>
                         {getStatusBadge(exam.status, exam.dynamicStatus)}
-                      </div>
+                        {/* Debug info */}
+                        <Badge variant="outline" className="text-xs">
+                          Attempts: {exam.studentsAttempted} | Results: {exam.studentsCompleted}
+                        </Badge>
+                        </div>
                       {exam.description && (
                         <CardDescription className="mb-2">{exam.description}</CardDescription>
                       )}
@@ -412,6 +418,24 @@ export default function TeacherExams() {
                         <Eye className="h-4 w-4 mr-1" />
                         View
                       </Button>
+                      
+                      {/* Debug info */}
+                      <div className="text-xs text-gray-500">
+                        Debug: Attempts={exam.studentsAttempted}, Results={exam.studentsCompleted}
+                      </div>
+                      
+                      {/* Show Results button for exams with student attempts */}
+                      {exam.studentsAttempted > 0 && (
+                        <Button 
+                          variant="default" 
+                          size="sm"
+                          onClick={() => router.push(`/teacher/exams/${exam.id}/results`)}
+                          className="bg-purple-600 hover:bg-purple-700"
+                        >
+                          <BarChart3 className="h-4 w-4 mr-1" />
+                          Results ({exam.studentsAttempted})
+                        </Button>
+                      )}
                       {canEdit(exam) && (
                         <Button 
                           variant="outline" 

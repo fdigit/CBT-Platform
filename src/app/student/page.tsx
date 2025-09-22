@@ -85,7 +85,7 @@ export default function StudentDashboard() {
 
       if (examsResponse.ok) {
         const examsData = await examsResponse.json()
-        setExams(examsData)
+        setExams(examsData.exams || [])
       }
 
       if (resultsResponse.ok) {
@@ -142,7 +142,7 @@ export default function StudentDashboard() {
   }
 
   // Get active/ongoing exam for priority display
-  const activeExam = exams.find(exam => getExamStatus(exam) === 'active')
+  const activeExam = Array.isArray(exams) ? exams.find(exam => getExamStatus(exam) === 'active') : null
   
   return (
     <StudentDashboardLayout>
@@ -250,7 +250,7 @@ export default function StudentDashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {exams.length === 0 ? (
+            {!Array.isArray(exams) || exams.length === 0 ? (
               <div className="text-center py-12">
                 <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No exams available</h3>
@@ -258,7 +258,7 @@ export default function StudentDashboard() {
               </div>
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {exams.map((exam) => (
+                {Array.isArray(exams) && exams.map((exam) => (
                   <ExamCard
                     key={exam.id}
                     id={exam.id}

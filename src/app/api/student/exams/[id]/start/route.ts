@@ -63,19 +63,36 @@ export async function POST(
     const startTime = new Date(exam.startTime)
     const endTime = new Date(exam.endTime)
 
-    // Check if exam is currently active
-    if (now < startTime) {
-      return NextResponse.json({ 
-        error: 'Exam has not started yet',
-        startTime: exam.startTime
-      }, { status: 400 })
-    }
+    // Check if exam is currently active (considering manual control)
+    if (exam.manualControl) {
+      // Manual control enabled - check manual status
+      if (!exam.isLive) {
+        return NextResponse.json({ 
+          error: 'Exam is not currently live',
+          startTime: exam.startTime
+        }, { status: 400 })
+      }
+      if (exam.isCompleted) {
+        return NextResponse.json({ 
+          error: 'Exam has been completed',
+          endTime: exam.endTime
+        }, { status: 400 })
+      }
+    } else {
+      // Original time-based logic
+      if (now < startTime) {
+        return NextResponse.json({ 
+          error: 'Exam has not started yet',
+          startTime: exam.startTime
+        }, { status: 400 })
+      }
 
-    if (now > endTime) {
-      return NextResponse.json({ 
-        error: 'Exam has ended',
-        endTime: exam.endTime
-      }, { status: 400 })
+      if (now > endTime) {
+        return NextResponse.json({ 
+          error: 'Exam has ended',
+          endTime: exam.endTime
+        }, { status: 400 })
+      }
     }
 
     // Check existing attempts
@@ -131,12 +148,28 @@ export async function POST(
     const realIp = request.headers.get('x-real-ip')
     const ipAddress = forwardedFor?.split(',')[0] || realIp || 'unknown'
 
-    // Create new attempt
-    const newAttempt = await prisma.examAttempt.create({
-      data: {
+    // Create new attempt with proper attempt number calculation
+    const nextAttemptNumber = existingAttempts.length + 1
+    
+    // Use upsert to handle potential race conditions
+    const newAttempt = await prisma.examAttempt.upsert({
+      where: {
+        studentId_examId_attemptNumber: {
+          studentId: student.id,
+          examId,
+          attemptNumber: nextAttemptNumber
+        }
+      },
+      update: {
+        startedAt: now,
+        status: 'IN_PROGRESS',
+        ipAddress,
+        userAgent
+      },
+      create: {
         examId,
         studentId: student.id,
-        attemptNumber: existingAttempts.length + 1,
+        attemptNumber: nextAttemptNumber,
         startedAt: now,
         status: 'IN_PROGRESS',
         ipAddress,
