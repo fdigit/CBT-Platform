@@ -3,11 +3,11 @@
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter, useParams } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../../components/ui/card'
+import { Button } from '../../../../components/ui/button'
+import { Badge } from '../../../../components/ui/badge'
 import { ArrowLeft, Edit, Users, Clock, Calendar, Settings } from 'lucide-react'
-import { useToast } from '@/hooks/use-toast'
+import { useToast } from '../../../../hooks/use-toast'
 
 interface Question {
   id: string
