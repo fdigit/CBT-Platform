@@ -3,7 +3,7 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useCallback } from 'react'
-import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
+import { DashboardLayout } from '../../../components/dashboard/DashboardLayout'
 import {
   UserTable,
   UserFilters,
@@ -13,10 +13,10 @@ import {
   DeleteUserModal,
   ResetPasswordModal,
   BulkActionModal,
-} from '@/components/admin'
-import { Button } from '@/components/ui/button'
+} from '../../../components/admin'
+import { Button } from '../../../components/ui/button'
 import { Plus, Download } from 'lucide-react'
-import { useToast } from '@/hooks/use-toast'
+import { useToast } from '../../../hooks/use-toast'
 
 export interface User {
   id: string

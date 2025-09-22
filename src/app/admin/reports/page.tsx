@@ -3,21 +3,21 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useCallback } from 'react'
-import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
-import { StatsCard } from '@/components/dashboard/StatsCard'
-import { ReportsFilters, type ReportsFilters as ReportsFiltersType } from '@/components/admin/ReportsFilters'
+import { DashboardLayout } from '../../../components/dashboard/DashboardLayout'
+import { StatsCard } from '../../../components/dashboard/StatsCard'
+import { ReportsFilters, type ReportsFilters as ReportsFiltersType } from '../../../components/admin/ReportsFilters'
 import { 
   UserGrowthChart, 
   ExamsPerSchoolChart, 
   UserRoleDistributionChart, 
   SchoolPerformanceChart,
   RevenueAnalyticsChart 
-} from '@/components/admin/ReportsCharts'
-import { ReportsActivityTable } from '@/components/admin/ReportsActivityTable'
-import { Button } from '@/components/ui/button'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { useToast } from '@/hooks/use-toast'
+} from '../../../components/admin/ReportsCharts'
+import { ReportsActivityTable } from '../../../components/admin/ReportsActivityTable'
+import { Button } from '../../../components/ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../components/ui/tabs'
+import { Alert, AlertDescription } from '../../../components/ui/alert'
+import { useToast } from '../../../hooks/use-toast'
 import { 
   School, 
   Users, 

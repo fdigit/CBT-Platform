@@ -3,12 +3,12 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useCallback } from 'react'
-import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
-import { SchoolsSummary } from '@/components/dashboard/SchoolsSummary'
-import { SchoolFilters, type SchoolFilters as SchoolFiltersType } from '@/components/dashboard/SchoolFilters'
-import { SchoolManagementTable } from '@/components/dashboard/SchoolManagementTable'
-import { Pagination } from '@/components/dashboard/Pagination'
-import { useToast } from '@/hooks/use-toast'
+import { DashboardLayout } from '../../../components/dashboard/DashboardLayout'
+import { SchoolsSummary } from '../../../components/dashboard/SchoolsSummary'
+import { SchoolFilters, type SchoolFilters as SchoolFiltersType } from '../../../components/dashboard/SchoolFilters'
+import { SchoolManagementTable } from '../../../components/dashboard/SchoolManagementTable'
+import { Pagination } from '../../../components/dashboard/Pagination'
+import { useToast } from '../../../hooks/use-toast'
 
 interface School {
   id: string

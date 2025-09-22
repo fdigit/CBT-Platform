@@ -3,8 +3,8 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
-import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { DashboardLayout } from '../../../components/dashboard/DashboardLayout'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../components/ui/card'
 
 export default function PaymentsPage() {
   const { data: session, status } = useSession()

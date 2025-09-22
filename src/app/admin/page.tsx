@@ -3,8 +3,8 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
-import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
-import { DashboardOverview } from '@/components/dashboard/DashboardOverview'
+import { DashboardLayout } from '../../components/dashboard/DashboardLayout'
+import { DashboardOverview } from '../../components/dashboard/DashboardOverview'
 
 export default function AdminDashboard() {
   const { data: session, status } = useSession()
