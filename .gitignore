@@ -6,10 +6,12 @@ yarn-error.log*
 
 # Environment variables
 .env
+.env.*
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+supabase-config.env
 
 # Next.js
 .next/
