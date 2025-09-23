@@ -24,6 +24,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const paymentStatus = paystackResponse.data.status;
+
     // Update payment record
     const payment = await prisma.payment.update({
       where: { reference },

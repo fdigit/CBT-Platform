@@ -543,7 +543,7 @@ export function AddStudentModal({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label>Name</Label>
-                    <p className="font-medium">{createdStudent?.name}</p>
+                    <p className="font-medium">{createdStudent?.user?.name}</p>
                   </div>
                   <div>
                     <Label>Registration Number</Label>
@@ -566,13 +566,13 @@ export function AddStudentModal({
                     <Label>Email</Label>
                     <div className="flex items-center space-x-2">
                       <code className="bg-gray-100 px-2 py-1 rounded text-sm">
-                        {createdStudent?.email}
+                        {createdStudent?.user?.email}
                       </code>
                       <Button
                         size="sm"
                         variant="ghost"
                         onClick={() =>
-                          copyToClipboard(createdStudent?.email || '')
+                          copyToClipboard(createdStudent?.user?.email || '')
                         }
                       >
                         <Copy className="h-4 w-4" />

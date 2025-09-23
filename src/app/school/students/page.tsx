@@ -12,27 +12,7 @@ import { StudentProfileDrawer } from '../../../components/school/students/Studen
 import { AddStudentModal } from '../../../components/school/students/AddStudentModal';
 import { BulkUploadModal } from '../../../components/school/students/BulkUploadModal';
 import { useToast } from '../../../hooks/use-toast';
-
-export interface Student {
-  id: string;
-  regNumber: string;
-  name: string;
-  email: string;
-  gender?: 'MALE' | 'FEMALE';
-  class?: string;
-  section?: string;
-  parentPhone?: string;
-  parentEmail?: string;
-  dateOfBirth?: string;
-  address?: string;
-  status: 'ACTIVE' | 'SUSPENDED' | 'GRADUATED' | 'ALUMNI' | 'PENDING';
-  avatar?: string;
-  lastLogin?: string;
-  lastExamTaken?: string;
-  performanceScore?: number;
-  createdAt: string;
-  updatedAt: string;
-}
+import { Student } from '@/types/models';
 
 export interface StudentsFilters {
   search: string;

@@ -31,7 +31,7 @@ import {
   Eye,
   EyeOff,
 } from 'lucide-react';
-import { Student } from '../../app/school/students/page';
+import { Student } from '@/types/models';
 import { useToast } from '../../../hooks/use-toast';
 
 interface BulkUploadModalProps {

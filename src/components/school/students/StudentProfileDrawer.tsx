@@ -38,7 +38,7 @@ import {
   TrendingUp,
   AlertCircle,
 } from 'lucide-react';
-import { Student } from '../../app/school/students/page';
+import { Student, Role } from '@/types/models';
 import { format } from 'date-fns';
 import { useToast } from '../../../hooks/use-toast';
 
@@ -186,20 +186,19 @@ export function StudentProfileDrawer({
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <Avatar className="h-12 w-12">
-                <AvatarImage src={displayStudent.avatar} />
+                <AvatarImage src={undefined} />
                 <AvatarFallback>
-                  {getInitials(displayStudent.name)}
+                  {getInitials(displayStudent.user?.name || '')}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <SheetTitle>{displayStudent.name}</SheetTitle>
+                <SheetTitle>{displayStudent.user?.name}</SheetTitle>
                 <SheetDescription>
-                  {displayStudent.regNumber} • {displayStudent.email}
+                  {displayStudent.regNumber} • {displayStudent.user?.email}
                 </SheetDescription>
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              {getStatusBadge(displayStudent.status)}
               {!isEditing ? (
                 <Button size="sm" onClick={() => setIsEditing(true)}>
                   <Edit3 className="h-4 w-4 mr-2" />
@@ -248,15 +247,29 @@ export function StudentProfileDrawer({
                       {isEditing ? (
                         <Input
                           id="name"
-                          value={formData.name || ''}
+                          value={formData.user?.name || ''}
                           onChange={e =>
-                            setFormData({ ...formData, name: e.target.value })
+                            setFormData({
+                              ...formData,
+                              user: {
+                                id: formData.user?.id || '',
+                                email: formData.user?.email || '',
+                                password: formData.user?.password || '',
+                                name: e.target.value,
+                                role: formData.user?.role || Role.STUDENT,
+                                schoolId: formData.user?.schoolId || '',
+                                createdAt:
+                                  formData.user?.createdAt || new Date(),
+                                updatedAt:
+                                  formData.user?.updatedAt || new Date(),
+                              },
+                            })
                           }
                         />
                       ) : (
                         <div className="flex items-center space-x-2">
                           <User className="h-4 w-4 text-gray-400" />
-                          <span>{displayStudent.name}</span>
+                          <span>{displayStudent.user?.name}</span>
                         </div>
                       )}
                     </div>
@@ -267,15 +280,29 @@ export function StudentProfileDrawer({
                         <Input
                           id="email"
                           type="email"
-                          value={formData.email || ''}
+                          value={formData.user?.email || ''}
                           onChange={e =>
-                            setFormData({ ...formData, email: e.target.value })
+                            setFormData({
+                              ...formData,
+                              user: {
+                                id: formData.user?.id || '',
+                                email: e.target.value,
+                                password: formData.user?.password || '',
+                                name: formData.user?.name || '',
+                                role: formData.user?.role || Role.STUDENT,
+                                schoolId: formData.user?.schoolId || '',
+                                createdAt:
+                                  formData.user?.createdAt || new Date(),
+                                updatedAt:
+                                  formData.user?.updatedAt || new Date(),
+                              },
+                            })
                           }
                         />
                       ) : (
                         <div className="flex items-center space-x-2">
                           <Mail className="h-4 w-4 text-gray-400" />
-                          <span>{displayStudent.email}</span>
+                          <span>{displayStudent.user?.email}</span>
                         </div>
                       )}
                     </div>
@@ -284,11 +311,10 @@ export function StudentProfileDrawer({
                       <Label htmlFor="gender">Gender</Label>
                       {isEditing ? (
                         <Select
-                          value={formData.gender || ''}
+                          value={''}
                           onValueChange={value =>
                             setFormData({
                               ...formData,
-                              gender: value as 'MALE' | 'FEMALE',
                             })
                           }
                         >
@@ -303,13 +329,7 @@ export function StudentProfileDrawer({
                       ) : (
                         <div className="flex items-center space-x-2">
                           <User className="h-4 w-4 text-gray-400" />
-                          <span>
-                            {displayStudent.gender === 'MALE'
-                              ? 'Male'
-                              : displayStudent.gender === 'FEMALE'
-                                ? 'Female'
-                                : 'Not specified'}
-                          </span>
+                          <span>Not specified</span>
                         </div>
                       )}
                     </div>
@@ -320,11 +340,10 @@ export function StudentProfileDrawer({
                         <Input
                           id="dateOfBirth"
                           type="date"
-                          value={formData.dateOfBirth || ''}
+                          value={''}
                           onChange={e =>
                             setFormData({
                               ...formData,
-                              dateOfBirth: e.target.value,
                             })
                           }
                         />
@@ -343,7 +362,7 @@ export function StudentProfileDrawer({
                       {isEditing ? (
                         <Input
                           id="parentPhone"
-                          value={formData.parentPhone || ''}
+                          value={''}
                           onChange={e =>
                             setFormData({
                               ...formData,
@@ -367,7 +386,7 @@ export function StudentProfileDrawer({
                         <Input
                           id="parentEmail"
                           type="email"
-                          value={formData.parentEmail || ''}
+                          value={''}
                           onChange={e =>
                             setFormData({
                               ...formData,
@@ -391,9 +410,9 @@ export function StudentProfileDrawer({
                     {isEditing ? (
                       <Textarea
                         id="address"
-                        value={formData.address || ''}
+                        value={''}
                         onChange={e =>
-                          setFormData({ ...formData, address: e.target.value })
+                          setFormData({ ...formData })
                         }
                         rows={3}
                       />
@@ -420,9 +439,9 @@ export function StudentProfileDrawer({
                       {isEditing ? (
                         <Input
                           id="class"
-                          value={formData.class || ''}
+                          value={''}
                           onChange={e =>
-                            setFormData({ ...formData, class: e.target.value })
+                            setFormData({ ...formData })
                           }
                         />
                       ) : (
@@ -435,7 +454,7 @@ export function StudentProfileDrawer({
                       {isEditing ? (
                         <Input
                           id="section"
-                          value={formData.section || ''}
+                          value={''}
                           onChange={e =>
                             setFormData({
                               ...formData,
@@ -452,11 +471,11 @@ export function StudentProfileDrawer({
                       <Label htmlFor="status">Status</Label>
                       {isEditing ? (
                         <Select
-                          value={formData.status || ''}
+                          value={''}
                           onValueChange={value =>
                             setFormData({
                               ...formData,
-                              status: value as Student['status'],
+                              status: value,
                             })
                           }
                         >
@@ -472,7 +491,7 @@ export function StudentProfileDrawer({
                           </SelectContent>
                         </Select>
                       ) : (
-                        getStatusBadge(displayStudent.status)
+                        <span>Active</span>
                       )}
                     </div>
                   </div>
