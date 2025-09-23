@@ -411,9 +411,7 @@ export function StudentProfileDrawer({
                       <Textarea
                         id="address"
                         value={''}
-                        onChange={e =>
-                          setFormData({ ...formData })
-                        }
+                        onChange={e => setFormData({ ...formData })}
                         rows={3}
                       />
                     ) : (
@@ -440,9 +438,7 @@ export function StudentProfileDrawer({
                         <Input
                           id="class"
                           value={''}
-                          onChange={e =>
-                            setFormData({ ...formData })
-                          }
+                          onChange={e => setFormData({ ...formData })}
                         />
                       ) : (
                         <span>{displayStudent.class || 'Not assigned'}</span>
