@@ -1,16 +1,16 @@
 'use client'
 
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { Input } from '../../ui/input'
+import { Button } from '../../ui/button'
+import { Badge } from '../../ui/badge'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Card, CardContent } from '@/components/ui/card'
+} from '../../ui/select'
+import { Card, CardContent } from '../../ui/card'
 import { 
   Search, 
   Filter, 
@@ -18,11 +18,16 @@ import {
   ChevronDown
 } from 'lucide-react'
 import { useState } from 'react'
-import { ClassesFilters as FiltersType } from '@/app/school/classes/page'
+// Define types locally instead of importing from page
+interface ClassesFilters {
+  search: string
+  academicYear: string
+  status: string
+}
 
 interface ClassesFiltersProps {
-  filters: FiltersType
-  onChange: (filters: Partial<FiltersType>) => void
+  filters: ClassesFilters
+  onChange: (filters: Partial<ClassesFilters>) => void
 }
 
 const STATUSES = [
@@ -42,7 +47,7 @@ export function ClassesFilters({ filters, onChange }: ClassesFiltersProps) {
     onChange({ search: value })
   }
 
-  const handleFilterChange = (key: keyof FiltersType, value: any) => {
+  const handleFilterChange = (key: keyof ClassesFilters, value: any) => {
     onChange({ [key]: value })
   }
 

@@ -1,15 +1,46 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Checkbox } from '@/components/ui/checkbox'
-import { useToast } from '@/hooks/use-toast'
-import { Class, Teacher } from '@/app/school/classes/page'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../ui/dialog'
+import { Button } from '../../ui/button'
+import { Input } from '../../ui/input'
+import { Label } from '../../ui/label'
+import { Textarea } from '../../ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select'
+import { Checkbox } from '../../ui/checkbox'
+import { useToast } from '../../../hooks/use-toast'
+// Define types locally instead of importing from page
+interface Class {
+  id: string
+  name: string
+  section?: string
+  academicYear: string
+  description?: string
+  maxStudents: number
+  room?: string
+  status: 'ACTIVE' | 'INACTIVE' | 'ARCHIVED'
+  studentCount: number
+  examCount: number
+  teachers: Array<{
+    id: string
+    name: string
+    email: string
+    employeeId: string
+  }>
+  createdAt: string
+  updatedAt: string
+}
+
+interface Teacher {
+  id: string
+  employeeId: string
+  name: string
+  email: string
+  qualification?: string
+  specialization?: string
+  experience?: number
+  status: 'ACTIVE' | 'SUSPENDED' | 'TERMINATED' | 'ON_LEAVE'
+}
 
 interface EditClassModalProps {
   isOpen: boolean

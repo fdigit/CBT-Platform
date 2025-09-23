@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
+import { Button } from '../../ui/button'
+import { Card } from '../../ui/card'
+import { Input } from '../../ui/input'
+import { Badge } from '../../ui/badge'
 import {
   Table,
   TableBody,
@@ -12,15 +12,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
+} from '../../ui/table'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '../../ui/dropdown-menu'
 import { Search, MoreHorizontal, Trash2, UserCheck } from 'lucide-react'
-import { useToast } from '@/hooks/use-toast'
+import { useToast } from '../../../hooks/use-toast'
 
 interface TeacherSubjectAssignment {
   id: string

@@ -8,16 +8,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
+} from '../ui/table'
+import { Button } from '../ui/button'
+import { Checkbox } from '../ui/checkbox'
 import { ExamStatusBadge } from './ExamStatusBadge'
 import { ExamTypeBadge } from './ExamTypeBadge'
 import { ExamActionsDropdown } from './ExamActionsDropdown'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { ChevronLeft, ChevronRight, Calendar, Users, Clock } from 'lucide-react'
 import { format } from 'date-fns'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 
 interface ExamTableProps {
   exams: Array<{

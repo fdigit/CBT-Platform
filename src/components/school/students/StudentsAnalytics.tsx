@@ -1,9 +1,9 @@
 'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card'
+import { Badge } from '../../ui/badge'
 import { Users, UserCheck, UserX, GraduationCap, TrendingUp, AlertTriangle } from 'lucide-react'
-import { Student } from '@/app/school/students/page'
+import { Student } from '../../app/school/students/page'
 import { useMemo } from 'react'
 
 interface StudentsAnalyticsProps {

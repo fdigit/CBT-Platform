@@ -1,22 +1,22 @@
 'use client'
 
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Calendar } from '@/components/ui/calendar'
+import { Input } from '../../ui/input'
+import { Button } from '../../ui/button'
+import { Badge } from '../../ui/badge'
+import { Calendar } from '../../ui/calendar'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '../../ui/select'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover'
-import { Card, CardContent } from '@/components/ui/card'
+} from '../../ui/popover'
+import { Card, CardContent } from '../../ui/card'
 import { 
   Search, 
   Filter, 
@@ -26,7 +26,7 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { format } from 'date-fns'
-import { StudentsFilters as FiltersType } from '@/app/school/students/page'
+import { StudentsFilters as FiltersType } from '../../app/school/students/page'
 
 interface StudentsFiltersProps {
   filters: FiltersType

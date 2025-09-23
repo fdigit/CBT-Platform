@@ -1,8 +1,8 @@
 'use client'
 
 import { Users, UserCheck, UserX, UserPlus, TrendingUp, TrendingDown } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
+import { Badge } from '../ui/badge'
 
 export interface UserStats {
   totalUsers: number

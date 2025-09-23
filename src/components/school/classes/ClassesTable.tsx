@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '../../ui/badge'
+import { Button } from '../../ui/button'
+import { Card, CardContent } from '../../ui/card'
 import {
   Table,
   TableBody,
@@ -11,14 +11,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
+} from '../../ui/table'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '../../ui/dropdown-menu'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,7 +28,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+} from '../../ui/alert-dialog'
 import { 
   MoreHorizontal, 
   Eye, 
@@ -40,7 +40,27 @@ import {
   GraduationCap,
   MapPin
 } from 'lucide-react'
-import { Class } from '@/app/school/classes/page'
+// Define types locally instead of importing from page
+interface Class {
+  id: string
+  name: string
+  section?: string
+  academicYear: string
+  description?: string
+  maxStudents: number
+  room?: string
+  status: 'ACTIVE' | 'INACTIVE' | 'ARCHIVED'
+  studentCount: number
+  examCount: number
+  teachers: Array<{
+    id: string
+    name: string
+    email: string
+    employeeId: string
+  }>
+  createdAt: string
+  updatedAt: string
+}
 
 interface ClassesTableProps {
   classes: Class[]

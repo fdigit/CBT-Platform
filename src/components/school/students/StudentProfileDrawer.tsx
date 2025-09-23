@@ -1,28 +1,28 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar'
+import { Badge } from '../../ui/badge'
+import { Button } from '../../ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card'
+import { Input } from '../../ui/input'
+import { Label } from '../../ui/label'
+import { Textarea } from '../../ui/textarea'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '../../ui/select'
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from '@/components/ui/sheet'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+} from '../../ui/sheet'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs'
 import { 
   User, 
   Mail, 
@@ -38,9 +38,9 @@ import {
   TrendingUp,
   AlertCircle
 } from 'lucide-react'
-import { Student } from '@/app/school/students/page'
+import { Student } from '../../app/school/students/page'
 import { format } from 'date-fns'
-import { useToast } from '@/hooks/use-toast'
+import { useToast } from '../../../hooks/use-toast'
 
 interface StudentProfileDrawerProps {
   student: Student | null

@@ -10,18 +10,18 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+} from '../../ui/dialog'
+import { Button } from '../../ui/button'
+import { Input } from '../../ui/input'
+import { Label } from '../../ui/label'
+import { Textarea } from '../../ui/textarea'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '../../ui/select'
 import {
   Form,
   FormControl,
@@ -30,12 +30,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+} from '../../ui/form'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs'
+import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card'
+import { Badge } from '../../ui/badge'
+import { Separator } from '../../ui/separator'
+import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar'
 import { 
   User, 
   Mail, 
@@ -50,8 +50,8 @@ import {
   CheckCircle,
   AlertCircle
 } from 'lucide-react'
-import { useToast } from '@/hooks/use-toast'
-import { Teacher } from '@/app/school/teachers/page'
+import { useToast } from '../../../hooks/use-toast'
+import { Teacher } from '../../app/school/teachers/page'
 
 const teacherSchema = z.object({
   // Personal Information

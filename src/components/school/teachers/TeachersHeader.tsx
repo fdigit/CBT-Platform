@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
+import { Button } from '../../ui/button'
 import { 
   Plus, 
   Upload, 
@@ -17,7 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu'
+} from '../../ui/dropdown-menu'
 
 interface TeachersHeaderProps {
   onAddTeacher: () => void

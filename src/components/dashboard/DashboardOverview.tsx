@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Button } from '@/components/ui/button'
+import { Button } from '../ui/button'
 import { StatsCard } from './StatsCard'
 import { StudentGrowthChart, ExamChart, SubscriptionChart } from './Charts'
 import { RecentActivities } from './RecentActivities'

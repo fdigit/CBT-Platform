@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { Role } from '@/types/models'
+import { Role } from '../types/models'
 
 export interface AuthenticatedRequest extends NextRequest {
   user?: {

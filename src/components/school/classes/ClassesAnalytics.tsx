@@ -1,9 +1,46 @@
 'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card'
+import { Badge } from '../../ui/badge'
 import { Users, GraduationCap, BookOpen, Calendar, TrendingUp, AlertTriangle } from 'lucide-react'
-import { Class, Teacher } from '@/app/school/classes/page'
+// Define types locally instead of importing from page
+interface Class {
+  id: string
+  name: string
+  section?: string
+  academicYear: string
+  description?: string
+  maxStudents: number
+  room?: string
+  status: 'ACTIVE' | 'INACTIVE' | 'ARCHIVED'
+  studentCount: number
+  examCount: number
+  teachers: Array<{
+    id: string
+    name: string
+    email: string
+    employeeId: string
+  }>
+  createdAt: string
+  updatedAt: string
+}
+
+interface Teacher {
+  id: string
+  employeeId: string
+  name: string
+  email: string
+  qualification?: string
+  specialization?: string
+  experience?: number
+  status: 'ACTIVE' | 'SUSPENDED' | 'TERMINATED' | 'ON_LEAVE'
+  classCount: number
+  classes: Array<{
+    id: string
+    name: string
+    section?: string
+  }>
+}
 import { useMemo } from 'react'
 
 interface ClassesAnalyticsProps {

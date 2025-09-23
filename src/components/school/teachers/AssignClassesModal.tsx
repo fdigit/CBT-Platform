@@ -1,13 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { useToast } from '@/hooks/use-toast'
-import { Teacher } from '@/app/school/teachers/page'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../ui/dialog'
+import { Button } from '../../ui/button'
+import { Checkbox } from '../../ui/checkbox'
+import { Badge } from '../../ui/badge'
+import { Input } from '../../ui/input'
+import { useToast } from '../../../hooks/use-toast'
+import { Teacher } from '../../app/school/teachers/page'
 import { Users, Search, BookOpen } from 'lucide-react'
 
 interface AssignClassesModalProps {

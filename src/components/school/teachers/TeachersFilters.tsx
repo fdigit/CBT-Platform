@@ -1,24 +1,24 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { Button } from '../../ui/button'
+import { Input } from '../../ui/input'
+import { Label } from '../../ui/label'
+import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card'
+import { Badge } from '../../ui/badge'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '../../ui/select'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover'
-import { Calendar } from '@/components/ui/calendar'
+} from '../../ui/popover'
+import { Calendar } from '../../ui/calendar'
 import { 
   Search, 
   Filter, 
@@ -28,8 +28,8 @@ import {
   RotateCcw
 } from 'lucide-react'
 import { format } from 'date-fns'
-import { cn } from '@/lib/utils'
-import { TeachersFilters as FiltersType } from '@/app/school/teachers/page'
+import { cn } from '../../../lib/utils'
+import { TeachersFilters as FiltersType } from '../../app/school/teachers/page'
 
 interface TeachersFiltersProps {
   filters: FiltersType

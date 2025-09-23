@@ -7,14 +7,14 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from '@/components/ui/sheet'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
-import { Progress } from '@/components/ui/progress'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+} from '../../ui/sheet'
+import { Button } from '../../ui/button'
+import { Badge } from '../../ui/badge'
+import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar'
+import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card'
+import { Separator } from '../../ui/separator'
+import { Progress } from '../../ui/progress'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,7 +25,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
+} from '../../ui/alert-dialog'
 import { 
   Edit, 
   Mail, 
@@ -48,8 +48,8 @@ import {
   Activity
 } from 'lucide-react'
 import { format } from 'date-fns'
-import { cn } from '@/lib/utils'
-import { Teacher } from '@/app/school/teachers/page'
+import { cn } from '../../../lib/utils'
+import { Teacher } from '../../app/school/teachers/page'
 import { AssignClassesModal } from './AssignClassesModal'
 
 interface TeacherProfileDrawerProps {

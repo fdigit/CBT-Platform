@@ -1,16 +1,16 @@
 'use client'
 
 import { useState } from 'react'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '../../ui/badge'
+import { Button } from '../../ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card'
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from '@/components/ui/sheet'
+} from '../../ui/sheet'
 import { 
   Users, 
   GraduationCap, 
@@ -19,7 +19,44 @@ import {
   Calendar,
   Edit3
 } from 'lucide-react'
-import { Class, Teacher } from '@/app/school/classes/page'
+// Define types locally instead of importing from page
+interface Class {
+  id: string
+  name: string
+  section?: string
+  academicYear: string
+  description?: string
+  maxStudents: number
+  room?: string
+  status: 'ACTIVE' | 'INACTIVE' | 'ARCHIVED'
+  studentCount: number
+  examCount: number
+  teachers: Array<{
+    id: string
+    name: string
+    email: string
+    employeeId: string
+  }>
+  createdAt: string
+  updatedAt: string
+}
+
+interface Teacher {
+  id: string
+  employeeId: string
+  name: string
+  email: string
+  qualification?: string
+  specialization?: string
+  experience?: number
+  status: 'ACTIVE' | 'SUSPENDED' | 'TERMINATED' | 'ON_LEAVE'
+  classCount: number
+  classes: Array<{
+    id: string
+    name: string
+    section?: string
+  }>
+}
 import { EditClassModal } from './EditClassModal'
 
 interface ClassProfileDrawerProps {

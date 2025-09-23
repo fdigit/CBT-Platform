@@ -1,18 +1,18 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
+import { Button } from '../../ui/button'
+import { Card } from '../../ui/card'
+import { Label } from '../../ui/label'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Checkbox } from '@/components/ui/checkbox'
-import { useToast } from '@/hooks/use-toast'
+} from '../../ui/select'
+import { Checkbox } from '../../ui/checkbox'
+import { useToast } from '../../../hooks/use-toast'
 import { GraduationCap } from 'lucide-react'
 
 interface Teacher {

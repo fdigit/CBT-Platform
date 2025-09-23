@@ -1,10 +1,10 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Button } from '../../ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card'
+import { Badge } from '../../ui/badge'
+import { Alert, AlertDescription } from '../../ui/alert'
 import {
   Dialog,
   DialogContent,
@@ -12,7 +12,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
+} from '../../ui/dialog'
 import {
   Table,
   TableBody,
@@ -20,7 +20,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
+} from '../../ui/table'
 import { 
   Upload, 
   Download, 
@@ -31,8 +31,8 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react'
-import { Student } from '@/app/school/students/page'
-import { useToast } from '@/hooks/use-toast'
+import { Student } from '../../app/school/students/page'
+import { useToast } from '../../../hooks/use-toast'
 
 interface BulkUploadModalProps {
   isOpen: boolean

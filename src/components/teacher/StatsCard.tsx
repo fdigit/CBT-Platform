@@ -1,7 +1,7 @@
 'use client'
 
 import { LucideIcon } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 
 interface StatsCardProps {
   title: string

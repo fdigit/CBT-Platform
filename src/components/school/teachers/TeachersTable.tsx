@@ -8,11 +8,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Card, CardContent } from '@/components/ui/card'
+} from '../../ui/table'
+import { Button } from '../../ui/button'
+import { Badge } from '../../ui/badge'
+import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar'
+import { Card, CardContent } from '../../ui/card'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +20,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '../../ui/dropdown-menu'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,8 +30,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import { Checkbox } from '@/components/ui/checkbox'
+} from '../../ui/alert-dialog'
+import { Checkbox } from '../../ui/checkbox'
 import { 
   MoreHorizontal, 
   Edit, 
@@ -53,8 +53,8 @@ import {
   MapPin
 } from 'lucide-react'
 import { format } from 'date-fns'
-import { cn } from '@/lib/utils'
-import { Teacher } from '@/app/school/teachers/page'
+import { cn } from '../../../lib/utils'
+import { Teacher } from '../../app/school/teachers/page'
 
 interface TeachersTableProps {
   teachers: Teacher[]

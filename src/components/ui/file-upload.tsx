@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useRef, useCallback } from 'react'
-import { Button } from '@/components/ui/button'
-import { Progress } from '@/components/ui/progress'
-import { cn } from '@/lib/utils'
+import { Button } from './button'
+import { Progress } from './progress'
+import { cn } from '../../lib/utils'
 import {
   Upload,
   X,
@@ -15,7 +15,7 @@ import {
   AlertCircle,
   CheckCircle,
 } from 'lucide-react'
-import { useToast } from '@/hooks/use-toast'
+import { useToast } from '../../hooks/use-toast'
 
 export interface UploadedFile {
   id?: string

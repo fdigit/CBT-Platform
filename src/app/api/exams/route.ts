@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { examSchema, questionSchema } from '@/lib/validations'
-import { Role } from '@/types/models'
+import { Role } from '../../../types/models'
 
 export async function POST(request: NextRequest) {
   try {

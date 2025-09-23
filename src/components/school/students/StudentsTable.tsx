@@ -1,11 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Card, CardContent } from '@/components/ui/card'
+import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar'
+import { Badge } from '../../ui/badge'
+import { Button } from '../../ui/button'
+import { Checkbox } from '../../ui/checkbox'
+import { Card, CardContent } from '../../ui/card'
 import {
   Table,
   TableBody,
@@ -13,14 +13,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
+} from '../../ui/table'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '../../ui/dropdown-menu'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,7 +30,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+} from '../../ui/alert-dialog'
 import { 
   MoreHorizontal, 
   ArrowUpDown, 
@@ -47,7 +47,7 @@ import {
   Calendar,
   User
 } from 'lucide-react'
-import { Student } from '@/app/school/students/page'
+import { Student } from '../../app/school/students/page'
 import { format } from 'date-fns'
 
 interface StudentsTableProps {
