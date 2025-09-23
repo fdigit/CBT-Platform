@@ -1,16 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { Button } from '../components/ui/button';
-import { DashboardRedirect } from '../components/DashboardRedirect';
+import { Button } from '@/components/ui/button';
+import { DashboardRedirect } from '@/components/DashboardRedirect';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '../components/ui/card';
-import { Badge } from '../components/ui/badge';
+} from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import {
   BookOpen,
   Users,
