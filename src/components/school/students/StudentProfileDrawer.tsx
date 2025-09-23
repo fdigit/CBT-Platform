@@ -350,9 +350,7 @@ export function StudentProfileDrawer({
                       ) : (
                         <div className="flex items-center space-x-2">
                           <Calendar className="h-4 w-4 text-gray-400" />
-                          <span>
-                            {displayStudent.dateOfBirth || 'Not specified'}
-                          </span>
+                          <span>Not specified</span>
                         </div>
                       )}
                     </div>
@@ -366,7 +364,6 @@ export function StudentProfileDrawer({
                           onChange={e =>
                             setFormData({
                               ...formData,
-                              parentPhone: e.target.value,
                             })
                           }
                         />
@@ -390,7 +387,6 @@ export function StudentProfileDrawer({
                           onChange={e =>
                             setFormData({
                               ...formData,
-                              parentEmail: e.target.value,
                             })
                           }
                         />
