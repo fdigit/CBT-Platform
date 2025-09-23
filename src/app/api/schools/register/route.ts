@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
-import { prisma } from '@/lib/prisma'
-import { schoolRegistrationSchema } from '@/lib/validations'
-import { createSchoolRegistrationNotification } from '@/lib/notifications'
+import { prisma } from '../../../lib/prisma'
+import { schoolRegistrationSchema } from '../../../lib/validations'
+import { createSchoolRegistrationNotification } from '../../../lib/notifications'
 
 // Helper function to generate unique slug
 function generateSlug(name: string): string {

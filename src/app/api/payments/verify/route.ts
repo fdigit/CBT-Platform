@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { verifyPayment } from '@/lib/paystack'
-import { prisma } from '@/lib/prisma'
+import { verifyPayment } from '../../../lib/paystack'
+import { prisma } from '../../../lib/prisma'
 
 export async function POST(request: NextRequest) {
   try {

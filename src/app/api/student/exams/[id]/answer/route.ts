@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
-import { canSaveAnswers } from '@/lib/exam-status'
+import { authOptions } from '../../../../../lib/auth'
+import { prisma } from '../../../../../lib/prisma'
+import { canSaveAnswers } from '../../../../../lib/exam-status'
 
 export async function POST(
   request: NextRequest,

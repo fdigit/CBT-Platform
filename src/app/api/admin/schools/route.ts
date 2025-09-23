@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import bcrypt from 'bcryptjs'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
-import { schoolRegistrationSchema } from '@/lib/validations'
+import { authOptions } from '../../../lib/auth'
+import { prisma } from '../../../lib/prisma'
+import { schoolRegistrationSchema } from '../../../lib/validations'
 
 export async function GET(request: NextRequest) {
   try {
