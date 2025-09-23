@@ -1,27 +1,27 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '../../ui/dialog'
-import { Button } from '../../ui/button'
-import { Input } from '../../ui/input'
-import { Label } from '../../ui/label'
-import { Textarea } from '../../ui/textarea'
+} from '../../ui/dialog';
+import { Button } from '../../ui/button';
+import { Input } from '../../ui/input';
+import { Label } from '../../ui/label';
+import { Textarea } from '../../ui/textarea';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../ui/select'
+} from '../../ui/select';
 import {
   Form,
   FormControl,
@@ -30,28 +30,28 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../../ui/form'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs'
-import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card'
-import { Badge } from '../../ui/badge'
-import { Separator } from '../../ui/separator'
-import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar'
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  GraduationCap, 
-  BookOpen, 
+} from '../../ui/form';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
+import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
+import { Badge } from '../../ui/badge';
+import { Separator } from '../../ui/separator';
+import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  GraduationCap,
+  BookOpen,
   Calendar,
   Key,
   Upload,
   X,
   CheckCircle,
-  AlertCircle
-} from 'lucide-react'
-import { useToast } from '../../../hooks/use-toast'
-import { Teacher } from '../../app/school/teachers/page'
+  AlertCircle,
+} from 'lucide-react';
+import { useToast } from '../../../hooks/use-toast';
+import { Teacher } from '../../app/school/teachers/page';
 
 const teacherSchema = z.object({
   // Personal Information
@@ -59,34 +59,41 @@ const teacherSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
   phone: z.string().optional(),
   address: z.string().optional(),
-  
+
   // Professional Information
   employeeId: z.string().min(1, 'Employee ID is required'),
   qualification: z.string().optional(),
   specialization: z.string().optional(),
   experience: z.coerce.number().int().min(0).max(50).optional(),
   hireDate: z.string().optional(),
-  
-  // Account Settings
-  password: z.string().min(6, 'Password must be at least 6 characters').optional(),
-  generatePassword: z.boolean().default(true),
-})
 
-type TeacherFormData = z.infer<typeof teacherSchema>
+  // Account Settings
+  password: z
+    .string()
+    .min(6, 'Password must be at least 6 characters')
+    .optional(),
+  generatePassword: z.boolean().default(true),
+});
+
+type TeacherFormData = z.infer<typeof teacherSchema>;
 
 interface AddTeacherModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onTeacherAdded: (teacher: Teacher) => void
+  isOpen: boolean;
+  onClose: () => void;
+  onTeacherAdded: (teacher: Teacher) => void;
 }
 
-export function AddTeacherModal({ isOpen, onClose, onTeacherAdded }: AddTeacherModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false)
+export function AddTeacherModal({
+  isOpen,
+  onClose,
+  onTeacherAdded,
+}: AddTeacherModalProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [duplicateCheck, setDuplicateCheck] = useState<{
-    email?: boolean
-    employeeId?: boolean
-  }>({})
-  const { toast } = useToast()
+    email?: boolean;
+    employeeId?: boolean;
+  }>({});
+  const { toast } = useToast();
 
   const form = useForm<TeacherFormData>({
     resolver: zodResolver(teacherSchema),
@@ -103,9 +110,9 @@ export function AddTeacherModal({ isOpen, onClose, onTeacherAdded }: AddTeacherM
       password: '',
       generatePassword: true,
     },
-  })
+  });
 
-  const watchedValues = form.watch()
+  const watchedValues = form.watch();
 
   // Sample data (in real app, these would come from APIs)
   const qualifications = [
@@ -118,8 +125,8 @@ export function AddTeacherModal({ isOpen, onClose, onTeacherAdded }: AddTeacherM
     'PhD (Doctor of Philosophy)',
     'HND (Higher National Diploma)',
     'NCE (National Certificate in Education)',
-    'Other'
-  ]
+    'Other',
+  ];
 
   const specializations = [
     'Mathematics',
@@ -140,44 +147,51 @@ export function AddTeacherModal({ isOpen, onClose, onTeacherAdded }: AddTeacherM
     'Yoruba',
     'Igbo',
     'Hausa',
-    'Other'
-  ]
+    'Other',
+  ];
 
-  const checkDuplicate = async (field: 'email' | 'employeeId', value: string) => {
-    if (!value) return
+  const checkDuplicate = async (
+    field: 'email' | 'employeeId',
+    value: string
+  ) => {
+    if (!value) return;
 
     try {
-      const response = await fetch(`/api/school/teachers/check-duplicate?${field}=${encodeURIComponent(value)}`)
-      const data = await response.json()
-      
+      const response = await fetch(
+        `/api/school/teachers/check-duplicate?${field}=${encodeURIComponent(value)}`
+      );
+      const data = await response.json();
+
       setDuplicateCheck(prev => ({
         ...prev,
-        [field]: data.exists
-      }))
+        [field]: data.exists,
+      }));
 
       if (data.exists) {
         form.setError(field, {
           type: 'manual',
-          message: `This ${field} is already in use`
-        })
+          message: `This ${field} is already in use`,
+        });
       } else {
-        form.clearErrors(field)
+        form.clearErrors(field);
       }
     } catch (error) {
-      console.error(`Error checking ${field} duplicate:`, error)
+      console.error(`Error checking ${field} duplicate:`, error);
     }
-  }
+  };
 
   const generateEmployeeId = () => {
-    const prefix = 'TCH'
-    const timestamp = Date.now().toString().slice(-6)
-    const random = Math.floor(Math.random() * 100).toString().padStart(2, '0')
-    return `${prefix}${timestamp}${random}`
-  }
+    const prefix = 'TCH';
+    const timestamp = Date.now().toString().slice(-6);
+    const random = Math.floor(Math.random() * 100)
+      .toString()
+      .padStart(2, '0');
+    return `${prefix}${timestamp}${random}`;
+  };
 
   const onSubmit = async (data: TeacherFormData) => {
-    setIsSubmitting(true)
-    
+    setIsSubmitting(true);
+
     try {
       const response = await fetch('/api/school/teachers', {
         method: 'POST',
@@ -190,40 +204,41 @@ export function AddTeacherModal({ isOpen, onClose, onTeacherAdded }: AddTeacherM
           hireDate: data.hireDate || new Date().toISOString(),
           password: data.generatePassword ? undefined : data.password,
         }),
-      })
+      });
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || 'Failed to create teacher')
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create teacher');
       }
 
-      const newTeacher = await response.json()
-      
-      onTeacherAdded(newTeacher)
-      onClose()
-      form.reset()
-      
+      const newTeacher = await response.json();
+
+      onTeacherAdded(newTeacher);
+      onClose();
+      form.reset();
+
       toast({
         title: 'Success',
         description: `Teacher ${data.name} has been added successfully${newTeacher.tempPassword ? `. Temporary password: ${newTeacher.tempPassword}` : ''}`,
-      })
+      });
     } catch (error) {
-      console.error('Error creating teacher:', error)
+      console.error('Error creating teacher:', error);
       toast({
         title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to create teacher',
+        description:
+          error instanceof Error ? error.message : 'Failed to create teacher',
         variant: 'destructive',
-      })
+      });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleClose = () => {
-    form.reset()
-    setDuplicateCheck({})
-    onClose()
-  }
+    form.reset();
+    setDuplicateCheck({});
+    onClose();
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -234,7 +249,8 @@ export function AddTeacherModal({ isOpen, onClose, onTeacherAdded }: AddTeacherM
             <span>Add New Teacher</span>
           </DialogTitle>
           <DialogDescription>
-            Fill in the teacher's information to create a new account. All fields marked with * are required.
+            Fill in the teacher's information to create a new account. All
+            fields marked with * are required.
           </DialogDescription>
         </DialogHeader>
 
@@ -251,7 +267,9 @@ export function AddTeacherModal({ isOpen, onClose, onTeacherAdded }: AddTeacherM
               <TabsContent value="personal" className="space-y-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg">Personal Information</CardTitle>
+                    <CardTitle className="text-lg">
+                      Personal Information
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -265,9 +283,9 @@ export function AddTeacherModal({ isOpen, onClose, onTeacherAdded }: AddTeacherM
                               <span>Full Name *</span>
                             </FormLabel>
                             <FormControl>
-                              <Input 
-                                placeholder="Enter teacher's full name" 
-                                {...field} 
+                              <Input
+                                placeholder="Enter teacher's full name"
+                                {...field}
                               />
                             </FormControl>
                             <FormMessage />
@@ -291,11 +309,13 @@ export function AddTeacherModal({ isOpen, onClose, onTeacherAdded }: AddTeacherM
                               )}
                             </FormLabel>
                             <FormControl>
-                              <Input 
+                              <Input
                                 type="email"
-                                placeholder="teacher@school.com" 
+                                placeholder="teacher@school.com"
                                 {...field}
-                                onBlur={(e) => checkDuplicate('email', e.target.value)}
+                                onBlur={e =>
+                                  checkDuplicate('email', e.target.value)
+                                }
                               />
                             </FormControl>
                             <FormMessage />
@@ -313,10 +333,10 @@ export function AddTeacherModal({ isOpen, onClose, onTeacherAdded }: AddTeacherM
                               <span>Phone Number</span>
                             </FormLabel>
                             <FormControl>
-                              <Input 
+                              <Input
                                 type="tel"
-                                placeholder="+234 xxx xxx xxxx" 
-                                {...field} 
+                                placeholder="+234 xxx xxx xxxx"
+                                {...field}
                               />
                             </FormControl>
                             <FormMessage />
@@ -334,10 +354,7 @@ export function AddTeacherModal({ isOpen, onClose, onTeacherAdded }: AddTeacherM
                               <span>Hire Date</span>
                             </FormLabel>
                             <FormControl>
-                              <Input 
-                                type="date" 
-                                {...field} 
-                              />
+                              <Input type="date" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -355,10 +372,10 @@ export function AddTeacherModal({ isOpen, onClose, onTeacherAdded }: AddTeacherM
                             <span>Address</span>
                           </FormLabel>
                           <FormControl>
-                            <Textarea 
+                            <Textarea
                               placeholder="Enter teacher's address"
                               className="min-h-[80px]"
-                              {...field} 
+                              {...field}
                             />
                           </FormControl>
                           <FormMessage />
@@ -373,7 +390,9 @@ export function AddTeacherModal({ isOpen, onClose, onTeacherAdded }: AddTeacherM
               <TabsContent value="professional" className="space-y-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg">Professional Information</CardTitle>
+                    <CardTitle className="text-lg">
+                      Professional Information
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -393,19 +412,21 @@ export function AddTeacherModal({ isOpen, onClose, onTeacherAdded }: AddTeacherM
                             </FormLabel>
                             <div className="flex space-x-2">
                               <FormControl>
-                                <Input 
-                                  placeholder="Enter employee ID" 
+                                <Input
+                                  placeholder="Enter employee ID"
                                   {...field}
-                                  onBlur={(e) => checkDuplicate('employeeId', e.target.value)}
+                                  onBlur={e =>
+                                    checkDuplicate('employeeId', e.target.value)
+                                  }
                                 />
                               </FormControl>
                               <Button
                                 type="button"
                                 variant="outline"
                                 onClick={() => {
-                                  const id = generateEmployeeId()
-                                  field.onChange(id)
-                                  checkDuplicate('employeeId', id)
+                                  const id = generateEmployeeId();
+                                  field.onChange(id);
+                                  checkDuplicate('employeeId', id);
                                 }}
                               >
                                 Generate
@@ -423,12 +444,12 @@ export function AddTeacherModal({ isOpen, onClose, onTeacherAdded }: AddTeacherM
                           <FormItem>
                             <FormLabel>Years of Experience</FormLabel>
                             <FormControl>
-                              <Input 
+                              <Input
                                 type="number"
                                 min="0"
                                 max="50"
-                                placeholder="0" 
-                                {...field} 
+                                placeholder="0"
+                                {...field}
                               />
                             </FormControl>
                             <FormMessage />
@@ -445,14 +466,17 @@ export function AddTeacherModal({ isOpen, onClose, onTeacherAdded }: AddTeacherM
                               <GraduationCap className="h-4 w-4" />
                               <span>Qualification</span>
                             </FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
+                            <Select
+                              onValueChange={field.onChange}
+                              value={field.value}
+                            >
                               <FormControl>
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select qualification" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                {qualifications.map((qual) => (
+                                {qualifications.map(qual => (
                                   <SelectItem key={qual} value={qual}>
                                     {qual}
                                   </SelectItem>
@@ -473,14 +497,17 @@ export function AddTeacherModal({ isOpen, onClose, onTeacherAdded }: AddTeacherM
                               <BookOpen className="h-4 w-4" />
                               <span>Subject Specialization</span>
                             </FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
+                            <Select
+                              onValueChange={field.onChange}
+                              value={field.value}
+                            >
                               <FormControl>
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select specialization" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                {specializations.map((spec) => (
+                                {specializations.map(spec => (
                                   <SelectItem key={spec} value={spec}>
                                     {spec}
                                   </SelectItem>
@@ -509,9 +536,12 @@ export function AddTeacherModal({ isOpen, onClose, onTeacherAdded }: AddTeacherM
                       render={({ field }) => (
                         <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                           <div className="space-y-0.5">
-                            <FormLabel className="text-base">Generate Password</FormLabel>
+                            <FormLabel className="text-base">
+                              Generate Password
+                            </FormLabel>
                             <FormDescription>
-                              Automatically generate a secure password for the teacher
+                              Automatically generate a secure password for the
+                              teacher
                             </FormDescription>
                           </div>
                           <FormControl>
@@ -537,10 +567,10 @@ export function AddTeacherModal({ isOpen, onClose, onTeacherAdded }: AddTeacherM
                               <span>Custom Password *</span>
                             </FormLabel>
                             <FormControl>
-                              <Input 
+                              <Input
                                 type="password"
-                                placeholder="Enter password (min. 6 characters)" 
-                                {...field} 
+                                placeholder="Enter password (min. 6 characters)"
+                                {...field}
                               />
                             </FormControl>
                             <FormDescription>
@@ -563,9 +593,13 @@ export function AddTeacherModal({ isOpen, onClose, onTeacherAdded }: AddTeacherM
                     <div className="flex items-start space-x-4">
                       <Avatar className="h-16 w-16">
                         <AvatarFallback className="bg-blue-100 text-blue-700 text-xl">
-                          {watchedValues.name ? 
-                            watchedValues.name.split(' ').map(n => n[0]).join('').substring(0, 2) : 
-                            'TC'}
+                          {watchedValues.name
+                            ? watchedValues.name
+                                .split(' ')
+                                .map(n => n[0])
+                                .join('')
+                                .substring(0, 2)
+                            : 'TC'}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 space-y-2">
@@ -577,10 +611,14 @@ export function AddTeacherModal({ isOpen, onClose, onTeacherAdded }: AddTeacherM
                         </p>
                         <div className="flex flex-wrap gap-2">
                           {watchedValues.specialization && (
-                            <Badge variant="secondary">{watchedValues.specialization}</Badge>
+                            <Badge variant="secondary">
+                              {watchedValues.specialization}
+                            </Badge>
                           )}
                           {watchedValues.qualification && (
-                            <Badge variant="outline">{watchedValues.qualification}</Badge>
+                            <Badge variant="outline">
+                              {watchedValues.qualification}
+                            </Badge>
                           )}
                         </div>
                         <div className="text-sm text-gray-600 space-y-1">
@@ -618,7 +656,11 @@ export function AddTeacherModal({ isOpen, onClose, onTeacherAdded }: AddTeacherM
               </Button>
               <Button
                 type="submit"
-                disabled={isSubmitting || duplicateCheck.email || duplicateCheck.employeeId}
+                disabled={
+                  isSubmitting ||
+                  duplicateCheck.email ||
+                  duplicateCheck.employeeId
+                }
                 className="bg-blue-600 hover:bg-blue-700"
               >
                 {isSubmitting ? 'Creating Teacher...' : 'Create Teacher'}
@@ -628,5 +670,5 @@ export function AddTeacherModal({ isOpen, onClose, onTeacherAdded }: AddTeacherM
         </Form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

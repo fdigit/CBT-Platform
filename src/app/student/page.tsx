@@ -1,134 +1,150 @@
-'use client'
+'use client';
 
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card'
-import { Button } from '../../components/ui/button'
-import { Badge } from '../../components/ui/badge'
-import { BookOpen, Clock, CheckCircle, AlertCircle, TrendingUp, Calendar, Target } from 'lucide-react'
-import { useToast } from '../../hooks/use-toast'
-import { 
-  StudentDashboardLayout, 
-  StatsCard, 
-  ExamCard, 
-  ResultsTable 
-} from '../../components/student'
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../../components/ui/card';
+import { Button } from '../../components/ui/button';
+import { Badge } from '../../components/ui/badge';
+import {
+  BookOpen,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  TrendingUp,
+  Calendar,
+  Target,
+} from 'lucide-react';
+import { useToast } from '../../hooks/use-toast';
+import {
+  StudentDashboardLayout,
+  StatsCard,
+  ExamCard,
+  ResultsTable,
+} from '../../components/student';
 
 interface Exam {
-  id: string
-  title: string
-  description?: string
-  startTime: string
-  endTime: string
-  duration: number
-  status: 'upcoming' | 'active' | 'completed'
+  id: string;
+  title: string;
+  description?: string;
+  startTime: string;
+  endTime: string;
+  duration: number;
+  status: 'upcoming' | 'active' | 'completed';
 }
 
 interface StudentStats {
-  totalExams: number
-  completedExams: number
-  averageScore: number
-  upcomingExams: number
+  totalExams: number;
+  completedExams: number;
+  averageScore: number;
+  upcomingExams: number;
 }
 
 interface Result {
-  id: string
-  examTitle: string
-  subject: string
-  score: number
-  totalPoints: number
-  percentage: number
-  grade: string
-  date: string
-  duration: number
-  status: 'passed' | 'failed'
+  id: string;
+  examTitle: string;
+  subject: string;
+  score: number;
+  totalPoints: number;
+  percentage: number;
+  grade: string;
+  date: string;
+  duration: number;
+  status: 'passed' | 'failed';
 }
 
 export default function StudentDashboard() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [stats, setStats] = useState<StudentStats>({
     totalExams: 0,
     completedExams: 0,
     averageScore: 0,
-    upcomingExams: 0
-  })
-  const [exams, setExams] = useState<Exam[]>([])
-  const [recentResults, setRecentResults] = useState<Result[]>([])
-  const [loading, setLoading] = useState(true)
-  const { toast } = useToast()
+    upcomingExams: 0,
+  });
+  const [exams, setExams] = useState<Exam[]>([]);
+  const [recentResults, setRecentResults] = useState<Result[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
-    if (status === 'loading') return
-    
+    if (status === 'loading') return;
+
     if (!session || session.user.role !== 'STUDENT') {
-      router.push('/auth/signin')
-      return
+      router.push('/auth/signin');
+      return;
     }
 
-    fetchStudentData()
-  }, [session, status, router])
+    fetchStudentData();
+  }, [session, status, router]);
 
   const fetchStudentData = async () => {
     try {
-      const [statsResponse, examsResponse, resultsResponse] = await Promise.all([
-        fetch('/api/student/stats'),
-        fetch('/api/student/exams'),
-        fetch('/api/student/results')
-      ])
+      const [statsResponse, examsResponse, resultsResponse] = await Promise.all(
+        [
+          fetch('/api/student/stats'),
+          fetch('/api/student/exams'),
+          fetch('/api/student/results'),
+        ]
+      );
 
       if (statsResponse.ok) {
-        const statsData = await statsResponse.json()
-        setStats(statsData)
+        const statsData = await statsResponse.json();
+        setStats(statsData);
       }
 
       if (examsResponse.ok) {
-        const examsData = await examsResponse.json()
-        setExams(examsData.exams || [])
+        const examsData = await examsResponse.json();
+        setExams(examsData.exams || []);
       }
 
       if (resultsResponse.ok) {
-        const resultsData = await resultsResponse.json()
-        setRecentResults(resultsData.slice(0, 5)) // Show only 5 recent results
+        const resultsData = await resultsResponse.json();
+        setRecentResults(resultsData.slice(0, 5)); // Show only 5 recent results
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to fetch student data',
         variant: 'destructive',
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleStartExam = (examId: string) => {
-    router.push(`/student/exam/${examId}`)
-  }
+    router.push(`/student/exam/${examId}`);
+  };
 
   const getExamStatus = (exam: Exam): 'upcoming' | 'active' | 'completed' => {
-    const now = new Date()
-    const startTime = new Date(exam.startTime)
-    const endTime = new Date(exam.endTime)
+    const now = new Date();
+    const startTime = new Date(exam.startTime);
+    const endTime = new Date(exam.endTime);
 
-    if (now < startTime) return 'upcoming'
-    if (now >= startTime && now <= endTime) return 'active'
-    return 'completed'
-  }
+    if (now < startTime) return 'upcoming';
+    if (now >= startTime && now <= endTime) return 'active';
+    return 'completed';
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'upcoming':
-        return <Badge variant="secondary">Upcoming</Badge>
+        return <Badge variant="secondary">Upcoming</Badge>;
       case 'active':
-        return <Badge className="bg-green-600">Active</Badge>
+        return <Badge className="bg-green-600">Active</Badge>;
       case 'completed':
-        return <Badge>Completed</Badge>
+        return <Badge>Completed</Badge>;
       default:
-        return <Badge variant="outline">Unknown</Badge>
+        return <Badge variant="outline">Unknown</Badge>;
     }
-  }
+  };
 
   if (status === 'loading' || loading) {
     return (
@@ -138,12 +154,14 @@ export default function StudentDashboard() {
           <p className="mt-4 text-gray-600">Loading...</p>
         </div>
       </div>
-    )
+    );
   }
 
   // Get active/ongoing exam for priority display
-  const activeExam = Array.isArray(exams) ? exams.find(exam => getExamStatus(exam) === 'active') : null
-  
+  const activeExam = Array.isArray(exams)
+    ? exams.find(exam => getExamStatus(exam) === 'active')
+    : null;
+
   return (
     <StudentDashboardLayout>
       <div className="space-y-6">
@@ -191,9 +209,9 @@ export default function StudentDashboard() {
             value={`${stats.averageScore}%`}
             description="Overall performance"
             icon={Target}
-            trend={{ 
-              value: stats.averageScore >= 70 ? 5 : -3, 
-              isPositive: stats.averageScore >= 70 
+            trend={{
+              value: stats.averageScore >= 70 ? 5 : -3,
+              isPositive: stats.averageScore >= 70,
             }}
           />
         </div>
@@ -206,7 +224,9 @@ export default function StudentDashboard() {
                 <div className="bg-green-600 rounded-full p-1">
                   <AlertCircle className="h-4 w-4 text-white" />
                 </div>
-                <CardTitle className="text-green-800">Exam Available Now!</CardTitle>
+                <CardTitle className="text-green-800">
+                  Exam Available Now!
+                </CardTitle>
               </div>
             </CardHeader>
             <CardContent>
@@ -230,13 +250,15 @@ export default function StudentDashboard() {
           <ResultsTable
             results={recentResults}
             limit={5}
-            onViewDetails={(resultId) => router.push(`/student/results/${resultId}`)}
-            onDownloadPDF={(resultId) => {
+            onViewDetails={resultId =>
+              router.push(`/student/results/${resultId}`)
+            }
+            onDownloadPDF={resultId => {
               // TODO: Implement PDF download
               toast({
                 title: 'Download',
                 description: 'PDF download will be implemented soon',
-              })
+              });
             }}
           />
         )}
@@ -253,25 +275,32 @@ export default function StudentDashboard() {
             {!Array.isArray(exams) || exams.length === 0 ? (
               <div className="text-center py-12">
                 <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No exams available</h3>
-                <p className="text-gray-600">Check back later for new assignments</p>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  No exams available
+                </h3>
+                <p className="text-gray-600">
+                  Check back later for new assignments
+                </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {Array.isArray(exams) && exams.map((exam) => (
-                  <ExamCard
-                    key={exam.id}
-                    id={exam.id}
-                    title={exam.title}
-                    description={exam.description}
-                    startTime={exam.startTime}
-                    endTime={exam.endTime}
-                    duration={exam.duration}
-                    status={getExamStatus(exam)}
-                    onStartExam={handleStartExam}
-                    onViewResult={(examId) => router.push(`/student/results?exam=${examId}`)}
-                  />
-                ))}
+                {Array.isArray(exams) &&
+                  exams.map(exam => (
+                    <ExamCard
+                      key={exam.id}
+                      id={exam.id}
+                      title={exam.title}
+                      description={exam.description}
+                      startTime={exam.startTime}
+                      endTime={exam.endTime}
+                      duration={exam.duration}
+                      status={getExamStatus(exam)}
+                      onStartExam={handleStartExam}
+                      onViewResult={examId =>
+                        router.push(`/student/results?exam=${examId}`)
+                      }
+                    />
+                  ))}
               </div>
             )}
           </CardContent>
@@ -292,9 +321,12 @@ export default function StudentDashboard() {
                   <AlertCircle className="h-4 w-4 text-blue-600" />
                 </div>
                 <div>
-                  <h4 className="font-medium text-gray-900">Secure Environment</h4>
+                  <h4 className="font-medium text-gray-900">
+                    Secure Environment
+                  </h4>
                   <p className="text-sm text-gray-600 mt-1">
-                    Exams run in fullscreen mode with monitoring enabled for security.
+                    Exams run in fullscreen mode with monitoring enabled for
+                    security.
                   </p>
                 </div>
               </div>
@@ -325,5 +357,5 @@ export default function StudentDashboard() {
         </Card>
       </div>
     </StudentDashboardLayout>
-  )
+  );
 }

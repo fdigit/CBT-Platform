@@ -1,23 +1,23 @@
-'use client'
+'use client';
 
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
-import { DashboardLayout } from '../../components/dashboard/DashboardLayout'
-import { DashboardOverview } from '../../components/dashboard/DashboardOverview'
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { DashboardLayout } from '../../components/dashboard/DashboardLayout';
+import { DashboardOverview } from '../../components/dashboard/DashboardOverview';
 
 export default function AdminDashboard() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
   useEffect(() => {
-    if (status === 'loading') return
-    
+    if (status === 'loading') return;
+
     if (!session || session.user.role !== 'SUPER_ADMIN') {
-      router.push('/auth/signin')
-      return
+      router.push('/auth/signin');
+      return;
     }
-  }, [session, status, router])
+  }, [session, status, router]);
 
   if (status === 'loading') {
     return (
@@ -27,16 +27,16 @@ export default function AdminDashboard() {
           <p className="mt-4 text-gray-600">Loading...</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (!session || session.user.role !== 'SUPER_ADMIN') {
-    return null
+    return null;
   }
 
   return (
     <DashboardLayout>
       <DashboardOverview />
     </DashboardLayout>
-  )
+  );
 }

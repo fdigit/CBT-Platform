@@ -1,16 +1,16 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Button } from '../ui/button'
-import { Input } from '../ui/input'
-import { Label } from '../ui/label'
+import { useState } from 'react';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../ui/select'
+} from '../ui/select';
 import {
   Dialog,
   DialogContent,
@@ -18,7 +18,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '../ui/dialog'
+} from '../ui/dialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,33 +28,33 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '../ui/alert-dialog'
-import { Textarea } from '../ui/textarea'
-import { User, School } from 'lucide-react'
+} from '../ui/alert-dialog';
+import { Textarea } from '../ui/textarea';
+import { User, School } from 'lucide-react';
 
 export interface User {
-  id: string
-  name: string
-  email: string
-  role: 'SUPER_ADMIN' | 'SCHOOL_ADMIN' | 'STUDENT'
+  id: string;
+  name: string;
+  email: string;
+  role: 'SUPER_ADMIN' | 'SCHOOL_ADMIN' | 'STUDENT';
   school?: {
-    id: string
-    name: string
-    status: string
-  } | null
-  regNumber?: string
-  createdAt: string
-  updatedAt: string
-  notificationCount: number
+    id: string;
+    name: string;
+    status: string;
+  } | null;
+  regNumber?: string;
+  createdAt: string;
+  updatedAt: string;
+  notificationCount: number;
 }
 
 interface EditUserModalProps {
-  user: User | null
-  isOpen: boolean
-  onClose: () => void
-  onSave: (userData: Partial<User>) => void
-  schools: Array<{ id: string; name: string; status: string }>
-  loading?: boolean
+  user: User | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (userData: Partial<User>) => void;
+  schools: Array<{ id: string; name: string; status: string }>;
+  loading?: boolean;
 }
 
 export function EditUserModal({
@@ -70,15 +70,15 @@ export function EditUserModal({
     email: user?.email || '',
     role: user?.role || 'STUDENT',
     schoolId: user?.school?.id || '',
-  })
+  });
 
   const updateFormData = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
-  }
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
 
   const handleSave = () => {
-    onSave(formData)
-  }
+    onSave(formData);
+  };
 
   const handleClose = () => {
     setFormData({
@@ -86,9 +86,9 @@ export function EditUserModal({
       email: user?.email || '',
       role: user?.role || 'STUDENT',
       schoolId: user?.school?.id || '',
-    })
-    onClose()
-  }
+    });
+    onClose();
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -99,10 +99,9 @@ export function EditUserModal({
             <span>{user ? 'Edit User' : 'Add New User'}</span>
           </DialogTitle>
           <DialogDescription>
-            {user 
+            {user
               ? 'Update user information and permissions.'
-              : 'Create a new user account.'
-            }
+              : 'Create a new user account.'}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -111,7 +110,7 @@ export function EditUserModal({
             <Input
               id="name"
               value={formData.name}
-              onChange={(e) => updateFormData('name', e.target.value)}
+              onChange={e => updateFormData('name', e.target.value)}
               placeholder="Enter full name"
             />
           </div>
@@ -121,7 +120,7 @@ export function EditUserModal({
               id="email"
               type="email"
               value={formData.email}
-              onChange={(e) => updateFormData('email', e.target.value)}
+              onChange={e => updateFormData('email', e.target.value)}
               placeholder="Enter email address"
             />
           </div>
@@ -129,7 +128,7 @@ export function EditUserModal({
             <Label htmlFor="role">Role</Label>
             <Select
               value={formData.role}
-              onValueChange={(value) => updateFormData('role', value)}
+              onValueChange={value => updateFormData('role', value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select role" />
@@ -145,14 +144,14 @@ export function EditUserModal({
             <Label htmlFor="school">School (Optional)</Label>
             <Select
               value={formData.schoolId}
-              onValueChange={(value) => updateFormData('schoolId', value)}
+              onValueChange={value => updateFormData('schoolId', value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select school" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="">No School</SelectItem>
-                {schools.map((school) => (
+                {schools.map(school => (
                   <SelectItem key={school.id} value={school.id}>
                     <div className="flex items-center space-x-2">
                       <School className="h-4 w-4" />
@@ -174,15 +173,15 @@ export function EditUserModal({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 
 interface DeleteUserModalProps {
-  user: User | null
-  isOpen: boolean
-  onClose: () => void
-  onConfirm: () => void
-  loading?: boolean
+  user: User | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  loading?: boolean;
 }
 
 export function DeleteUserModal({
@@ -198,8 +197,8 @@ export function DeleteUserModal({
         <AlertDialogHeader>
           <AlertDialogTitle>Delete User Account</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete <strong>{user?.name}</strong>?
-            This action cannot be undone and will permanently remove the user account
+            Are you sure you want to delete <strong>{user?.name}</strong>? This
+            action cannot be undone and will permanently remove the user account
             and all associated data.
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -215,15 +214,15 @@ export function DeleteUserModal({
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
+  );
 }
 
 interface ResetPasswordModalProps {
-  user: User | null
-  isOpen: boolean
-  onClose: () => void
-  onConfirm: (newPassword: string) => void
-  loading?: boolean
+  user: User | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: (newPassword: string) => void;
+  loading?: boolean;
 }
 
 export function ResetPasswordModal({
@@ -233,19 +232,19 @@ export function ResetPasswordModal({
   onConfirm,
   loading = false,
 }: ResetPasswordModalProps) {
-  const [newPassword, setNewPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('');
 
   const handleConfirm = () => {
     if (newPassword.length >= 8) {
-      onConfirm(newPassword)
-      setNewPassword('')
+      onConfirm(newPassword);
+      setNewPassword('');
     }
-  }
+  };
 
   const handleClose = () => {
-    setNewPassword('')
-    onClose()
-  }
+    setNewPassword('');
+    onClose();
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -253,8 +252,8 @@ export function ResetPasswordModal({
         <DialogHeader>
           <DialogTitle>Reset Password</DialogTitle>
           <DialogDescription>
-            Set a new password for <strong>{user?.name}</strong>. 
-            The user will need to change this password on their next login.
+            Set a new password for <strong>{user?.name}</strong>. The user will
+            need to change this password on their next login.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -264,7 +263,7 @@ export function ResetPasswordModal({
               id="password"
               type="password"
               value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
+              onChange={e => setNewPassword(e.target.value)}
               placeholder="Enter new password (min 8 characters)"
               minLength={8}
             />
@@ -277,8 +276,8 @@ export function ResetPasswordModal({
           <Button variant="outline" onClick={handleClose} disabled={loading}>
             Cancel
           </Button>
-          <Button 
-            onClick={handleConfirm} 
+          <Button
+            onClick={handleConfirm}
             disabled={loading || newPassword.length < 8}
           >
             {loading ? 'Resetting...' : 'Reset Password'}
@@ -286,16 +285,16 @@ export function ResetPasswordModal({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 
 interface BulkActionModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onConfirm: (action: string, message?: string) => void
-  action: string
-  selectedCount: number
-  loading?: boolean
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: (action: string, message?: string) => void;
+  action: string;
+  selectedCount: number;
+  loading?: boolean;
 }
 
 export function BulkActionModal({
@@ -306,39 +305,39 @@ export function BulkActionModal({
   selectedCount,
   loading = false,
 }: BulkActionModalProps) {
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState('');
 
   const getActionTitle = () => {
     switch (action) {
       case 'suspend':
-        return 'Suspend Users'
+        return 'Suspend Users';
       case 'reactivate':
-        return 'Reactivate Users'
+        return 'Reactivate Users';
       case 'delete':
-        return 'Delete Users'
+        return 'Delete Users';
       case 'reset-password':
-        return 'Reset Passwords'
+        return 'Reset Passwords';
       default:
-        return 'Bulk Action'
+        return 'Bulk Action';
     }
-  }
+  };
 
   const getActionDescription = () => {
     switch (action) {
       case 'suspend':
-        return `Are you sure you want to suspend ${selectedCount} user(s)? They will not be able to access the platform.`
+        return `Are you sure you want to suspend ${selectedCount} user(s)? They will not be able to access the platform.`;
       case 'reactivate':
-        return `Are you sure you want to reactivate ${selectedCount} user(s)? They will regain access to the platform.`
+        return `Are you sure you want to reactivate ${selectedCount} user(s)? They will regain access to the platform.`;
       case 'delete':
-        return `Are you sure you want to permanently delete ${selectedCount} user(s)? This action cannot be undone.`
+        return `Are you sure you want to permanently delete ${selectedCount} user(s)? This action cannot be undone.`;
       case 'reset-password':
-        return `Are you sure you want to reset passwords for ${selectedCount} user(s)? They will receive new temporary passwords.`
+        return `Are you sure you want to reset passwords for ${selectedCount} user(s)? They will receive new temporary passwords.`;
       default:
-        return `Are you sure you want to perform this action on ${selectedCount} user(s)?`
+        return `Are you sure you want to perform this action on ${selectedCount} user(s)?`;
     }
-  }
+  };
 
-  const isDestructive = action === 'delete'
+  const isDestructive = action === 'delete';
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
@@ -349,20 +348,20 @@ export function BulkActionModal({
             {getActionDescription()}
           </AlertDialogDescription>
         </AlertDialogHeader>
-        
+
         {(action === 'suspend' || action === 'delete') && (
           <div className="py-4">
             <Label htmlFor="message">Reason (Optional)</Label>
             <Textarea
               id="message"
               value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              onChange={e => setMessage(e.target.value)}
               placeholder="Enter reason for this action..."
               rows={3}
             />
           </div>
         )}
-        
+
         <AlertDialogFooter>
           <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
           <AlertDialogAction
@@ -375,5 +374,5 @@ export function BulkActionModal({
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
+  );
 }

@@ -1,119 +1,140 @@
-'use client'
+'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
-import { Badge } from '../ui/badge'
-import { Button } from '../ui/button'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
-import { 
-  User, 
-  School, 
-  BookOpen, 
-  CreditCard, 
-  CheckCircle, 
-  Clock, 
-  XCircle, 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../ui/card';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../ui/table';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import {
+  User,
+  School,
+  BookOpen,
+  CreditCard,
+  CheckCircle,
+  Clock,
+  XCircle,
   AlertCircle,
   ExternalLink,
-  MoreHorizontal
-} from 'lucide-react'
-import { format } from 'date-fns'
+  MoreHorizontal,
+} from 'lucide-react';
+import { format } from 'date-fns';
 
 interface Activity {
-  id: string
-  type: 'user_registration' | 'school_approval' | 'exam_created' | 'payment_success' | 'exam_completed'
-  title: string
-  description: string
+  id: string;
+  type:
+    | 'user_registration'
+    | 'school_approval'
+    | 'exam_created'
+    | 'payment_success'
+    | 'exam_completed';
+  title: string;
+  description: string;
   user?: {
-    name: string
-    email: string
-    role: string
-  }
+    name: string;
+    email: string;
+    role: string;
+  };
   school?: {
-    name: string
-  }
+    name: string;
+  };
   metadata?: {
-    [key: string]: any
-  }
-  createdAt: string
-  status?: 'success' | 'pending' | 'failed' | 'warning'
+    [key: string]: any;
+  };
+  createdAt: string;
+  status?: 'success' | 'pending' | 'failed' | 'warning';
 }
 
 interface ReportsActivityTableProps {
-  activities: Activity[]
-  loading?: boolean
-  title?: string
-  description?: string
-  showViewAll?: boolean
-  onViewAll?: () => void
+  activities: Activity[];
+  loading?: boolean;
+  title?: string;
+  description?: string;
+  showViewAll?: boolean;
+  onViewAll?: () => void;
 }
 
 const getActivityIcon = (type: Activity['type']) => {
   switch (type) {
     case 'user_registration':
-      return <User className="h-4 w-4" />
+      return <User className="h-4 w-4" />;
     case 'school_approval':
-      return <School className="h-4 w-4" />
+      return <School className="h-4 w-4" />;
     case 'exam_created':
-      return <BookOpen className="h-4 w-4" />
+      return <BookOpen className="h-4 w-4" />;
     case 'payment_success':
-      return <CreditCard className="h-4 w-4" />
+      return <CreditCard className="h-4 w-4" />;
     case 'exam_completed':
-      return <CheckCircle className="h-4 w-4" />
+      return <CheckCircle className="h-4 w-4" />;
     default:
-      return <AlertCircle className="h-4 w-4" />
+      return <AlertCircle className="h-4 w-4" />;
   }
-}
+};
 
 const getActivityColor = (type: Activity['type']) => {
   switch (type) {
     case 'user_registration':
-      return 'bg-blue-100 text-blue-600'
+      return 'bg-blue-100 text-blue-600';
     case 'school_approval':
-      return 'bg-green-100 text-green-600'
+      return 'bg-green-100 text-green-600';
     case 'exam_created':
-      return 'bg-orange-100 text-orange-600'
+      return 'bg-orange-100 text-orange-600';
     case 'payment_success':
-      return 'bg-emerald-100 text-emerald-600'
+      return 'bg-emerald-100 text-emerald-600';
     case 'exam_completed':
-      return 'bg-purple-100 text-purple-600'
+      return 'bg-purple-100 text-purple-600';
     default:
-      return 'bg-gray-100 text-gray-600'
+      return 'bg-gray-100 text-gray-600';
   }
-}
+};
 
 const getStatusBadge = (status?: Activity['status']) => {
-  if (!status) return null
+  if (!status) return null;
 
   const variants = {
     success: 'bg-green-100 text-green-800',
     pending: 'bg-yellow-100 text-yellow-800',
     failed: 'bg-red-100 text-red-800',
-    warning: 'bg-orange-100 text-orange-800'
-  }
+    warning: 'bg-orange-100 text-orange-800',
+  };
 
   const icons = {
     success: <CheckCircle className="h-3 w-3" />,
     pending: <Clock className="h-3 w-3" />,
     failed: <XCircle className="h-3 w-3" />,
-    warning: <AlertCircle className="h-3 w-3" />
-  }
+    warning: <AlertCircle className="h-3 w-3" />,
+  };
 
   return (
-    <Badge variant="outline" className={`${variants[status]} border-0 flex items-center gap-1`}>
+    <Badge
+      variant="outline"
+      className={`${variants[status]} border-0 flex items-center gap-1`}
+    >
       {icons[status]}
       {status.charAt(0).toUpperCase() + status.slice(1)}
     </Badge>
-  )
-}
+  );
+};
 
-export function ReportsActivityTable({ 
-  activities, 
-  loading, 
-  title = "Recent Activity", 
-  description = "Latest platform activities and events",
+export function ReportsActivityTable({
+  activities,
+  loading,
+  title = 'Recent Activity',
+  description = 'Latest platform activities and events',
   showViewAll = true,
-  onViewAll
+  onViewAll,
 }: ReportsActivityTableProps) {
   if (loading) {
     return (
@@ -124,8 +145,11 @@ export function ReportsActivityTable({
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="flex items-center space-x-4 animate-pulse">
+            {[1, 2, 3, 4, 5].map(i => (
+              <div
+                key={i}
+                className="flex items-center space-x-4 animate-pulse"
+              >
                 <div className="h-10 w-10 bg-gray-200 rounded-full"></div>
                 <div className="flex-1 space-y-2">
                   <div className="h-4 bg-gray-200 rounded w-3/4"></div>
@@ -137,7 +161,7 @@ export function ReportsActivityTable({
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   if (!activities || activities.length === 0) {
@@ -154,7 +178,7 @@ export function ReportsActivityTable({
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -175,10 +199,15 @@ export function ReportsActivityTable({
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {activities.slice(0, 10).map((activity) => (
-            <div key={activity.id} className="flex items-start space-x-4 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+          {activities.slice(0, 10).map(activity => (
+            <div
+              key={activity.id}
+              className="flex items-start space-x-4 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+            >
               {/* Activity Icon */}
-              <div className={`p-2 rounded-full ${getActivityColor(activity.type)}`}>
+              <div
+                className={`p-2 rounded-full ${getActivityColor(activity.type)}`}
+              >
                 {getActivityIcon(activity.type)}
               </div>
 
@@ -192,7 +221,7 @@ export function ReportsActivityTable({
                     <p className="text-sm text-gray-500 mt-1">
                       {activity.description}
                     </p>
-                    
+
                     {/* Additional Info */}
                     <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
                       {activity.user && (
@@ -207,7 +236,9 @@ export function ReportsActivityTable({
                           {activity.school.name}
                         </span>
                       )}
-                      <span>{format(new Date(activity.createdAt), 'MMM dd, HH:mm')}</span>
+                      <span>
+                        {format(new Date(activity.createdAt), 'MMM dd, HH:mm')}
+                      </span>
                     </div>
                   </div>
 
@@ -234,15 +265,15 @@ export function ReportsActivityTable({
         )}
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // Alternative table view for detailed activities
-export function DetailedActivityTable({ 
-  activities, 
-  loading, 
-  title = "Activity Log", 
-  description = "Detailed activity log with full information" 
+export function DetailedActivityTable({
+  activities,
+  loading,
+  title = 'Activity Log',
+  description = 'Detailed activity log with full information',
 }: ReportsActivityTableProps) {
   if (loading) {
     return (
@@ -254,13 +285,13 @@ export function DetailedActivityTable({
         <CardContent>
           <div className="animate-pulse">
             <div className="h-10 bg-gray-200 rounded mb-4"></div>
-            {[1, 2, 3, 4, 5].map((i) => (
+            {[1, 2, 3, 4, 5].map(i => (
               <div key={i} className="h-12 bg-gray-100 rounded mb-2"></div>
             ))}
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -281,16 +312,20 @@ export function DetailedActivityTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {activities.map((activity) => (
+            {activities.map(activity => (
               <TableRow key={activity.id}>
                 <TableCell>
                   <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-full ${getActivityColor(activity.type)}`}>
+                    <div
+                      className={`p-2 rounded-full ${getActivityColor(activity.type)}`}
+                    >
                       {getActivityIcon(activity.type)}
                     </div>
                     <div>
                       <p className="font-medium">{activity.title}</p>
-                      <p className="text-sm text-gray-500">{activity.description}</p>
+                      <p className="text-sm text-gray-500">
+                        {activity.description}
+                      </p>
                     </div>
                   </div>
                 </TableCell>
@@ -299,14 +334,20 @@ export function DetailedActivityTable({
                     {activity.user && (
                       <div className="flex items-center gap-2">
                         <Avatar className="h-6 w-6">
-                          <AvatarImage src={`/avatars/${activity.user.name.charAt(0).toLowerCase()}.png`} />
+                          <AvatarImage
+                            src={`/avatars/${activity.user.name.charAt(0).toLowerCase()}.png`}
+                          />
                           <AvatarFallback className="text-xs">
                             {activity.user.name.charAt(0).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="text-sm font-medium">{activity.user.name}</p>
-                          <p className="text-xs text-gray-500">{activity.user.role}</p>
+                          <p className="text-sm font-medium">
+                            {activity.user.name}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {activity.user.role}
+                          </p>
                         </div>
                       </div>
                     )}
@@ -318,9 +359,7 @@ export function DetailedActivityTable({
                     )}
                   </div>
                 </TableCell>
-                <TableCell>
-                  {getStatusBadge(activity.status)}
-                </TableCell>
+                <TableCell>{getStatusBadge(activity.status)}</TableCell>
                 <TableCell className="text-sm text-gray-500">
                   {format(new Date(activity.createdAt), 'MMM dd, yyyy HH:mm')}
                 </TableCell>
@@ -335,5 +374,5 @@ export function DetailedActivityTable({
         </Table>
       </CardContent>
     </Card>
-  )
+  );
 }

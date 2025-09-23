@@ -1,95 +1,119 @@
-'use client'
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card'
-import { Badge } from '../../ui/badge'
-import { Users, GraduationCap, BookOpen, Calendar, TrendingUp, AlertTriangle } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
+import { Badge } from '../../ui/badge';
+import {
+  Users,
+  GraduationCap,
+  BookOpen,
+  Calendar,
+  TrendingUp,
+  AlertTriangle,
+} from 'lucide-react';
 // Define types locally instead of importing from page
 interface Class {
-  id: string
-  name: string
-  section?: string
-  academicYear: string
-  description?: string
-  maxStudents: number
-  room?: string
-  status: 'ACTIVE' | 'INACTIVE' | 'ARCHIVED'
-  studentCount: number
-  examCount: number
+  id: string;
+  name: string;
+  section?: string;
+  academicYear: string;
+  description?: string;
+  maxStudents: number;
+  room?: string;
+  status: 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
+  studentCount: number;
+  examCount: number;
   teachers: Array<{
-    id: string
-    name: string
-    email: string
-    employeeId: string
-  }>
-  createdAt: string
-  updatedAt: string
+    id: string;
+    name: string;
+    email: string;
+    employeeId: string;
+  }>;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface Teacher {
-  id: string
-  employeeId: string
-  name: string
-  email: string
-  qualification?: string
-  specialization?: string
-  experience?: number
-  status: 'ACTIVE' | 'SUSPENDED' | 'TERMINATED' | 'ON_LEAVE'
-  classCount: number
+  id: string;
+  employeeId: string;
+  name: string;
+  email: string;
+  qualification?: string;
+  specialization?: string;
+  experience?: number;
+  status: 'ACTIVE' | 'SUSPENDED' | 'TERMINATED' | 'ON_LEAVE';
+  classCount: number;
   classes: Array<{
-    id: string
-    name: string
-    section?: string
-  }>
+    id: string;
+    name: string;
+    section?: string;
+  }>;
 }
-import { useMemo } from 'react'
+import { useMemo } from 'react';
 
 interface ClassesAnalyticsProps {
-  classes: Class[]
-  teachers: Teacher[]
+  classes: Class[];
+  teachers: Teacher[];
 }
 
 export function ClassesAnalytics({ classes, teachers }: ClassesAnalyticsProps) {
   const analytics = useMemo(() => {
-    const total = classes.length
-    const active = classes.filter(c => c.status === 'ACTIVE').length
-    const inactive = classes.filter(c => c.status === 'INACTIVE').length
-    const archived = classes.filter(c => c.status === 'ARCHIVED').length
-    
+    const total = classes.length;
+    const active = classes.filter(c => c.status === 'ACTIVE').length;
+    const inactive = classes.filter(c => c.status === 'INACTIVE').length;
+    const archived = classes.filter(c => c.status === 'ARCHIVED').length;
+
     // Academic year distribution
-    const academicYears = classes.reduce((acc, cls) => {
-      acc[cls.academicYear] = (acc[cls.academicYear] || 0) + 1
-      return acc
-    }, {} as Record<string, number>)
-    
+    const academicYears = classes.reduce(
+      (acc, cls) => {
+        acc[cls.academicYear] = (acc[cls.academicYear] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+
     // Current academic year (most common)
-    const currentYear = Object.entries(academicYears)
-      .sort(([,a], [,b]) => b - a)[0]?.[0] || new Date().getFullYear() + '/' + (new Date().getFullYear() + 1)
-    
+    const currentYear =
+      Object.entries(academicYears).sort(([, a], [, b]) => b - a)[0]?.[0] ||
+      new Date().getFullYear() + '/' + (new Date().getFullYear() + 1);
+
     // Student distribution
-    const totalStudents = classes.reduce((sum, cls) => sum + cls.studentCount, 0)
-    const averageStudentsPerClass = total > 0 ? Math.round(totalStudents / total) : 0
-    
+    const totalStudents = classes.reduce(
+      (sum, cls) => sum + cls.studentCount,
+      0
+    );
+    const averageStudentsPerClass =
+      total > 0 ? Math.round(totalStudents / total) : 0;
+
     // Class capacity analysis
-    const capacityUsage = classes.map(cls => ({
-      id: cls.id,
-      name: `${cls.name}${cls.section ? ` - ${cls.section}` : ''}`,
-      usage: cls.maxStudents > 0 ? (cls.studentCount / cls.maxStudents) * 100 : 0,
-      students: cls.studentCount,
-      maxStudents: cls.maxStudents
-    })).sort((a, b) => b.usage - a.usage)
-    
-    const overCapacity = capacityUsage.filter(c => c.usage > 100).length
-    const nearCapacity = capacityUsage.filter(c => c.usage >= 80 && c.usage <= 100).length
-    
+    const capacityUsage = classes
+      .map(cls => ({
+        id: cls.id,
+        name: `${cls.name}${cls.section ? ` - ${cls.section}` : ''}`,
+        usage:
+          cls.maxStudents > 0 ? (cls.studentCount / cls.maxStudents) * 100 : 0,
+        students: cls.studentCount,
+        maxStudents: cls.maxStudents,
+      }))
+      .sort((a, b) => b.usage - a.usage);
+
+    const overCapacity = capacityUsage.filter(c => c.usage > 100).length;
+    const nearCapacity = capacityUsage.filter(
+      c => c.usage >= 80 && c.usage <= 100
+    ).length;
+
     // Teacher distribution
-    const totalTeachers = teachers.length
-    const activeTeachers = teachers.filter(t => t.status === 'ACTIVE').length
-    const unassignedTeachers = teachers.filter(t => t.classCount === 0).length
-    const teachersWithMultipleClasses = teachers.filter(t => t.classCount > 1).length
-    
+    const totalTeachers = teachers.length;
+    const activeTeachers = teachers.filter(t => t.status === 'ACTIVE').length;
+    const unassignedTeachers = teachers.filter(t => t.classCount === 0).length;
+    const teachersWithMultipleClasses = teachers.filter(
+      t => t.classCount > 1
+    ).length;
+
     // Classes without teachers
-    const classesWithoutTeachers = classes.filter(c => c.teachers.length === 0).length
-    
+    const classesWithoutTeachers = classes.filter(
+      c => c.teachers.length === 0
+    ).length;
+
     return {
       total,
       active,
@@ -106,24 +130,28 @@ export function ClassesAnalytics({ classes, teachers }: ClassesAnalyticsProps) {
       activeTeachers,
       unassignedTeachers,
       teachersWithMultipleClasses,
-      classesWithoutTeachers
-    }
-  }, [classes, teachers])
+      classesWithoutTeachers,
+    };
+  }, [classes, teachers]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'ACTIVE': return 'bg-green-100 text-green-800'
-      case 'INACTIVE': return 'bg-yellow-100 text-yellow-800'
-      case 'ARCHIVED': return 'bg-gray-100 text-gray-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'ACTIVE':
+        return 'bg-green-100 text-green-800';
+      case 'INACTIVE':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'ARCHIVED':
+        return 'bg-gray-100 text-gray-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
-  }
+  };
 
   const getCapacityColor = (usage: number) => {
-    if (usage > 100) return 'text-red-600'
-    if (usage >= 80) return 'text-yellow-600'
-    return 'text-green-600'
-  }
+    if (usage > 100) return 'text-red-600';
+    if (usage >= 80) return 'text-yellow-600';
+    return 'text-green-600';
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
@@ -148,7 +176,9 @@ export function ClassesAnalytics({ classes, teachers }: ClassesAnalyticsProps) {
           <Users className="h-4 w-4 text-blue-600" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-blue-600">{analytics.totalStudents}</div>
+          <div className="text-2xl font-bold text-blue-600">
+            {analytics.totalStudents}
+          </div>
           <p className="text-xs text-muted-foreground">
             Avg {analytics.averageStudentsPerClass} per class
           </p>
@@ -162,7 +192,9 @@ export function ClassesAnalytics({ classes, teachers }: ClassesAnalyticsProps) {
           <GraduationCap className="h-4 w-4 text-green-600" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-green-600">{analytics.activeTeachers}</div>
+          <div className="text-2xl font-bold text-green-600">
+            {analytics.activeTeachers}
+          </div>
           <p className="text-xs text-muted-foreground">
             {analytics.unassignedTeachers} unassigned
           </p>
@@ -172,7 +204,9 @@ export function ClassesAnalytics({ classes, teachers }: ClassesAnalyticsProps) {
       {/* Alerts */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Attention Needed</CardTitle>
+          <CardTitle className="text-sm font-medium">
+            Attention Needed
+          </CardTitle>
           <AlertTriangle className="h-4 w-4 text-orange-600" />
         </CardHeader>
         <CardContent>
@@ -217,7 +251,7 @@ export function ClassesAnalytics({ classes, teachers }: ClassesAnalyticsProps) {
         <CardContent>
           <div className="space-y-2">
             {Object.entries(analytics.academicYears)
-              .sort(([,a], [,b]) => b - a)
+              .sort(([, a], [, b]) => b - a)
               .slice(0, 3)
               .map(([year, count]) => (
                 <div key={year} className="flex items-center justify-between">
@@ -236,21 +270,27 @@ export function ClassesAnalytics({ classes, teachers }: ClassesAnalyticsProps) {
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            {analytics.capacityUsage.map((cls) => (
+            {analytics.capacityUsage.map(cls => (
               <div key={cls.id} className="flex items-center justify-between">
-                <span className="text-sm font-medium truncate mr-2">{cls.name}</span>
+                <span className="text-sm font-medium truncate mr-2">
+                  {cls.name}
+                </span>
                 <div className="flex items-center space-x-2">
                   <span className="text-xs text-gray-500">
                     {cls.students}/{cls.maxStudents}
                   </span>
-                  <span className={`text-sm font-bold ${getCapacityColor(cls.usage)}`}>
+                  <span
+                    className={`text-sm font-bold ${getCapacityColor(cls.usage)}`}
+                  >
                     {Math.round(cls.usage)}%
                   </span>
                 </div>
               </div>
             ))}
             {analytics.capacityUsage.length === 0 && (
-              <p className="text-sm text-muted-foreground">No classes available</p>
+              <p className="text-sm text-muted-foreground">
+                No classes available
+              </p>
             )}
           </div>
         </CardContent>
@@ -259,7 +299,9 @@ export function ClassesAnalytics({ classes, teachers }: ClassesAnalyticsProps) {
       {/* Teacher Insights */}
       <Card className="md:col-span-2">
         <CardHeader>
-          <CardTitle className="text-sm font-medium">Teacher Insights</CardTitle>
+          <CardTitle className="text-sm font-medium">
+            Teacher Insights
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
@@ -269,23 +311,31 @@ export function ClassesAnalytics({ classes, teachers }: ClassesAnalyticsProps) {
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm">Active Teachers</span>
-              <Badge className="bg-green-100 text-green-800">{analytics.activeTeachers}</Badge>
+              <Badge className="bg-green-100 text-green-800">
+                {analytics.activeTeachers}
+              </Badge>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm">Unassigned</span>
-              <Badge className="bg-yellow-100 text-yellow-800">{analytics.unassignedTeachers}</Badge>
+              <Badge className="bg-yellow-100 text-yellow-800">
+                {analytics.unassignedTeachers}
+              </Badge>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm">Multiple Classes</span>
-              <Badge variant="outline">{analytics.teachersWithMultipleClasses}</Badge>
+              <Badge variant="outline">
+                {analytics.teachersWithMultipleClasses}
+              </Badge>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm">Classes w/o Teachers</span>
-              <Badge className="bg-red-100 text-red-800">{analytics.classesWithoutTeachers}</Badge>
+              <Badge className="bg-red-100 text-red-800">
+                {analytics.classesWithoutTeachers}
+              </Badge>
             </div>
           </div>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

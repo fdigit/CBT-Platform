@@ -20,6 +20,7 @@
 3. **Replace `[YOUR_DATABASE_PASSWORD]`** with your actual database password
 
 Example:
+
 ```env
 DATABASE_URL="postgresql://postgres:your_actual_password_here@db.mydmheuxeczdgtzdwucu.supabase.co:5432/postgres"
 ```
@@ -36,10 +37,11 @@ DATABASE_URL="postgresql://postgres:your_actual_password_here@db.mydmheuxeczdgtz
 ### Option B: Using pgAdmin
 
 1. **Connect to Supabase** in pgAdmin:
+
    ```
    General Tab:
    - Name: CBT Platform Supabase
-   
+
    Connection Tab:
    - Host: db.mydmheuxeczdgtzdwucu.supabase.co
    - Port: 5432
@@ -59,6 +61,7 @@ DATABASE_URL="postgresql://postgres:your_actual_password_here@db.mydmheuxeczdgtz
 ## Step 4: Test the Connection
 
 1. **Start your development server**:
+
    ```bash
    npm run dev
    ```
@@ -92,6 +95,7 @@ DATABASE_URL="postgresql://postgres:your_actual_password_here@db.mydmheuxeczdgtz
    - Make sure you're connected to the `postgres` database
 
 ### Connection String Format:
+
 ```
 postgresql://postgres:[PASSWORD]@db.mydmheuxeczdgtzdwucu.supabase.co:5432/postgres
 ```
@@ -110,6 +114,7 @@ postgresql://postgres:[PASSWORD]@db.mydmheuxeczdgtzdwucu.supabase.co:5432/postgr
 - **Table Editor**: https://supabase.com/dashboard/project/mydmheuxeczdgtzdwucu/editor
 
 You can now:
+
 - View your database tables in the Supabase dashboard
 - Run SQL queries directly in the SQL editor
 - Monitor your database usage and performance

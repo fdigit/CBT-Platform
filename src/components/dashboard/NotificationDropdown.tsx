@@ -1,58 +1,76 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Button } from '../ui/button'
-import { Badge } from '../ui/badge'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
-import { Bell, Check, CheckCheck, School, CreditCard, AlertTriangle } from 'lucide-react'
-import { useToast } from '../../hooks/use-toast'
+import { useState, useEffect } from 'react';
+import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../ui/card';
+import {
+  Bell,
+  Check,
+  CheckCheck,
+  School,
+  CreditCard,
+  AlertTriangle,
+} from 'lucide-react';
+import { useToast } from '../../hooks/use-toast';
 
 interface Notification {
-  id: string
-  title: string
-  message: string
-  type: 'SCHOOL_REGISTRATION' | 'SCHOOL_APPROVED' | 'SCHOOL_REJECTED' | 'PAYMENT_RECEIVED' | 'SYSTEM_ALERT'
-  isRead: boolean
-  metadata?: any
-  createdAt: string
+  id: string;
+  title: string;
+  message: string;
+  type:
+    | 'SCHOOL_REGISTRATION'
+    | 'SCHOOL_APPROVED'
+    | 'SCHOOL_REJECTED'
+    | 'PAYMENT_RECEIVED'
+    | 'SYSTEM_ALERT';
+  isRead: boolean;
+  metadata?: any;
+  createdAt: string;
 }
 
 interface NotificationResponse {
-  notifications: Notification[]
-  unreadCount: number
+  notifications: Notification[];
+  unreadCount: number;
 }
 
 export function NotificationDropdown() {
-  const [notifications, setNotifications] = useState<Notification[]>([])
-  const [unreadCount, setUnreadCount] = useState(0)
-  const [isOpen, setIsOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [mounted, setMounted] = useState(false)
-  const { toast } = useToast()
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const { toast } = useToast();
 
   const fetchNotifications = async () => {
     try {
-      setLoading(true)
-      const response = await fetch('/api/admin/notifications?limit=20')
+      setLoading(true);
+      const response = await fetch('/api/admin/notifications?limit=20');
       if (response.ok) {
-        const data: NotificationResponse = await response.json()
-        setNotifications(data.notifications)
-        setUnreadCount(data.unreadCount)
+        const data: NotificationResponse = await response.json();
+        setNotifications(data.notifications);
+        setUnreadCount(data.unreadCount);
       }
     } catch (error) {
-      console.error('Error fetching notifications:', error)
+      console.error('Error fetching notifications:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    setMounted(true)
-    fetchNotifications()
+    setMounted(true);
+    fetchNotifications();
     // Poll for new notifications every 30 seconds
-    const interval = setInterval(fetchNotifications, 30000)
-    return () => clearInterval(interval)
-  }, [])
+    const interval = setInterval(fetchNotifications, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Prevent hydration issues
   if (!mounted) {
@@ -60,7 +78,7 @@ export function NotificationDropdown() {
       <Button variant="ghost" size="sm" className="relative p-2">
         <Bell className="h-5 w-5" />
       </Button>
-    )
+    );
   }
 
   const markAsRead = async (notificationId: string) => {
@@ -71,18 +89,18 @@ export function NotificationDropdown() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ notificationId }),
-      })
+      });
 
       if (response.ok) {
         setNotifications(prev =>
-          prev.map(n => n.id === notificationId ? { ...n, isRead: true } : n)
-        )
-        setUnreadCount(prev => Math.max(0, prev - 1))
+          prev.map(n => (n.id === notificationId ? { ...n, isRead: true } : n))
+        );
+        setUnreadCount(prev => Math.max(0, prev - 1));
       }
     } catch (error) {
-      console.error('Error marking notification as read:', error)
+      console.error('Error marking notification as read:', error);
     }
-  }
+  };
 
   const markAllAsRead = async () => {
     try {
@@ -92,61 +110,61 @@ export function NotificationDropdown() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ markAllAsRead: true }),
-      })
+      });
 
       if (response.ok) {
-        setNotifications(prev => prev.map(n => ({ ...n, isRead: true })))
-        setUnreadCount(0)
+        setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+        setUnreadCount(0);
         toast({
           title: 'Success',
           description: 'All notifications marked as read',
-        })
+        });
       }
     } catch (error) {
-      console.error('Error marking all as read:', error)
+      console.error('Error marking all as read:', error);
       toast({
         title: 'Error',
         description: 'Failed to mark notifications as read',
         variant: 'destructive',
-      })
+      });
     }
-  }
+  };
 
   const getNotificationIcon = (type: Notification['type']) => {
     switch (type) {
       case 'SCHOOL_REGISTRATION':
-        return <School className="h-4 w-4 text-blue-600" />
+        return <School className="h-4 w-4 text-blue-600" />;
       case 'SCHOOL_APPROVED':
-        return <Check className="h-4 w-4 text-green-600" />
+        return <Check className="h-4 w-4 text-green-600" />;
       case 'SCHOOL_REJECTED':
-        return <AlertTriangle className="h-4 w-4 text-red-600" />
+        return <AlertTriangle className="h-4 w-4 text-red-600" />;
       case 'PAYMENT_RECEIVED':
-        return <CreditCard className="h-4 w-4 text-green-600" />
+        return <CreditCard className="h-4 w-4 text-green-600" />;
       case 'SYSTEM_ALERT':
-        return <AlertTriangle className="h-4 w-4 text-orange-600" />
+        return <AlertTriangle className="h-4 w-4 text-orange-600" />;
       default:
-        return <Bell className="h-4 w-4 text-gray-600" />
+        return <Bell className="h-4 w-4 text-gray-600" />;
     }
-  }
+  };
 
   const formatTimeAgo = (dateString: string) => {
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
     if (diffInSeconds < 60) {
-      return 'Just now'
+      return 'Just now';
     } else if (diffInSeconds < 3600) {
-      const minutes = Math.floor(diffInSeconds / 60)
-      return `${minutes}m ago`
+      const minutes = Math.floor(diffInSeconds / 60);
+      return `${minutes}m ago`;
     } else if (diffInSeconds < 86400) {
-      const hours = Math.floor(diffInSeconds / 3600)
-      return `${hours}h ago`
+      const hours = Math.floor(diffInSeconds / 3600);
+      return `${hours}h ago`;
     } else {
-      const days = Math.floor(diffInSeconds / 86400)
-      return `${days}d ago`
+      const days = Math.floor(diffInSeconds / 86400);
+      return `${days}d ago`;
     }
-  }
+  };
 
   return (
     <div className="relative">
@@ -191,7 +209,8 @@ export function NotificationDropdown() {
               </div>
               {unreadCount > 0 && (
                 <CardDescription>
-                  You have {unreadCount} unread notification{unreadCount !== 1 ? 's' : ''}
+                  You have {unreadCount} unread notification
+                  {unreadCount !== 1 ? 's' : ''}
                 </CardDescription>
               )}
             </CardHeader>
@@ -206,13 +225,15 @@ export function NotificationDropdown() {
                 </div>
               ) : (
                 <div className="divide-y">
-                  {notifications.map((notification) => (
+                  {notifications.map(notification => (
                     <div
                       key={notification.id}
                       className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${
                         !notification.isRead ? 'bg-blue-50' : ''
                       }`}
-                      onClick={() => !notification.isRead && markAsRead(notification.id)}
+                      onClick={() =>
+                        !notification.isRead && markAsRead(notification.id)
+                      }
                     >
                       <div className="flex items-start space-x-3">
                         <div className="flex-shrink-0 mt-1">
@@ -220,18 +241,26 @@ export function NotificationDropdown() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between">
-                            <p className={`text-sm font-medium ${
-                              !notification.isRead ? 'text-gray-900' : 'text-gray-700'
-                            }`}>
+                            <p
+                              className={`text-sm font-medium ${
+                                !notification.isRead
+                                  ? 'text-gray-900'
+                                  : 'text-gray-700'
+                              }`}
+                            >
                               {notification.title}
                             </p>
                             {!notification.isRead && (
                               <div className="h-2 w-2 bg-blue-600 rounded-full flex-shrink-0" />
                             )}
                           </div>
-                          <p className={`text-sm mt-1 ${
-                            !notification.isRead ? 'text-gray-700' : 'text-gray-500'
-                          }`}>
+                          <p
+                            className={`text-sm mt-1 ${
+                              !notification.isRead
+                                ? 'text-gray-700'
+                                : 'text-gray-500'
+                            }`}
+                          >
                             {notification.message}
                           </p>
                           <p className="text-xs text-gray-400 mt-2">
@@ -248,5 +277,5 @@ export function NotificationDropdown() {
         </>
       )}
     </div>
-  )
+  );
 }

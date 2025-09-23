@@ -18,6 +18,7 @@ The platform uses a **school-scoped multi-tenancy** approach where:
 ### Key Models
 
 #### School Model
+
 ```typescript
 {
   id: string          // Unique identifier
@@ -32,6 +33,7 @@ The platform uses a **school-scoped multi-tenancy** approach where:
 ```
 
 #### User Model
+
 ```typescript
 {
   id: string
@@ -68,21 +70,23 @@ The platform uses a **school-scoped multi-tenancy** approach where:
 ### Access Control Implementation
 
 #### Middleware
+
 - `src/lib/middleware.ts` - Comprehensive middleware for API routes
 - `middleware.ts` - Next.js route protection middleware
 
 #### Key Functions
+
 ```typescript
 // School scoping for queries
-getSchoolScopedWhere(user, additionalWhere)
+getSchoolScopedWhere(user, additionalWhere);
 
 // Student-specific scoping
-getStudentScopedWhere(user, additionalWhere)
+getStudentScopedWhere(user, additionalWhere);
 
 // Permission checks
-canAccessSchool(user, schoolId)
-canManageStudents(user)
-canCreateExams(user)
+canAccessSchool(user, schoolId);
+canManageStudents(user);
+canCreateExams(user);
 ```
 
 ## API Routes
@@ -90,15 +94,18 @@ canCreateExams(user)
 All API routes are protected with role-based middleware:
 
 ### School Management
+
 - `POST /api/schools/register` - Public school registration
 - `GET /api/schools` - Super admin only
 - `PATCH /api/schools` - Super admin only (approve/reject)
 
 ### Exam Management
+
 - `POST /api/exams` - School admin only (scoped to their school)
 - `GET /api/exams` - School admin only (scoped to their school)
 
 ### Student APIs
+
 - `GET /api/student/exams` - Student only (scoped to their school)
 - `GET /api/student/results` - Student only (their results only)
 
@@ -113,6 +120,7 @@ psql -d your_database < update-schema.sql
 ```
 
 ### Key Changes
+
 - Added `slug` field to schools (unique)
 - Replaced `approved` with `status` enum
 - Renamed `regNo` to `regNumber` in students
@@ -160,6 +168,7 @@ npx prisma migrate dev --name multi-tenant-update
 ## Usage Examples
 
 ### School Registration
+
 ```typescript
 const response = await fetch('/api/schools/register', {
   method: 'POST',
@@ -170,12 +179,13 @@ const response = await fetch('/api/schools/register', {
     phone: '+234-xxx-xxx-xxxx',
     adminName: 'John Doe',
     adminEmail: 'john@brainisland.edu',
-    adminPassword: 'securepassword123'
-  })
-})
+    adminPassword: 'securepassword123',
+  }),
+});
 ```
 
 ### Creating School-Scoped Exam
+
 ```typescript
 // Automatically scoped to admin's school
 const exam = await fetch('/api/exams', {
@@ -185,11 +195,13 @@ const exam = await fetch('/api/exams', {
       title: 'Mathematics Final Exam',
       startTime: '2024-01-15T09:00:00Z',
       endTime: '2024-01-15T11:00:00Z',
-      duration: 120
+      duration: 120,
     },
-    questions: [/* questions array */]
-  })
-})
+    questions: [
+      /* questions array */
+    ],
+  }),
+});
 ```
 
 ## Security Features
@@ -229,12 +241,14 @@ NEXTAUTH_URL="http://localhost:3000"
 ## TypeScript Support
 
 Comprehensive TypeScript types are provided in:
+
 - `src/types/models.ts` - Database models and interfaces
 - `src/types/next-auth.d.ts` - NextAuth session extensions
 
 ## Testing
 
 The implementation includes:
+
 - Type safety throughout
 - Comprehensive error handling
 - Validation at all levels
@@ -261,6 +275,7 @@ The implementation includes:
 ## Support
 
 For questions or issues with the multi-tenant implementation, refer to:
+
 - Database schema: `prisma/schema.prisma`
 - Type definitions: `src/types/models.ts`
 - Middleware: `src/lib/middleware.ts`

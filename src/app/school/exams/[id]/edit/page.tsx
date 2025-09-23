@@ -1,49 +1,55 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
-import { useRouter, useParams } from 'next/navigation'
-import { Button } from '../../../../../components/ui/button'
-import { Input } from '../../../../../components/ui/input'
-import { Label } from '../../../../../components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../../../components/ui/card'
-import { Textarea } from '../../../../../components/ui/textarea'
-import { Switch } from '../../../../../components/ui/switch'
-import { useToast } from '../../../../../hooks/use-toast'
-import { examSchema } from '../../../../../lib/validations'
-import { ArrowLeft, Save, Trash2, Plus, Eye } from 'lucide-react'
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter, useParams } from 'next/navigation';
+import { Button } from '../../../../../components/ui/button';
+import { Input } from '../../../../../components/ui/input';
+import { Label } from '../../../../../components/ui/label';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../../../../../components/ui/card';
+import { Textarea } from '../../../../../components/ui/textarea';
+import { Switch } from '../../../../../components/ui/switch';
+import { useToast } from '../../../../../hooks/use-toast';
+import { examSchema } from '../../../../../lib/validations';
+import { ArrowLeft, Save, Trash2, Plus, Eye } from 'lucide-react';
 
 interface Question {
-  id: string
-  text: string
-  type: 'MCQ' | 'TRUE_FALSE' | 'ESSAY'
-  options?: string[]
-  correctAnswer?: any
-  points: number
+  id: string;
+  text: string;
+  type: 'MCQ' | 'TRUE_FALSE' | 'ESSAY';
+  options?: string[];
+  correctAnswer?: any;
+  points: number;
 }
 
 interface Exam {
-  id: string
-  title: string
-  description?: string
-  startTime: string
-  endTime: string
-  duration: number
-  shuffle: boolean
-  negativeMarking: boolean
-  is_live: boolean
-  questions: Question[]
+  id: string;
+  title: string;
+  description?: string;
+  startTime: string;
+  endTime: string;
+  duration: number;
+  shuffle: boolean;
+  negativeMarking: boolean;
+  is_live: boolean;
+  questions: Question[];
 }
 
 export default function EditExamPage() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
-  const params = useParams()
-  const examId = params.id as string
-  const [loading, setLoading] = useState(false)
-  const [exam, setExam] = useState<Exam | null>(null)
-  const [questions, setQuestions] = useState<Question[]>([])
-  const { toast } = useToast()
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const params = useParams();
+  const examId = params.id as string;
+  const [loading, setLoading] = useState(false);
+  const [exam, setExam] = useState<Exam | null>(null);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const { toast } = useToast();
 
   const [examData, setExamData] = useState({
     title: '',
@@ -54,27 +60,27 @@ export default function EditExamPage() {
     shuffle: false,
     negativeMarking: false,
     is_live: false,
-  })
+  });
 
   useEffect(() => {
-    if (status === 'loading') return
-    
+    if (status === 'loading') return;
+
     if (!session || session.user.role !== 'SCHOOL_ADMIN') {
-      router.push('/auth/signin')
-      return
+      router.push('/auth/signin');
+      return;
     }
 
-    fetchExam()
-  }, [session, status, router, examId])
+    fetchExam();
+  }, [session, status, router, examId]);
 
   const fetchExam = async () => {
     try {
-      const response = await fetch(`/api/exams/${examId}`)
+      const response = await fetch(`/api/exams/${examId}`);
       if (response.ok) {
-        const examData = await response.json()
-        setExam(examData)
-        setQuestions(examData.questions || [])
-        
+        const examData = await response.json();
+        setExam(examData);
+        setQuestions(examData.questions || []);
+
         // Format dates for input fields
         setExamData({
           title: examData.title,
@@ -85,38 +91,40 @@ export default function EditExamPage() {
           shuffle: examData.shuffle,
           negativeMarking: examData.negativeMarking,
           is_live: examData.is_live || false,
-        })
+        });
       } else {
         toast({
           title: 'Error',
           description: 'Failed to fetch exam details',
           variant: 'destructive',
-        })
-        router.push('/school/exams')
+        });
+        router.push('/school/exams');
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'An error occurred while fetching exam',
         variant: 'destructive',
-      })
+      });
     }
-  }
+  };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value, type } = e.target;
     setExamData(prev => ({
       ...prev,
-      [name]: type === 'number' ? parseInt(value) : value
-    }))
-  }
+      [name]: type === 'number' ? parseInt(value) : value,
+    }));
+  };
 
   const handleSwitchChange = (name: string, checked: boolean) => {
     setExamData(prev => ({
       ...prev,
-      [name]: checked
-    }))
-  }
+      [name]: checked,
+    }));
+  };
 
   const addQuestion = () => {
     const newQuestion: Question = {
@@ -125,59 +133,67 @@ export default function EditExamPage() {
       type: 'MCQ',
       options: ['', '', '', ''],
       correctAnswer: '',
-      points: 1
-    }
-    setQuestions([...questions, newQuestion])
-  }
+      points: 1,
+    };
+    setQuestions([...questions, newQuestion]);
+  };
 
   const updateQuestion = (id: string, field: keyof Question, value: any) => {
-    setQuestions(questions.map(q => 
-      q.id === id ? { ...q, [field]: value } : q
-    ))
-  }
+    setQuestions(
+      questions.map(q => (q.id === id ? { ...q, [field]: value } : q))
+    );
+  };
 
   const removeQuestion = (id: string) => {
-    setQuestions(questions.filter(q => q.id !== id))
-  }
+    setQuestions(questions.filter(q => q.id !== id));
+  };
 
   const addOption = (questionId: string) => {
-    setQuestions(questions.map(q => 
-      q.id === questionId 
-        ? { ...q, options: [...(q.options || []), ''] }
-        : q
-    ))
-  }
+    setQuestions(
+      questions.map(q =>
+        q.id === questionId ? { ...q, options: [...(q.options || []), ''] } : q
+      )
+    );
+  };
 
-  const updateOption = (questionId: string, optionIndex: number, value: string) => {
-    setQuestions(questions.map(q => 
-      q.id === questionId 
-        ? { 
-            ...q, 
-            options: q.options?.map((opt, idx) => 
-              idx === optionIndex ? value : opt
-            )
-          }
-        : q
-    ))
-  }
+  const updateOption = (
+    questionId: string,
+    optionIndex: number,
+    value: string
+  ) => {
+    setQuestions(
+      questions.map(q =>
+        q.id === questionId
+          ? {
+              ...q,
+              options: q.options?.map((opt, idx) =>
+                idx === optionIndex ? value : opt
+              ),
+            }
+          : q
+      )
+    );
+  };
 
   const removeOption = (questionId: string, optionIndex: number) => {
-    setQuestions(questions.map(q => 
-      q.id === questionId 
-        ? { 
-            ...q, 
-            options: q.options?.filter((_, idx) => idx !== optionIndex)
-          }
-        : q
-    ))
-  }
+    setQuestions(
+      questions.map(q =>
+        q.id === questionId
+          ? {
+              ...q,
+              options: q.options?.filter((_, idx) => idx !== optionIndex),
+            }
+          : q
+      )
+    );
+  };
 
   const handleSave = async () => {
-    setLoading(true)
+    setLoading(true);
 
     try {
-      const validatedData = examSchema.parse(examData)
-      
+      const validatedData = examSchema.parse(examData);
+
       const response = await fetch(`/api/exams/${examId}`, {
         method: 'PUT',
         headers: {
@@ -185,71 +201,75 @@ export default function EditExamPage() {
         },
         body: JSON.stringify({
           exam: validatedData,
-          questions: questions
+          questions: questions,
         }),
-      })
+      });
 
       if (response.ok) {
         toast({
           title: 'Success',
           description: 'Exam updated successfully!',
-        })
-        router.push('/school/exams')
+        });
+        router.push('/school/exams');
       } else {
-        const error = await response.json()
+        const error = await response.json();
         toast({
           title: 'Error',
           description: error.message || 'Failed to update exam',
           variant: 'destructive',
-        })
+        });
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Please check your input and try again.',
         variant: 'destructive',
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this exam? This action cannot be undone.')) {
-      return
+    if (
+      !confirm(
+        'Are you sure you want to delete this exam? This action cannot be undone.'
+      )
+    ) {
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
 
     try {
       const response = await fetch(`/api/exams/${examId}`, {
         method: 'DELETE',
-      })
+      });
 
       if (response.ok) {
         toast({
           title: 'Success',
           description: 'Exam deleted successfully!',
-        })
-        router.push('/school/exams')
+        });
+        router.push('/school/exams');
       } else {
-        const error = await response.json()
+        const error = await response.json();
         toast({
           title: 'Error',
           description: error.message || 'Failed to delete exam',
           variant: 'destructive',
-        })
+        });
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'An error occurred while deleting exam',
         variant: 'destructive',
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   if (status === 'loading' || !exam) {
     return (
@@ -259,7 +279,7 @@ export default function EditExamPage() {
           <p className="mt-4 text-gray-600">Loading exam details...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -269,8 +289,8 @@ export default function EditExamPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-6">
             <div className="flex items-center">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => router.push('/school/exams')}
                 className="mr-4"
               >
@@ -279,7 +299,9 @@ export default function EditExamPage() {
               </Button>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Edit Exam</h1>
-                <p className="text-gray-600">Modify exam details and questions</p>
+                <p className="text-gray-600">
+                  Modify exam details and questions
+                </p>
               </div>
             </div>
             <div className="flex space-x-2">
@@ -382,7 +404,9 @@ export default function EditExamPage() {
                   <Switch
                     id="shuffle"
                     checked={examData.shuffle}
-                    onCheckedChange={(checked) => handleSwitchChange('shuffle', checked)}
+                    onCheckedChange={checked =>
+                      handleSwitchChange('shuffle', checked)
+                    }
                   />
                   <Label htmlFor="shuffle">Shuffle Questions</Label>
                 </div>
@@ -390,7 +414,9 @@ export default function EditExamPage() {
                   <Switch
                     id="negativeMarking"
                     checked={examData.negativeMarking}
-                    onCheckedChange={(checked) => handleSwitchChange('negativeMarking', checked)}
+                    onCheckedChange={checked =>
+                      handleSwitchChange('negativeMarking', checked)
+                    }
                   />
                   <Label htmlFor="negativeMarking">Negative Marking</Label>
                 </div>
@@ -398,9 +424,14 @@ export default function EditExamPage() {
                   <Switch
                     id="is_live"
                     checked={examData.is_live}
-                    onCheckedChange={(checked) => handleSwitchChange('is_live', checked)}
+                    onCheckedChange={checked =>
+                      handleSwitchChange('is_live', checked)
+                    }
                   />
-                  <Label htmlFor="is_live" className="text-green-600 font-medium">
+                  <Label
+                    htmlFor="is_live"
+                    className="text-green-600 font-medium"
+                  >
                     Make Live (Override Schedule)
                   </Label>
                 </div>
@@ -409,8 +440,8 @@ export default function EditExamPage() {
               {examData.is_live && (
                 <div className="bg-green-50 border border-green-200 rounded-md p-4">
                   <p className="text-green-800 text-sm">
-                    <strong>Live Mode:</strong> Students can take this exam immediately, 
-                    regardless of the scheduled start/end times.
+                    <strong>Live Mode:</strong> Students can take this exam
+                    immediately, regardless of the scheduled start/end times.
                   </p>
                 </div>
               )}
@@ -427,7 +458,11 @@ export default function EditExamPage() {
                     Add and edit questions for your examination
                   </CardDescription>
                 </div>
-                <Button type="button" onClick={addQuestion} className="bg-blue-600 hover:bg-blue-700">
+                <Button
+                  type="button"
+                  onClick={addQuestion}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Add Question
                 </Button>
@@ -436,14 +471,18 @@ export default function EditExamPage() {
             <CardContent className="space-y-6">
               {questions.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
-                  <p>No questions added yet. Click "Add Question" to get started.</p>
+                  <p>
+                    No questions added yet. Click "Add Question" to get started.
+                  </p>
                 </div>
               ) : (
                 questions.map((question, index) => (
                   <Card key={question.id} className="border-2">
                     <CardHeader>
                       <div className="flex items-center justify-between">
-                        <CardTitle className="text-lg">Question {index + 1}</CardTitle>
+                        <CardTitle className="text-lg">
+                          Question {index + 1}
+                        </CardTitle>
                         <Button
                           type="button"
                           variant="destructive"
@@ -459,7 +498,9 @@ export default function EditExamPage() {
                         <Label>Question Text *</Label>
                         <Textarea
                           value={question.text}
-                          onChange={(e) => updateQuestion(question.id, 'text', e.target.value)}
+                          onChange={e =>
+                            updateQuestion(question.id, 'text', e.target.value)
+                          }
                           placeholder="Enter your question here..."
                           rows={3}
                         />
@@ -470,7 +511,13 @@ export default function EditExamPage() {
                           <Label>Question Type *</Label>
                           <select
                             value={question.type}
-                            onChange={(e) => updateQuestion(question.id, 'type', e.target.value)}
+                            onChange={e =>
+                              updateQuestion(
+                                question.id,
+                                'type',
+                                e.target.value
+                              )
+                            }
                             className="w-full p-2 border border-gray-300 rounded-md"
                           >
                             <option value="MCQ">Multiple Choice</option>
@@ -483,7 +530,13 @@ export default function EditExamPage() {
                           <Input
                             type="number"
                             value={question.points}
-                            onChange={(e) => updateQuestion(question.id, 'points', parseFloat(e.target.value))}
+                            onChange={e =>
+                              updateQuestion(
+                                question.id,
+                                'points',
+                                parseFloat(e.target.value)
+                              )
+                            }
                             min="0.5"
                             step="0.5"
                           />
@@ -491,7 +544,8 @@ export default function EditExamPage() {
                       </div>
 
                       {/* Options for MCQ and True/False */}
-                      {(question.type === 'MCQ' || question.type === 'TRUE_FALSE') && (
+                      {(question.type === 'MCQ' ||
+                        question.type === 'TRUE_FALSE') && (
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
                             <Label>Options *</Label>
@@ -506,17 +560,28 @@ export default function EditExamPage() {
                             </Button>
                           </div>
                           {question.options?.map((option, optionIndex) => (
-                            <div key={optionIndex} className="flex items-center space-x-2">
+                            <div
+                              key={optionIndex}
+                              className="flex items-center space-x-2"
+                            >
                               <Input
                                 value={option}
-                                onChange={(e) => updateOption(question.id, optionIndex, e.target.value)}
+                                onChange={e =>
+                                  updateOption(
+                                    question.id,
+                                    optionIndex,
+                                    e.target.value
+                                  )
+                                }
                                 placeholder={`Option ${optionIndex + 1}`}
                               />
                               <Button
                                 type="button"
                                 variant="destructive"
                                 size="sm"
-                                onClick={() => removeOption(question.id, optionIndex)}
+                                onClick={() =>
+                                  removeOption(question.id, optionIndex)
+                                }
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
@@ -531,7 +596,13 @@ export default function EditExamPage() {
                         {question.type === 'MCQ' ? (
                           <select
                             value={question.correctAnswer}
-                            onChange={(e) => updateQuestion(question.id, 'correctAnswer', e.target.value)}
+                            onChange={e =>
+                              updateQuestion(
+                                question.id,
+                                'correctAnswer',
+                                e.target.value
+                              )
+                            }
                             className="w-full p-2 border border-gray-300 rounded-md"
                           >
                             <option value="">Select correct option</option>
@@ -544,7 +615,13 @@ export default function EditExamPage() {
                         ) : question.type === 'TRUE_FALSE' ? (
                           <select
                             value={question.correctAnswer}
-                            onChange={(e) => updateQuestion(question.id, 'correctAnswer', e.target.value)}
+                            onChange={e =>
+                              updateQuestion(
+                                question.id,
+                                'correctAnswer',
+                                e.target.value
+                              )
+                            }
                             className="w-full p-2 border border-gray-300 rounded-md"
                           >
                             <option value="">Select correct answer</option>
@@ -554,7 +631,13 @@ export default function EditExamPage() {
                         ) : (
                           <Textarea
                             value={question.correctAnswer || ''}
-                            onChange={(e) => updateQuestion(question.id, 'correctAnswer', e.target.value)}
+                            onChange={e =>
+                              updateQuestion(
+                                question.id,
+                                'correctAnswer',
+                                e.target.value
+                              )
+                            }
                             placeholder="Expected answer or grading criteria..."
                             rows={3}
                           />
@@ -588,5 +671,5 @@ export default function EditExamPage() {
         </div>
       </main>
     </div>
-  )
+  );
 }

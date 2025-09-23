@@ -1,23 +1,23 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
-import { Button } from '../ui/button'
-import { Badge } from '../ui/badge'
-import { Clock, Play, CheckCircle, Calendar, AlertCircle } from 'lucide-react'
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
+import { Clock, Play, CheckCircle, Calendar, AlertCircle } from 'lucide-react';
 
 interface ExamCardProps {
-  id: string
-  title: string
-  description?: string
-  startTime: string
-  endTime: string
-  duration: number
-  status: 'upcoming' | 'active' | 'completed'
-  isLive?: boolean
-  onStartExam: (examId: string) => void
-  onViewResult?: (examId: string) => void
-  className?: string
+  id: string;
+  title: string;
+  description?: string;
+  startTime: string;
+  endTime: string;
+  duration: number;
+  status: 'upcoming' | 'active' | 'completed';
+  isLive?: boolean;
+  onStartExam: (examId: string) => void;
+  onViewResult?: (examId: string) => void;
+  className?: string;
 }
 
 export function ExamCard({
@@ -31,90 +31,98 @@ export function ExamCard({
   isLive = false,
   onStartExam,
   onViewResult,
-  className
+  className,
 }: ExamCardProps) {
-  const [timeLeft, setTimeLeft] = useState<string>('')
+  const [timeLeft, setTimeLeft] = useState<string>('');
 
   useEffect(() => {
     if (status === 'upcoming') {
       const updateCountdown = () => {
-        const now = new Date()
-        const start = new Date(startTime)
-        const diff = start.getTime() - now.getTime()
+        const now = new Date();
+        const start = new Date(startTime);
+        const diff = start.getTime() - now.getTime();
 
         if (diff > 0) {
-          const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-          const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-          const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+          const hours = Math.floor(
+            (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+          );
+          const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
           if (days > 0) {
-            setTimeLeft(`${days}d ${hours}h ${minutes}m`)
+            setTimeLeft(`${days}d ${hours}h ${minutes}m`);
           } else if (hours > 0) {
-            setTimeLeft(`${hours}h ${minutes}m`)
+            setTimeLeft(`${hours}h ${minutes}m`);
           } else {
-            setTimeLeft(`${minutes}m`)
+            setTimeLeft(`${minutes}m`);
           }
         } else {
-          setTimeLeft('Starting soon...')
+          setTimeLeft('Starting soon...');
         }
-      }
+      };
 
-      updateCountdown()
-      const interval = setInterval(updateCountdown, 60000) // Update every minute
+      updateCountdown();
+      const interval = setInterval(updateCountdown, 60000); // Update every minute
 
-      return () => clearInterval(interval)
+      return () => clearInterval(interval);
     }
-  }, [status, startTime])
+  }, [status, startTime]);
 
   const getStatusBadge = () => {
     switch (status) {
       case 'upcoming':
-        return <Badge variant="secondary" className="bg-blue-50 text-blue-700">Upcoming</Badge>
+        return (
+          <Badge variant="secondary" className="bg-blue-50 text-blue-700">
+            Upcoming
+          </Badge>
+        );
       case 'active':
-        return <Badge className="bg-green-600 text-white">Active</Badge>
+        return <Badge className="bg-green-600 text-white">Active</Badge>;
       case 'completed':
-        return <Badge className="bg-gray-600 text-white">Completed</Badge>
+        return <Badge className="bg-gray-600 text-white">Completed</Badge>;
       default:
-        return <Badge variant="outline">Unknown</Badge>
+        return <Badge variant="outline">Unknown</Badge>;
     }
-  }
+  };
 
   const getActionButton = () => {
     switch (status) {
       case 'active':
         return (
-          <Button 
+          <Button
             onClick={() => onStartExam(id)}
             className="bg-green-600 hover:bg-green-700 text-white"
           >
             <Play className="h-4 w-4 mr-2" />
             Start Exam
           </Button>
-        )
+        );
       case 'upcoming':
         return (
           <Button variant="outline" disabled>
             <Clock className="h-4 w-4 mr-2" />
             Not Available
           </Button>
-        )
+        );
       case 'completed':
         return (
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={() => onViewResult && onViewResult(id)}
           >
             <CheckCircle className="h-4 w-4 mr-2" />
             View Results
           </Button>
-        )
+        );
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   return (
-    <Card className={`transition-all duration-200 hover:shadow-md ${className}`}>
+    <Card
+      className={`transition-all duration-200 hover:shadow-md ${className}`}
+    >
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="flex-1">
@@ -131,9 +139,7 @@ export function ExamCard({
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        {description && (
-          <p className="text-sm text-gray-600">{description}</p>
-        )}
+        {description && <p className="text-sm text-gray-600">{description}</p>}
 
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div className="flex items-center space-x-2">
@@ -162,11 +168,8 @@ export function ExamCard({
           </div>
         )}
 
-        <div className="flex justify-end pt-2">
-          {getActionButton()}
-        </div>
+        <div className="flex justify-end pt-2">{getActionButton()}</div>
       </CardContent>
     </Card>
-  )
+  );
 }
-

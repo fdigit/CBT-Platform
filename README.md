@@ -5,42 +5,49 @@ A comprehensive Computer-Based Testing platform built with Next.js 15, React 19,
 ## 🚀 Features
 
 ### Authentication & Roles
+
 - **Multi-role system**: Super Admin, School Admin, Student
 - **Role-based access control** with NextAuth.js
 - **JWT sessions** for secure authentication
 - **Password hashing** with bcryptjs
 
 ### School Management
+
 - **School registration** with admin approval workflow
 - **Individual school dashboards** with analytics
 - **Student management** with CSV import support
 - **Unique login credentials** for each student
 
 ### Exam Management
+
 - **Multiple question types**: MCQ, True/False, Essay
 - **Bulk question upload** via CSV/Excel templates
 - **Flexible exam settings**: duration, start/end time, shuffle options, negative marking
 - **Real-time exam monitoring**
 
 ### Exam Environment
+
 - **Countdown timer** with auto-submit
 - **Auto-save answers** every 30 seconds
 - **Anti-cheating measures**: fullscreen mode, copy-paste disabled
 - **Question navigation** and review system
 
 ### Grading & Results
+
 - **Auto-grading** for objective questions
 - **Manual grading** for essay questions
 - **Export results** to PDF/Excel formats
 - **Performance analytics** and reporting
 
 ### Payments
+
 - **Subscription model** (monthly/yearly for schools)
 - **Pay-per-exam** option
 - **Paystack integration** for Nigerian payments
 - **Payment verification** and tracking
 
 ### Analytics & Reports
+
 - **Student performance tracking**
 - **School-level dashboards** with charts (Recharts)
 - **Real-time statistics** and insights
@@ -49,11 +56,13 @@ A comprehensive Computer-Based Testing platform built with Next.js 15, React 19,
 ## 🛠 Tech Stack
 
 ### Core Framework & Runtime
+
 - **Next.js 15** (App Router)
 - **React 19**
 - **TypeScript 5**
 
 ### Styling & UI
+
 - **Tailwind CSS 3**
 - **@tailwindcss/typography**
 - **Lucide React** (icons)
@@ -61,18 +70,22 @@ A comprehensive Computer-Based Testing platform built with Next.js 15, React 19,
 - **Radix UI** (components)
 
 ### Database & ORM
+
 - **PostgreSQL 16** (via Supabase or Neon)
 - **Prisma 6** (ORM)
 
 ### Caching & Real-Time
+
 - **Upstash Redis** for exam sessions
 - **Optional WebSockets** (Pusher/Socket.IO)
 
 ### State Management
+
 - **@tanstack/react-query 5**
 - **Zustand** (optional for local UI state)
 
 ### Authentication & Security
+
 - **NextAuth.js 4**
 - **bcryptjs** (password hashing)
 - **jsonwebtoken**
@@ -80,26 +93,32 @@ A comprehensive Computer-Based Testing platform built with Next.js 15, React 19,
 - **Helmet.js** (security headers)
 
 ### Exam & Content Management
+
 - **Tiptap** (rich text editor)
 - **DOMPurify** (XSS protection)
 
 ### File & Media Handling
+
 - **Cloudinary** (image storage)
 - **Sharp** (image processing)
 
 ### Email & Notifications
+
 - **Resend** (transactional emails)
 - **react-hot-toast** (UI notifications)
 
 ### Payments
+
 - **Paystack** (primary payment processor)
 - **Stripe** (optional for future expansion)
 
 ### Analytics & Charts
+
 - **Recharts** (dashboards)
 - **PostHog or Plausible** (usage analytics)
 
 ### Utilities
+
 - **date-fns** (date manipulation)
 - **uuid** (unique identifiers)
 - **clsx** (conditional classes)
@@ -107,11 +126,13 @@ A comprehensive Computer-Based Testing platform built with Next.js 15, React 19,
 - **dotenv** (environment variables)
 
 ### Development Tools
+
 - **ESLint** (linting)
 - **Prettier** (code formatting)
 - **Jest + React Testing Library** (testing)
 
 ### Hosting
+
 - **Vercel** (frontend + API routes)
 - **Supabase/Neon** (database)
 - **Upstash** (Redis)
@@ -120,6 +141,7 @@ A comprehensive Computer-Based Testing platform built with Next.js 15, React 19,
 ## 📋 Prerequisites
 
 Before you begin, ensure you have the following installed:
+
 - **Node.js** (v18 or higher)
 - **npm** or **yarn**
 - **PostgreSQL** database
@@ -211,14 +233,17 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 After running the seed script, you can use these test credentials:
 
 ### Super Admin
+
 - **Email**: `admin@cbtplatform.com`
 - **Password**: `admin123`
 
 ### School Admin
+
 - **Email**: `admin@school.com`
 - **Password**: `admin123`
 
 ### Student
+
 - **Email**: `john.doe@student.com`
 - **Password**: `student123`
 

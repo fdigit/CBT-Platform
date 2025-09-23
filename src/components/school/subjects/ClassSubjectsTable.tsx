@@ -1,10 +1,10 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Button } from '../../ui/button'
-import { Card } from '../../ui/card'
-import { Input } from '../../ui/input'
-import { Badge } from '../../ui/badge'
+import { useState } from 'react';
+import { Button } from '../../ui/button';
+import { Card } from '../../ui/card';
+import { Input } from '../../ui/input';
+import { Badge } from '../../ui/badge';
 import {
   Table,
   TableBody,
@@ -12,116 +12,133 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../../ui/table'
+} from '../../ui/table';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '../../ui/dropdown-menu'
-import { Search, MoreHorizontal, Trash2, School } from 'lucide-react'
-import { useToast } from '../../../hooks/use-toast'
+} from '../../ui/dropdown-menu';
+import { Search, MoreHorizontal, Trash2, School } from 'lucide-react';
+import { useToast } from '../../../hooks/use-toast';
 
 interface ClassSubjectAssignment {
-  id: string
+  id: string;
   class: {
-    id: string
-    name: string
-    section?: string
-    academicYear: string
-  }
+    id: string;
+    name: string;
+    section?: string;
+    academicYear: string;
+  };
   teacher: {
-    id: string
-    name: string
-    email: string
-    employeeId: string
-  }
+    id: string;
+    name: string;
+    email: string;
+    employeeId: string;
+  };
   subject: {
-    id: string
-    name: string
-    code?: string
-  }
-  createdAt: string
+    id: string;
+    name: string;
+    code?: string;
+  };
+  createdAt: string;
 }
 
 interface ClassSubjectsTableProps {
-  assignments: ClassSubjectAssignment[]
-  loading: boolean
-  onRefresh: () => void
+  assignments: ClassSubjectAssignment[];
+  loading: boolean;
+  onRefresh: () => void;
 }
 
 export function ClassSubjectsTable({
   assignments,
   loading,
-  onRefresh
+  onRefresh,
 }: ClassSubjectsTableProps) {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [removingId, setRemovingId] = useState<string | null>(null)
-  const { toast } = useToast()
+  const [searchTerm, setSearchTerm] = useState('');
+  const [removingId, setRemovingId] = useState<string | null>(null);
+  const { toast } = useToast();
 
-  const filteredAssignments = assignments.filter(assignment =>
-    assignment.class.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    assignment.class.section?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    assignment.teacher.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    assignment.subject.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    assignment.subject.code?.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredAssignments = assignments.filter(
+    assignment =>
+      assignment.class.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      assignment.class.section
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      assignment.teacher.name
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      assignment.subject.name
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      assignment.subject.code?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleRemoveAssignment = async (assignment: ClassSubjectAssignment) => {
-    const className = `${assignment.class.name}${assignment.class.section ? ` ${assignment.class.section}` : ''}`
-    if (!confirm(`Remove ${assignment.teacher.name} from teaching ${assignment.subject.name} in ${className}?`)) {
-      return
+    const className = `${assignment.class.name}${assignment.class.section ? ` ${assignment.class.section}` : ''}`;
+    if (
+      !confirm(
+        `Remove ${assignment.teacher.name} from teaching ${assignment.subject.name} in ${className}?`
+      )
+    ) {
+      return;
     }
 
-    setRemovingId(assignment.id)
+    setRemovingId(assignment.id);
 
     try {
       const response = await fetch('/api/school/subjects/assign-classes', {
         method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           classId: assignment.class.id,
           teacherId: assignment.teacher.id,
-          subjectId: assignment.subject.id
-        })
-      })
+          subjectId: assignment.subject.id,
+        }),
+      });
 
       if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.message || 'Failed to remove assignment')
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to remove assignment');
       }
 
       toast({
         title: 'Success',
-        description: 'Class assignment removed successfully'
-      })
+        description: 'Class assignment removed successfully',
+      });
 
-      onRefresh()
+      onRefresh();
     } catch (error) {
       toast({
         title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to remove assignment',
-        variant: 'destructive'
-      })
+        description:
+          error instanceof Error
+            ? error.message
+            : 'Failed to remove assignment',
+        variant: 'destructive',
+      });
     } finally {
-      setRemovingId(null)
+      setRemovingId(null);
     }
-  }
+  };
 
   // Group assignments by class
-  const groupedAssignments = filteredAssignments.reduce((acc, assignment) => {
-    const classKey = `${assignment.class.id}-${assignment.class.name}-${assignment.class.section || ''}`
-    if (!acc[classKey]) {
-      acc[classKey] = {
-        class: assignment.class,
-        assignments: []
+  const groupedAssignments = filteredAssignments.reduce(
+    (acc, assignment) => {
+      const classKey = `${assignment.class.id}-${assignment.class.name}-${assignment.class.section || ''}`;
+      if (!acc[classKey]) {
+        acc[classKey] = {
+          class: assignment.class,
+          assignments: [],
+        };
       }
-    }
-    acc[classKey].assignments.push(assignment)
-    return acc
-  }, {} as Record<string, { class: any; assignments: ClassSubjectAssignment[] }>)
+      acc[classKey].assignments.push(assignment);
+      return acc;
+    },
+    {} as Record<string, { class: any; assignments: ClassSubjectAssignment[] }>
+  );
 
   if (loading) {
     return (
@@ -130,7 +147,7 @@ export function ClassSubjectsTable({
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
         </div>
       </Card>
-    )
+    );
   }
 
   return (
@@ -143,7 +160,8 @@ export function ClassSubjectsTable({
               Class ↔ Teacher ↔ Subject Assignments
             </h2>
             <p className="text-gray-600 text-sm mt-1">
-              {assignments.length} assignment{assignments.length !== 1 ? 's' : ''} total
+              {assignments.length} assignment
+              {assignments.length !== 1 ? 's' : ''} total
             </p>
           </div>
 
@@ -152,7 +170,7 @@ export function ClassSubjectsTable({
             <Input
               placeholder="Search assignments..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               className="pl-10"
             />
           </div>
@@ -163,7 +181,9 @@ export function ClassSubjectsTable({
         <div className="text-center py-8">
           <School className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <p className="text-gray-500 mb-2">
-            {searchTerm ? 'No assignments found matching your search' : 'No class assignments yet'}
+            {searchTerm
+              ? 'No assignments found matching your search'
+              : 'No class assignments yet'}
           </p>
           {!searchTerm && (
             <p className="text-gray-400 text-sm">
@@ -173,99 +193,115 @@ export function ClassSubjectsTable({
         </div>
       ) : (
         <div className="space-y-6">
-          {Object.values(groupedAssignments).map(({ class: classItem, assignments: classAssignments }) => (
-            <div key={`${classItem.id}-${classItem.section}`} className="border rounded-lg p-4">
-              <div className="mb-4">
-                <div className="flex items-center gap-3">
-                  <h3 className="font-semibold text-gray-900">
-                    {classItem.name}
-                    {classItem.section && ` - Section ${classItem.section}`}
-                  </h3>
-                  <Badge variant="outline" className="text-xs">
-                    {classItem.academicYear}
-                  </Badge>
-                  <Badge variant="secondary" className="text-xs">
-                    {classAssignments.length} assignment{classAssignments.length !== 1 ? 's' : ''}
-                  </Badge>
+          {Object.values(groupedAssignments).map(
+            ({ class: classItem, assignments: classAssignments }) => (
+              <div
+                key={`${classItem.id}-${classItem.section}`}
+                className="border rounded-lg p-4"
+              >
+                <div className="mb-4">
+                  <div className="flex items-center gap-3">
+                    <h3 className="font-semibold text-gray-900">
+                      {classItem.name}
+                      {classItem.section && ` - Section ${classItem.section}`}
+                    </h3>
+                    <Badge variant="outline" className="text-xs">
+                      {classItem.academicYear}
+                    </Badge>
+                    <Badge variant="secondary" className="text-xs">
+                      {classAssignments.length} assignment
+                      {classAssignments.length !== 1 ? 's' : ''}
+                    </Badge>
+                  </div>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Teacher</TableHead>
+                        <TableHead>Subject</TableHead>
+                        <TableHead>Subject Code</TableHead>
+                        <TableHead>Employee ID</TableHead>
+                        <TableHead>Assigned Date</TableHead>
+                        <TableHead className="w-[50px]">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {classAssignments.map(assignment => (
+                        <TableRow key={assignment.id}>
+                          <TableCell>
+                            <div>
+                              <p className="font-medium text-gray-900">
+                                {assignment.teacher.name}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                {assignment.teacher.email}
+                              </p>
+                            </div>
+                          </TableCell>
+                          <TableCell className="font-medium">
+                            {assignment.subject.name}
+                          </TableCell>
+                          <TableCell>
+                            {assignment.subject.code ? (
+                              <Badge
+                                variant="outline"
+                                className="font-mono text-xs"
+                              >
+                                {assignment.subject.code}
+                              </Badge>
+                            ) : (
+                              <span className="text-gray-400">-</span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              variant="outline"
+                              className="font-mono text-xs"
+                            >
+                              {assignment.teacher.employeeId}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-gray-600">
+                            {new Date(
+                              assignment.createdAt
+                            ).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  disabled={removingId === assignment.id}
+                                >
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    handleRemoveAssignment(assignment)
+                                  }
+                                  className="text-red-600 focus:text-red-600"
+                                >
+                                  <Trash2 className="h-4 w-4 mr-2" />
+                                  Remove Assignment
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 </div>
               </div>
-
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Teacher</TableHead>
-                      <TableHead>Subject</TableHead>
-                      <TableHead>Subject Code</TableHead>
-                      <TableHead>Employee ID</TableHead>
-                      <TableHead>Assigned Date</TableHead>
-                      <TableHead className="w-[50px]">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {classAssignments.map((assignment) => (
-                      <TableRow key={assignment.id}>
-                        <TableCell>
-                          <div>
-                            <p className="font-medium text-gray-900">
-                              {assignment.teacher.name}
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              {assignment.teacher.email}
-                            </p>
-                          </div>
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          {assignment.subject.name}
-                        </TableCell>
-                        <TableCell>
-                          {assignment.subject.code ? (
-                            <Badge variant="outline" className="font-mono text-xs">
-                              {assignment.subject.code}
-                            </Badge>
-                          ) : (
-                            <span className="text-gray-400">-</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="font-mono text-xs">
-                            {assignment.teacher.employeeId}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-gray-600">
-                          {new Date(assignment.createdAt).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button 
-                                variant="ghost" 
-                                size="sm"
-                                disabled={removingId === assignment.id}
-                              >
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem
-                                onClick={() => handleRemoveAssignment(assignment)}
-                                className="text-red-600 focus:text-red-600"
-                              >
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                Remove Assignment
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </div>
-          ))}
+            )
+          )}
         </div>
       )}
     </Card>
-  )
+  );
 }

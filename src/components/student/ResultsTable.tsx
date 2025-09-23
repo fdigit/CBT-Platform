@@ -1,8 +1,8 @@
-'use client'
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
-import { Button } from '../ui/button'
-import { Badge } from '../ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
 import {
   Table,
   TableBody,
@@ -10,29 +10,29 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../ui/table'
-import { Download, Eye, TrendingUp, TrendingDown } from 'lucide-react'
+} from '../ui/table';
+import { Download, Eye, TrendingUp, TrendingDown } from 'lucide-react';
 
 interface Result {
-  id: string
-  examTitle: string
-  subject: string
-  score: number
-  totalPoints: number
-  percentage: number
-  grade: string
-  date: string
-  duration: number
-  status: 'passed' | 'failed'
+  id: string;
+  examTitle: string;
+  subject: string;
+  score: number;
+  totalPoints: number;
+  percentage: number;
+  grade: string;
+  date: string;
+  duration: number;
+  status: 'passed' | 'failed';
 }
 
 interface ResultsTableProps {
-  results: Result[]
-  showActions?: boolean
-  limit?: number
-  className?: string
-  onViewDetails?: (resultId: string) => void
-  onDownloadPDF?: (resultId: string) => void
+  results: Result[];
+  showActions?: boolean;
+  limit?: number;
+  className?: string;
+  onViewDetails?: (resultId: string) => void;
+  onDownloadPDF?: (resultId: string) => void;
 }
 
 export function ResultsTable({
@@ -41,27 +41,35 @@ export function ResultsTable({
   limit,
   className,
   onViewDetails,
-  onDownloadPDF
+  onDownloadPDF,
 }: ResultsTableProps) {
-  const displayResults = limit ? results.slice(0, limit) : results
+  const displayResults = limit ? results.slice(0, limit) : results;
 
   const getGradeBadge = (grade: string, status: 'passed' | 'failed') => {
-    const baseClasses = "font-medium"
-    
+    const baseClasses = 'font-medium';
+
     if (status === 'passed') {
-      return <Badge className={`bg-green-100 text-green-800 ${baseClasses}`}>{grade}</Badge>
+      return (
+        <Badge className={`bg-green-100 text-green-800 ${baseClasses}`}>
+          {grade}
+        </Badge>
+      );
     } else {
-      return <Badge className={`bg-red-100 text-red-800 ${baseClasses}`}>{grade}</Badge>
+      return (
+        <Badge className={`bg-red-100 text-red-800 ${baseClasses}`}>
+          {grade}
+        </Badge>
+      );
     }
-  }
+  };
 
   const getPerformanceIcon = (percentage: number) => {
     if (percentage >= 70) {
-      return <TrendingUp className="h-4 w-4 text-green-600" />
+      return <TrendingUp className="h-4 w-4 text-green-600" />;
     } else {
-      return <TrendingDown className="h-4 w-4 text-red-600" />
+      return <TrendingDown className="h-4 w-4 text-red-600" />;
     }
-  }
+  };
 
   if (displayResults.length === 0) {
     return (
@@ -75,7 +83,7 @@ export function ResultsTable({
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -93,11 +101,13 @@ export function ResultsTable({
               <TableHead>Percentage</TableHead>
               <TableHead>Grade</TableHead>
               <TableHead>Date</TableHead>
-              {showActions && <TableHead className="text-right">Actions</TableHead>}
+              {showActions && (
+                <TableHead className="text-right">Actions</TableHead>
+              )}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {displayResults.map((result) => (
+            {displayResults.map(result => (
               <TableRow key={result.id} className="hover:bg-gray-50">
                 <TableCell className="font-medium">
                   <div className="flex items-center space-x-2">
@@ -113,9 +123,13 @@ export function ResultsTable({
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center space-x-2">
-                    <span className={`font-semibold ${
-                      result.percentage >= 70 ? 'text-green-600' : 'text-red-600'
-                    }`}>
+                    <span
+                      className={`font-semibold ${
+                        result.percentage >= 70
+                          ? 'text-green-600'
+                          : 'text-red-600'
+                      }`}
+                    >
                       {result.percentage}%
                     </span>
                   </div>
@@ -132,14 +146,18 @@ export function ResultsTable({
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => onViewDetails && onViewDetails(result.id)}
+                        onClick={() =>
+                          onViewDetails && onViewDetails(result.id)
+                        }
                       >
                         <Eye className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => onDownloadPDF && onDownloadPDF(result.id)}
+                        onClick={() =>
+                          onDownloadPDF && onDownloadPDF(result.id)
+                        }
                       >
                         <Download className="h-4 w-4" />
                       </Button>
@@ -152,6 +170,5 @@ export function ResultsTable({
         </Table>
       </CardContent>
     </Card>
-  )
+  );
 }
-

@@ -1,114 +1,127 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
-import { useRouter, useParams } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../../components/ui/card'
-import { Button } from '../../../../components/ui/button'
-import { Badge } from '../../../../components/ui/badge'
-import { ArrowLeft, Edit, Users, Clock, Calendar, Settings } from 'lucide-react'
-import { useToast } from '../../../../hooks/use-toast'
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter, useParams } from 'next/navigation';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../../../../components/ui/card';
+import { Button } from '../../../../components/ui/button';
+import { Badge } from '../../../../components/ui/badge';
+import {
+  ArrowLeft,
+  Edit,
+  Users,
+  Clock,
+  Calendar,
+  Settings,
+} from 'lucide-react';
+import { useToast } from '../../../../hooks/use-toast';
 
 interface Question {
-  id: string
-  text: string
-  type: 'MCQ' | 'TRUE_FALSE' | 'ESSAY'
-  options?: string[]
-  correctAnswer?: any
-  points: number
+  id: string;
+  text: string;
+  type: 'MCQ' | 'TRUE_FALSE' | 'ESSAY';
+  options?: string[];
+  correctAnswer?: any;
+  points: number;
 }
 
 interface Exam {
-  id: string
-  title: string
-  description?: string
-  startTime: string
-  endTime: string
-  duration: number
-  shuffle: boolean
-  negativeMarking: boolean
-  createdAt: string
-  questions: Question[]
+  id: string;
+  title: string;
+  description?: string;
+  startTime: string;
+  endTime: string;
+  duration: number;
+  shuffle: boolean;
+  negativeMarking: boolean;
+  createdAt: string;
+  questions: Question[];
   _count: {
-    results: number
-    answers: number
-  }
+    results: number;
+    answers: number;
+  };
 }
 
 export default function ExamViewPage() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
-  const params = useParams()
-  const examId = params.id as string
-  const [exam, setExam] = useState<Exam | null>(null)
-  const [loading, setLoading] = useState(true)
-  const { toast } = useToast()
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const params = useParams();
+  const examId = params.id as string;
+  const [exam, setExam] = useState<Exam | null>(null);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
-    if (status === 'loading') return
-    
+    if (status === 'loading') return;
+
     if (!session || session.user.role !== 'SCHOOL_ADMIN') {
-      router.push('/auth/signin')
-      return
+      router.push('/auth/signin');
+      return;
     }
 
-    fetchExam()
-  }, [session, status, router, examId])
+    fetchExam();
+  }, [session, status, router, examId]);
 
   const fetchExam = async () => {
     try {
-      const response = await fetch(`/api/exams/${examId}`)
+      const response = await fetch(`/api/exams/${examId}`);
       if (response.ok) {
-        const examData = await response.json()
-        setExam(examData)
+        const examData = await response.json();
+        setExam(examData);
       } else {
         toast({
           title: 'Error',
           description: 'Failed to fetch exam details',
           variant: 'destructive',
-        })
-        router.push('/school/exams')
+        });
+        router.push('/school/exams');
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'An error occurred while fetching exam',
         variant: 'destructive',
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const getExamStatus = () => {
-    if (!exam) return 'unknown'
-    const now = new Date()
-    const startTime = new Date(exam.startTime)
-    const endTime = new Date(exam.endTime)
+    if (!exam) return 'unknown';
+    const now = new Date();
+    const startTime = new Date(exam.startTime);
+    const endTime = new Date(exam.endTime);
 
-    if (now < startTime) return 'upcoming'
-    if (now >= startTime && now <= endTime) return 'active'
-    return 'completed'
-  }
+    if (now < startTime) return 'upcoming';
+    if (now >= startTime && now <= endTime) return 'active';
+    return 'completed';
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'live':
-        return <Badge className="bg-red-600 text-white">🔴 LIVE</Badge>
+        return <Badge className="bg-red-600 text-white">🔴 LIVE</Badge>;
       case 'upcoming':
-        return <Badge variant="secondary">Upcoming</Badge>
+        return <Badge variant="secondary">Upcoming</Badge>;
       case 'active':
-        return <Badge className="bg-green-600">Active</Badge>
+        return <Badge className="bg-green-600">Active</Badge>;
       case 'completed':
-        return <Badge>Completed</Badge>
+        return <Badge>Completed</Badge>;
       default:
-        return <Badge variant="outline">Unknown</Badge>
+        return <Badge variant="outline">Unknown</Badge>;
     }
-  }
+  };
 
   const formatDateTime = (dateString: string) => {
-    return new Date(dateString).toLocaleString()
-  }
+    return new Date(dateString).toLocaleString();
+  };
 
   if (status === 'loading' || loading) {
     return (
@@ -118,7 +131,7 @@ export default function ExamViewPage() {
           <p className="mt-4 text-gray-600">Loading exam details...</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (!exam) {
@@ -131,10 +144,10 @@ export default function ExamViewPage() {
           </Button>
         </div>
       </div>
-    )
+    );
   }
 
-  const examStatus = getExamStatus()
+  const examStatus = getExamStatus();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -143,8 +156,8 @@ export default function ExamViewPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-6">
             <div className="flex items-center">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => router.push('/school/exams')}
                 className="mr-4"
               >
@@ -153,7 +166,9 @@ export default function ExamViewPage() {
               </Button>
               <div>
                 <div className="flex items-center space-x-2">
-                  <h1 className="text-2xl font-bold text-gray-900">{exam.title}</h1>
+                  <h1 className="text-2xl font-bold text-gray-900">
+                    {exam.title}
+                  </h1>
                   {getStatusBadge(examStatus)}
                 </div>
                 <p className="text-gray-600">Exam preview and details</p>
@@ -194,28 +209,36 @@ export default function ExamViewPage() {
                     <Calendar className="h-4 w-4 text-gray-500" />
                     <div>
                       <p className="text-sm font-medium">Start Time</p>
-                      <p className="text-sm text-gray-600">{formatDateTime(exam.startTime)}</p>
+                      <p className="text-sm text-gray-600">
+                        {formatDateTime(exam.startTime)}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Calendar className="h-4 w-4 text-gray-500" />
                     <div>
                       <p className="text-sm font-medium">End Time</p>
-                      <p className="text-sm text-gray-600">{formatDateTime(exam.endTime)}</p>
+                      <p className="text-sm text-gray-600">
+                        {formatDateTime(exam.endTime)}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Clock className="h-4 w-4 text-gray-500" />
                     <div>
                       <p className="text-sm font-medium">Duration</p>
-                      <p className="text-sm text-gray-600">{exam.duration} minutes</p>
+                      <p className="text-sm text-gray-600">
+                        {exam.duration} minutes
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Users className="h-4 w-4 text-gray-500" />
                     <div>
                       <p className="text-sm font-medium">Questions</p>
-                      <p className="text-sm text-gray-600">{exam.questions.length} questions</p>
+                      <p className="text-sm text-gray-600">
+                        {exam.questions.length} questions
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -225,8 +248,12 @@ export default function ExamViewPage() {
                   <div>
                     <p className="text-sm font-medium">Settings</p>
                     <div className="flex space-x-2 mt-1">
-                      {exam.shuffle && <Badge variant="outline">Shuffled</Badge>}
-                      {exam.negativeMarking && <Badge variant="outline">Negative Marking</Badge>}
+                      {exam.shuffle && (
+                        <Badge variant="outline">Shuffled</Badge>
+                      )}
+                      {exam.negativeMarking && (
+                        <Badge variant="outline">Negative Marking</Badge>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -248,14 +275,19 @@ export default function ExamViewPage() {
                       <h4 className="font-medium">Question {index + 1}</h4>
                       <div className="flex items-center space-x-2">
                         <Badge variant="outline">{question.type}</Badge>
-                        <Badge variant="secondary">{question.points} point{question.points !== 1 ? 's' : ''}</Badge>
+                        <Badge variant="secondary">
+                          {question.points} point
+                          {question.points !== 1 ? 's' : ''}
+                        </Badge>
                       </div>
                     </div>
                     <p className="text-gray-700 mb-3">{question.text}</p>
-                    
+
                     {question.type === 'MCQ' && question.options && (
                       <div className="space-y-1">
-                        <p className="text-sm font-medium text-gray-600">Options:</p>
+                        <p className="text-sm font-medium text-gray-600">
+                          Options:
+                        </p>
                         <ul className="list-disc list-inside text-sm text-gray-600">
                           {question.options.map((option, optIndex) => (
                             <li key={optIndex}>{option}</li>
@@ -263,10 +295,12 @@ export default function ExamViewPage() {
                         </ul>
                       </div>
                     )}
-                    
+
                     {question.type === 'TRUE_FALSE' && question.options && (
                       <div className="space-y-1">
-                        <p className="text-sm font-medium text-gray-600">Options:</p>
+                        <p className="text-sm font-medium text-gray-600">
+                          Options:
+                        </p>
                         <ul className="list-disc list-inside text-sm text-gray-600">
                           {question.options.map((option, optIndex) => (
                             <li key={optIndex}>{option}</li>
@@ -274,11 +308,15 @@ export default function ExamViewPage() {
                         </ul>
                       </div>
                     )}
-                    
+
                     {question.type === 'ESSAY' && (
                       <div className="space-y-1">
-                        <p className="text-sm font-medium text-gray-600">Essay Question</p>
-                        <p className="text-sm text-gray-600">Students will provide written responses</p>
+                        <p className="text-sm font-medium text-gray-600">
+                          Essay Question
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Students will provide written responses
+                        </p>
                       </div>
                     )}
                   </div>
@@ -299,15 +337,21 @@ export default function ExamViewPage() {
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Total Attempts</span>
-                  <span className="text-sm text-gray-600">{exam._count.answers}</span>
+                  <span className="text-sm text-gray-600">
+                    {exam._count.answers}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Completed</span>
-                  <span className="text-sm text-gray-600">{exam._count.results}</span>
+                  <span className="text-sm text-gray-600">
+                    {exam._count.results}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Created</span>
-                  <span className="text-sm text-gray-600">{formatDateTime(exam.createdAt)}</span>
+                  <span className="text-sm text-gray-600">
+                    {formatDateTime(exam.createdAt)}
+                  </span>
                 </div>
               </CardContent>
             </Card>
@@ -339,5 +383,5 @@ export default function ExamViewPage() {
         </div>
       </main>
     </div>
-  )
+  );
 }

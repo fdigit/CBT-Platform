@@ -1,50 +1,50 @@
 #!/usr/bin/env node
 
-require('dotenv').config({ path: '.env.local' })
-const { PrismaClient } = require('@prisma/client')
-const bcrypt = require('bcryptjs')
+require('dotenv').config({ path: '.env.local' });
+const { PrismaClient } = require('@prisma/client');
+const bcrypt = require('bcryptjs');
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 async function setupDatabase() {
-  console.log('🚀 Setting up CBT Platform database...')
-  
+  console.log('🚀 Setting up CBT Platform database...');
+
   try {
     // Test connection
-    await prisma.$connect()
-    console.log('✅ Connected to Supabase database')
-    
+    await prisma.$connect();
+    console.log('✅ Connected to Supabase database');
+
     // Create enum types
-    console.log('📝 Creating enum types...')
+    console.log('📝 Creating enum types...');
     await prisma.$executeRaw`
       DO $$ BEGIN
         CREATE TYPE "Role" AS ENUM ('SUPER_ADMIN', 'SCHOOL_ADMIN', 'STUDENT');
       EXCEPTION
         WHEN duplicate_object THEN null;
       END $$;
-    `
-    
+    `;
+
     await prisma.$executeRaw`
       DO $$ BEGIN
         CREATE TYPE "QuestionType" AS ENUM ('MCQ', 'TRUE_FALSE', 'ESSAY');
       EXCEPTION
         WHEN duplicate_object THEN null;
       END $$;
-    `
-    
+    `;
+
     await prisma.$executeRaw`
       DO $$ BEGIN
         CREATE TYPE "PaymentStatus" AS ENUM ('PENDING', 'SUCCESS', 'FAILED');
       EXCEPTION
         WHEN duplicate_object THEN null;
       END $$;
-    `
-    
-    console.log('✅ Enum types created')
-    
+    `;
+
+    console.log('✅ Enum types created');
+
     // Create tables
-    console.log('📝 Creating tables...')
-    
+    console.log('📝 Creating tables...');
+
     // Users table
     await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "users" (
@@ -58,8 +58,8 @@ async function setupDatabase() {
         "schoolId" TEXT,
         CONSTRAINT "users_pkey" PRIMARY KEY ("id")
       );
-    `
-    
+    `;
+
     // Schools table
     await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "schools" (
@@ -72,8 +72,8 @@ async function setupDatabase() {
         "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
         CONSTRAINT "schools_pkey" PRIMARY KEY ("id")
       );
-    `
-    
+    `;
+
     // School admins table
     await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "school_admins" (
@@ -82,8 +82,8 @@ async function setupDatabase() {
         "schoolId" TEXT NOT NULL,
         CONSTRAINT "school_admins_pkey" PRIMARY KEY ("id")
       );
-    `
-    
+    `;
+
     // Students table
     await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "students" (
@@ -93,8 +93,8 @@ async function setupDatabase() {
         "regNo" TEXT NOT NULL,
         CONSTRAINT "students_pkey" PRIMARY KEY ("id")
       );
-    `
-    
+    `;
+
     // Exams table
     await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "exams" (
@@ -110,8 +110,8 @@ async function setupDatabase() {
         "schoolId" TEXT NOT NULL,
         CONSTRAINT "exams_pkey" PRIMARY KEY ("id")
       );
-    `
-    
+    `;
+
     // Questions table
     await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "questions" (
@@ -124,8 +124,8 @@ async function setupDatabase() {
         "examId" TEXT NOT NULL,
         CONSTRAINT "questions_pkey" PRIMARY KEY ("id")
       );
-    `
-    
+    `;
+
     // Answers table
     await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "answers" (
@@ -137,8 +137,8 @@ async function setupDatabase() {
         "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
         CONSTRAINT "answers_pkey" PRIMARY KEY ("id")
       );
-    `
-    
+    `;
+
     // Results table
     await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "results" (
@@ -149,8 +149,8 @@ async function setupDatabase() {
         "gradedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
         CONSTRAINT "results_pkey" PRIMARY KEY ("id")
       );
-    `
-    
+    `;
+
     // Payments table
     await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "payments" (
@@ -163,44 +163,44 @@ async function setupDatabase() {
         "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
         CONSTRAINT "payments_pkey" PRIMARY KEY ("id")
       );
-    `
-    
-    console.log('✅ Tables created')
-    
+    `;
+
+    console.log('✅ Tables created');
+
     // Create indexes
-    console.log('📝 Creating indexes...')
-    await prisma.$executeRaw`CREATE UNIQUE INDEX IF NOT EXISTS "users_email_key" ON "users"("email");`
-    await prisma.$executeRaw`CREATE UNIQUE INDEX IF NOT EXISTS "schools_email_key" ON "schools"("email");`
-    await prisma.$executeRaw`CREATE UNIQUE INDEX IF NOT EXISTS "school_admins_userId_key" ON "school_admins"("userId");`
-    await prisma.$executeRaw`CREATE UNIQUE INDEX IF NOT EXISTS "students_userId_key" ON "students"("userId");`
-    await prisma.$executeRaw`CREATE UNIQUE INDEX IF NOT EXISTS "students_regNo_key" ON "students"("regNo");`
-    await prisma.$executeRaw`CREATE UNIQUE INDEX IF NOT EXISTS "payments_reference_key" ON "payments"("reference");`
-    
-    console.log('✅ Indexes created')
-    
+    console.log('📝 Creating indexes...');
+    await prisma.$executeRaw`CREATE UNIQUE INDEX IF NOT EXISTS "users_email_key" ON "users"("email");`;
+    await prisma.$executeRaw`CREATE UNIQUE INDEX IF NOT EXISTS "schools_email_key" ON "schools"("email");`;
+    await prisma.$executeRaw`CREATE UNIQUE INDEX IF NOT EXISTS "school_admins_userId_key" ON "school_admins"("userId");`;
+    await prisma.$executeRaw`CREATE UNIQUE INDEX IF NOT EXISTS "students_userId_key" ON "students"("userId");`;
+    await prisma.$executeRaw`CREATE UNIQUE INDEX IF NOT EXISTS "students_regNo_key" ON "students"("regNo");`;
+    await prisma.$executeRaw`CREATE UNIQUE INDEX IF NOT EXISTS "payments_reference_key" ON "payments"("reference");`;
+
+    console.log('✅ Indexes created');
+
     // Add foreign key constraints
-    console.log('📝 Adding foreign key constraints...')
-    await prisma.$executeRaw`ALTER TABLE "users" ADD CONSTRAINT IF NOT EXISTS "users_schoolId_fkey" FOREIGN KEY ("schoolId") REFERENCES "schools"("id") ON DELETE SET NULL ON UPDATE CASCADE;`
-    await prisma.$executeRaw`ALTER TABLE "school_admins" ADD CONSTRAINT IF NOT EXISTS "school_admins_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;`
-    await prisma.$executeRaw`ALTER TABLE "school_admins" ADD CONSTRAINT IF NOT EXISTS "school_admins_schoolId_fkey" FOREIGN KEY ("schoolId") REFERENCES "schools"("id") ON DELETE RESTRICT ON UPDATE CASCADE;`
-    await prisma.$executeRaw`ALTER TABLE "students" ADD CONSTRAINT IF NOT EXISTS "students_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;`
-    await prisma.$executeRaw`ALTER TABLE "students" ADD CONSTRAINT IF NOT EXISTS "students_schoolId_fkey" FOREIGN KEY ("schoolId") REFERENCES "schools"("id") ON DELETE RESTRICT ON UPDATE CASCADE;`
-    await prisma.$executeRaw`ALTER TABLE "exams" ADD CONSTRAINT IF NOT EXISTS "exams_schoolId_fkey" FOREIGN KEY ("schoolId") REFERENCES "schools"("id") ON DELETE RESTRICT ON UPDATE CASCADE;`
-    await prisma.$executeRaw`ALTER TABLE "questions" ADD CONSTRAINT IF NOT EXISTS "questions_examId_fkey" FOREIGN KEY ("examId") REFERENCES "exams"("id") ON DELETE RESTRICT ON UPDATE CASCADE;`
-    await prisma.$executeRaw`ALTER TABLE "answers" ADD CONSTRAINT IF NOT EXISTS "answers_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE RESTRICT ON UPDATE CASCADE;`
-    await prisma.$executeRaw`ALTER TABLE "answers" ADD CONSTRAINT IF NOT EXISTS "answers_questionId_fkey" FOREIGN KEY ("questionId") REFERENCES "questions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;`
-    await prisma.$executeRaw`ALTER TABLE "answers" ADD CONSTRAINT IF NOT EXISTS "answers_examId_fkey" FOREIGN KEY ("examId") REFERENCES "exams"("id") ON DELETE RESTRICT ON UPDATE CASCADE;`
-    await prisma.$executeRaw`ALTER TABLE "results" ADD CONSTRAINT IF NOT EXISTS "results_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE RESTRICT ON UPDATE CASCADE;`
-    await prisma.$executeRaw`ALTER TABLE "results" ADD CONSTRAINT IF NOT EXISTS "results_examId_fkey" FOREIGN KEY ("examId") REFERENCES "exams"("id") ON DELETE RESTRICT ON UPDATE CASCADE;`
-    await prisma.$executeRaw`ALTER TABLE "payments" ADD CONSTRAINT IF NOT EXISTS "payments_schoolId_fkey" FOREIGN KEY ("schoolId") REFERENCES "schools"("id") ON DELETE RESTRICT ON UPDATE CASCADE;`
-    
-    console.log('✅ Foreign key constraints added')
-    
+    console.log('📝 Adding foreign key constraints...');
+    await prisma.$executeRaw`ALTER TABLE "users" ADD CONSTRAINT IF NOT EXISTS "users_schoolId_fkey" FOREIGN KEY ("schoolId") REFERENCES "schools"("id") ON DELETE SET NULL ON UPDATE CASCADE;`;
+    await prisma.$executeRaw`ALTER TABLE "school_admins" ADD CONSTRAINT IF NOT EXISTS "school_admins_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;`;
+    await prisma.$executeRaw`ALTER TABLE "school_admins" ADD CONSTRAINT IF NOT EXISTS "school_admins_schoolId_fkey" FOREIGN KEY ("schoolId") REFERENCES "schools"("id") ON DELETE RESTRICT ON UPDATE CASCADE;`;
+    await prisma.$executeRaw`ALTER TABLE "students" ADD CONSTRAINT IF NOT EXISTS "students_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;`;
+    await prisma.$executeRaw`ALTER TABLE "students" ADD CONSTRAINT IF NOT EXISTS "students_schoolId_fkey" FOREIGN KEY ("schoolId") REFERENCES "schools"("id") ON DELETE RESTRICT ON UPDATE CASCADE;`;
+    await prisma.$executeRaw`ALTER TABLE "exams" ADD CONSTRAINT IF NOT EXISTS "exams_schoolId_fkey" FOREIGN KEY ("schoolId") REFERENCES "schools"("id") ON DELETE RESTRICT ON UPDATE CASCADE;`;
+    await prisma.$executeRaw`ALTER TABLE "questions" ADD CONSTRAINT IF NOT EXISTS "questions_examId_fkey" FOREIGN KEY ("examId") REFERENCES "exams"("id") ON DELETE RESTRICT ON UPDATE CASCADE;`;
+    await prisma.$executeRaw`ALTER TABLE "answers" ADD CONSTRAINT IF NOT EXISTS "answers_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE RESTRICT ON UPDATE CASCADE;`;
+    await prisma.$executeRaw`ALTER TABLE "answers" ADD CONSTRAINT IF NOT EXISTS "answers_questionId_fkey" FOREIGN KEY ("questionId") REFERENCES "questions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;`;
+    await prisma.$executeRaw`ALTER TABLE "answers" ADD CONSTRAINT IF NOT EXISTS "answers_examId_fkey" FOREIGN KEY ("examId") REFERENCES "exams"("id") ON DELETE RESTRICT ON UPDATE CASCADE;`;
+    await prisma.$executeRaw`ALTER TABLE "results" ADD CONSTRAINT IF NOT EXISTS "results_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE RESTRICT ON UPDATE CASCADE;`;
+    await prisma.$executeRaw`ALTER TABLE "results" ADD CONSTRAINT IF NOT EXISTS "results_examId_fkey" FOREIGN KEY ("examId") REFERENCES "exams"("id") ON DELETE RESTRICT ON UPDATE CASCADE;`;
+    await prisma.$executeRaw`ALTER TABLE "payments" ADD CONSTRAINT IF NOT EXISTS "payments_schoolId_fkey" FOREIGN KEY ("schoolId") REFERENCES "schools"("id") ON DELETE RESTRICT ON UPDATE CASCADE;`;
+
+    console.log('✅ Foreign key constraints added');
+
     // Insert seed data
-    console.log('🌱 Inserting seed data...')
-    
-    const hashedPassword = await bcrypt.hash('admin123', 12)
-    
+    console.log('🌱 Inserting seed data...');
+
+    const hashedPassword = await bcrypt.hash('admin123', 12);
+
     // Create sample school
     const school = await prisma.school.upsert({
       where: { email: 'admin@techacademy.com' },
@@ -212,8 +212,8 @@ async function setupDatabase() {
         phone: '+234-123-456-7890',
         approved: true,
       },
-    })
-    
+    });
+
     // Create super admin
     const superAdmin = await prisma.user.upsert({
       where: { email: 'admin@cbtplatform.com' },
@@ -225,8 +225,8 @@ async function setupDatabase() {
         name: 'Super Admin',
         role: 'SUPER_ADMIN',
       },
-    })
-    
+    });
+
     // Create school admin
     const schoolAdmin = await prisma.user.upsert({
       where: { email: 'admin@school.com' },
@@ -239,8 +239,8 @@ async function setupDatabase() {
         role: 'SCHOOL_ADMIN',
         schoolId: school.id,
       },
-    })
-    
+    });
+
     // Create school admin profile
     await prisma.schoolAdmin.upsert({
       where: { userId: schoolAdmin.id },
@@ -250,17 +250,42 @@ async function setupDatabase() {
         userId: schoolAdmin.id,
         schoolId: school.id,
       },
-    })
-    
+    });
+
     // Create sample students
     const students = [
-      { id: 'student-001', email: 'john.doe@student.com', name: 'John Doe', regNo: 'STU001' },
-      { id: 'student-002', email: 'jane.smith@student.com', name: 'Jane Smith', regNo: 'STU002' },
-      { id: 'student-003', email: 'mike.johnson@student.com', name: 'Mike Johnson', regNo: 'STU003' },
-      { id: 'student-004', email: 'sarah.wilson@student.com', name: 'Sarah Wilson', regNo: 'STU004' },
-      { id: 'student-005', email: 'david.brown@student.com', name: 'David Brown', regNo: 'STU005' },
-    ]
-    
+      {
+        id: 'student-001',
+        email: 'john.doe@student.com',
+        name: 'John Doe',
+        regNo: 'STU001',
+      },
+      {
+        id: 'student-002',
+        email: 'jane.smith@student.com',
+        name: 'Jane Smith',
+        regNo: 'STU002',
+      },
+      {
+        id: 'student-003',
+        email: 'mike.johnson@student.com',
+        name: 'Mike Johnson',
+        regNo: 'STU003',
+      },
+      {
+        id: 'student-004',
+        email: 'sarah.wilson@student.com',
+        name: 'Sarah Wilson',
+        regNo: 'STU004',
+      },
+      {
+        id: 'student-005',
+        email: 'david.brown@student.com',
+        name: 'David Brown',
+        regNo: 'STU005',
+      },
+    ];
+
     for (const studentData of students) {
       const user = await prisma.user.upsert({
         where: { email: studentData.email },
@@ -273,8 +298,8 @@ async function setupDatabase() {
           role: 'STUDENT',
           schoolId: school.id,
         },
-      })
-      
+      });
+
       await prisma.student.upsert({
         where: { userId: user.id },
         update: {},
@@ -284,9 +309,9 @@ async function setupDatabase() {
           schoolId: school.id,
           regNo: studentData.regNo,
         },
-      })
+      });
     }
-    
+
     // Create sample exam
     const exam = await prisma.exam.upsert({
       where: { id: 'exam-001' },
@@ -302,8 +327,8 @@ async function setupDatabase() {
         negativeMarking: false,
         schoolId: school.id,
       },
-    })
-    
+    });
+
     // Create sample questions
     const questions = [
       {
@@ -335,7 +360,8 @@ async function setupDatabase() {
         text: 'Explain the concept of photosynthesis.',
         type: 'ESSAY',
         options: null,
-        correctAnswer: 'Expected answer: Process by which plants convert sunlight into energy',
+        correctAnswer:
+          'Expected answer: Process by which plants convert sunlight into energy',
         points: 5.0,
       },
       {
@@ -346,8 +372,8 @@ async function setupDatabase() {
         correctAnswer: '50',
         points: 1.0,
       },
-    ]
-    
+    ];
+
     for (const questionData of questions) {
       await prisma.question.upsert({
         where: { id: questionData.id },
@@ -361,25 +387,24 @@ async function setupDatabase() {
           points: questionData.points,
           examId: exam.id,
         },
-      })
+      });
     }
-    
-    console.log('✅ Seed data inserted')
-    console.log('🎉 Database setup completed successfully!')
-    console.log('')
-    console.log('📋 Test Credentials:')
-    console.log('Super Admin: admin@cbtplatform.com / admin123')
-    console.log('School Admin: admin@school.com / admin123')
-    console.log('Student: john.doe@student.com / admin123')
-    console.log('')
-    console.log('🚀 You can now start the application with: npm run dev')
-    
+
+    console.log('✅ Seed data inserted');
+    console.log('🎉 Database setup completed successfully!');
+    console.log('');
+    console.log('📋 Test Credentials:');
+    console.log('Super Admin: admin@cbtplatform.com / admin123');
+    console.log('School Admin: admin@school.com / admin123');
+    console.log('Student: john.doe@student.com / admin123');
+    console.log('');
+    console.log('🚀 You can now start the application with: npm run dev');
   } catch (error) {
-    console.error('❌ Error setting up database:', error)
-    process.exit(1)
+    console.error('❌ Error setting up database:', error);
+    process.exit(1);
   } finally {
-    await prisma.$disconnect()
+    await prisma.$disconnect();
   }
 }
 
-setupDatabase()
+setupDatabase();

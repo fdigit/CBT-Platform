@@ -1,11 +1,21 @@
-import { prisma } from '@/lib/prisma'
+import { prisma } from '@/lib/prisma';
 
 export interface NotificationData {
-  title: string
-  message: string
-  type: 'ASSIGNMENT_CREATED' | 'ASSIGNMENT_SUBMITTED' | 'ASSIGNMENT_GRADED' | 'LESSON_PLAN_SUBMITTED' | 'LESSON_PLAN_APPROVED' | 'LESSON_PLAN_REJECTED' | 'LESSON_PLAN_NEEDS_REVISION' | 'SCHOOL_REGISTRATION' | 'SCHOOL_APPROVED' | 'SCHOOL_REJECTED'
-  userId: string
-  metadata?: any
+  title: string;
+  message: string;
+  type:
+    | 'ASSIGNMENT_CREATED'
+    | 'ASSIGNMENT_SUBMITTED'
+    | 'ASSIGNMENT_GRADED'
+    | 'LESSON_PLAN_SUBMITTED'
+    | 'LESSON_PLAN_APPROVED'
+    | 'LESSON_PLAN_REJECTED'
+    | 'LESSON_PLAN_NEEDS_REVISION'
+    | 'SCHOOL_REGISTRATION'
+    | 'SCHOOL_APPROVED'
+    | 'SCHOOL_REJECTED';
+  userId: string;
+  metadata?: any;
 }
 
 export async function createNotification(data: NotificationData) {
@@ -17,18 +27,20 @@ export async function createNotification(data: NotificationData) {
         type: data.type,
         userId: data.userId,
         metadata: data.metadata || {},
-        isRead: false
-      }
-    })
-    
-    return notification
+        isRead: false,
+      },
+    });
+
+    return notification;
   } catch (error) {
-    console.error('Error creating notification:', error)
-    throw error
+    console.error('Error creating notification:', error);
+    throw error;
   }
 }
 
-export async function createBulkNotifications(notifications: NotificationData[]) {
+export async function createBulkNotifications(
+  notifications: NotificationData[]
+) {
   try {
     const createdNotifications = await prisma.notification.createMany({
       data: notifications.map(notification => ({
@@ -37,14 +49,14 @@ export async function createBulkNotifications(notifications: NotificationData[])
         type: notification.type,
         userId: notification.userId,
         metadata: notification.metadata || {},
-        isRead: false
-      }))
-    })
-    
-    return createdNotifications
+        isRead: false,
+      })),
+    });
+
+    return createdNotifications;
   } catch (error) {
-    console.error('Error creating bulk notifications:', error)
-    throw error
+    console.error('Error creating bulk notifications:', error);
+    throw error;
   }
 }
 
@@ -63,11 +75,11 @@ export async function notifyStudentsAboutAssignment(
     metadata: {
       assignmentId,
       teacherName,
-      assignmentTitle
-    }
-  }))
+      assignmentTitle,
+    },
+  }));
 
-  return createBulkNotifications(notifications)
+  return createBulkNotifications(notifications);
 }
 
 export async function notifyTeacherAboutSubmission(
@@ -86,9 +98,9 @@ export async function notifyTeacherAboutSubmission(
       assignmentId,
       submissionId,
       studentName,
-      assignmentTitle
-    }
-  })
+      assignmentTitle,
+    },
+  });
 }
 
 export async function notifyStudentAboutGrade(
@@ -107,9 +119,9 @@ export async function notifyStudentAboutGrade(
       assignmentId,
       assignmentTitle,
       score,
-      maxScore
-    }
-  })
+      maxScore,
+    },
+  });
 }
 
 // Lesson plan-related notification helpers
@@ -127,9 +139,9 @@ export async function notifyAdminAboutLessonPlan(
     metadata: {
       lessonPlanId,
       teacherName,
-      lessonPlanTitle
-    }
-  })
+      lessonPlanTitle,
+    },
+  });
 }
 
 export async function notifyTeacherAboutLessonPlanReview(
@@ -141,16 +153,16 @@ export async function notifyTeacherAboutLessonPlanReview(
   reviewNotes?: string
 ) {
   const statusMessages = {
-    'APPROVED': 'has been approved',
-    'REJECTED': 'has been rejected',
-    'NEEDS_REVISION': 'needs revision'
-  }
+    APPROVED: 'has been approved',
+    REJECTED: 'has been rejected',
+    NEEDS_REVISION: 'needs revision',
+  };
 
   const notificationTypes = {
-    'APPROVED': 'LESSON_PLAN_APPROVED' as const,
-    'REJECTED': 'LESSON_PLAN_REJECTED' as const,
-    'NEEDS_REVISION': 'LESSON_PLAN_NEEDS_REVISION' as const
-  }
+    APPROVED: 'LESSON_PLAN_APPROVED' as const,
+    REJECTED: 'LESSON_PLAN_REJECTED' as const,
+    NEEDS_REVISION: 'LESSON_PLAN_NEEDS_REVISION' as const,
+  };
 
   return createNotification({
     title: 'Lesson Plan Review Update',
@@ -162,9 +174,9 @@ export async function notifyTeacherAboutLessonPlanReview(
       lessonPlanTitle,
       reviewStatus,
       reviewerName,
-      reviewNotes
-    }
-  })
+      reviewNotes,
+    },
+  });
 }
 
 export async function getUserNotifications(userId: string, limit = 20) {
@@ -172,32 +184,35 @@ export async function getUserNotifications(userId: string, limit = 20) {
     const notifications = await prisma.notification.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
-      take: limit
-    })
-    
-    return notifications
+      take: limit,
+    });
+
+    return notifications;
   } catch (error) {
-    console.error('Error fetching user notifications:', error)
-    throw error
+    console.error('Error fetching user notifications:', error);
+    throw error;
   }
 }
 
-export async function markNotificationAsRead(notificationId: string, userId: string) {
+export async function markNotificationAsRead(
+  notificationId: string,
+  userId: string
+) {
   try {
     const notification = await prisma.notification.updateMany({
       where: {
         id: notificationId,
-        userId
+        userId,
       },
       data: {
-        isRead: true
-      }
-    })
-    
-    return notification
+        isRead: true,
+      },
+    });
+
+    return notification;
   } catch (error) {
-    console.error('Error marking notification as read:', error)
-    throw error
+    console.error('Error marking notification as read:', error);
+    throw error;
   }
 }
 
@@ -206,17 +221,17 @@ export async function markAllNotificationsAsRead(userId: string) {
     const notifications = await prisma.notification.updateMany({
       where: {
         userId,
-        isRead: false
+        isRead: false,
       },
       data: {
-        isRead: true
-      }
-    })
-    
-    return notifications
+        isRead: true,
+      },
+    });
+
+    return notifications;
   } catch (error) {
-    console.error('Error marking all notifications as read:', error)
-    throw error
+    console.error('Error marking all notifications as read:', error);
+    throw error;
   }
 }
 
@@ -225,14 +240,14 @@ export async function getUnreadNotificationCount(userId: string) {
     const count = await prisma.notification.count({
       where: {
         userId,
-        isRead: false
-      }
-    })
-    
-    return count
+        isRead: false,
+      },
+    });
+
+    return count;
   } catch (error) {
-    console.error('Error getting unread notification count:', error)
-    throw error
+    console.error('Error getting unread notification count:', error);
+    throw error;
   }
 }
 
@@ -249,9 +264,9 @@ export async function createSchoolRegistrationNotification(
     userId: adminId,
     metadata: {
       schoolId,
-      schoolName
-    }
-  })
+      schoolName,
+    },
+  });
 }
 
 export async function createSchoolApprovalNotification(
@@ -260,10 +275,10 @@ export async function createSchoolApprovalNotification(
   approved: boolean,
   rejectionReason?: string
 ) {
-  const status = approved ? 'approved' : 'rejected'
-  const message = approved 
+  const status = approved ? 'approved' : 'rejected';
+  const message = approved
     ? `Your school "${schoolName}" has been approved and is now active`
-    : `Your school "${schoolName}" registration has been rejected. Reason: ${rejectionReason || 'Not specified'}`
+    : `Your school "${schoolName}" registration has been rejected. Reason: ${rejectionReason || 'Not specified'}`;
 
   return createNotification({
     title: `School Registration ${approved ? 'Approved' : 'Rejected'}`,
@@ -273,7 +288,7 @@ export async function createSchoolApprovalNotification(
     metadata: {
       schoolName,
       approved,
-      rejectionReason
-    }
-  })
+      rejectionReason,
+    },
+  });
 }

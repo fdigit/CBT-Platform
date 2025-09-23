@@ -1,64 +1,67 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '../../../lib/auth'
-import { prisma } from '../../../lib/prisma'
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    
+    const session = await getServerSession(authOptions);
+
     if (!session || session.user.role !== 'TEACHER') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get teacher profile
     const teacher = await prisma.teacher.findUnique({
       where: { userId: session.user.id },
-      include: { school: true }
-    })
+      include: { school: true },
+    });
 
     if (!teacher) {
-      return NextResponse.json({ error: 'Teacher profile not found' }, { status: 404 })
+      return NextResponse.json(
+        { error: 'Teacher profile not found' },
+        { status: 404 }
+      );
     }
 
-    const { searchParams } = new URL(request.url)
-    const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '10')
-    const status = searchParams.get('status')
-    const type = searchParams.get('type')
-    const subject = searchParams.get('subject')
-    const classId = searchParams.get('classId')
-    const search = searchParams.get('search')
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '10');
+    const status = searchParams.get('status');
+    const type = searchParams.get('type');
+    const subject = searchParams.get('subject');
+    const classId = searchParams.get('classId');
+    const search = searchParams.get('search');
 
     // Build where clause
     const where: any = {
       teacherId: teacher.id,
       schoolId: teacher.schoolId,
-    }
+    };
 
     if (status && status !== 'all') {
-      where.status = status
+      where.status = status;
     }
 
     if (type && type !== 'all') {
-      where.type = type
+      where.type = type;
     }
 
     if (subject && subject !== 'all') {
       where.subject = {
-        name: subject
-      }
+        name: subject,
+      };
     }
 
     if (classId && classId !== 'all') {
-      where.classId = classId
+      where.classId = classId;
     }
 
     if (search) {
       where.OR = [
         { title: { contains: search, mode: 'insensitive' } },
         { description: { contains: search, mode: 'insensitive' } },
-      ]
+      ];
     }
 
     // Get assignments with pagination
@@ -67,36 +70,36 @@ export async function GET(request: NextRequest) {
         where,
         include: {
           subject: {
-            select: { name: true, code: true }
+            select: { name: true, code: true },
           },
           class: {
-            select: { name: true, section: true }
+            select: { name: true, section: true },
           },
           attachments: true,
           submissions: {
             include: {
               student: {
-                select: { id: true, user: { select: { name: true } } }
+                select: { id: true, user: { select: { name: true } } },
               },
-              attachments: true
-            }
+              attachments: true,
+            },
           },
           _count: {
-            select: { submissions: true }
-          }
+            select: { submissions: true },
+          },
         },
         orderBy: { createdAt: 'desc' },
         skip: (page - 1) * limit,
         take: limit,
       }),
-      prisma.assignment.count({ where })
-    ])
+      prisma.assignment.count({ where }),
+    ]);
 
     // Calculate submission statistics for each assignment
     const assignmentsWithStats = assignments.map(assignment => {
-      const submissions = assignment.submissions
-      const totalStudents = assignment.class ? 30 : 0 // Mock - get actual count from class enrollment
-      
+      const submissions = assignment.submissions;
+      const totalStudents = assignment.class ? 30 : 0; // Mock - get actual count from class enrollment
+
       return {
         ...assignment,
         submissions: {
@@ -105,9 +108,11 @@ export async function GET(request: NextRequest) {
           graded: submissions.filter(s => s.status === 'GRADED').length,
           pending: submissions.filter(s => s.status === 'SUBMITTED').length,
         },
-        averageScore: submissions.length > 0 
-          ? submissions.reduce((sum, s) => sum + (s.score || 0), 0) / submissions.length 
-          : null,
+        averageScore:
+          submissions.length > 0
+            ? submissions.reduce((sum, s) => sum + (s.score || 0), 0) /
+              submissions.length
+            : null,
         submissionDetails: submissions.map(s => ({
           id: s.id,
           studentId: s.studentId,
@@ -116,51 +121,55 @@ export async function GET(request: NextRequest) {
           submittedAt: s.submittedAt,
           score: s.score,
           feedback: s.feedback,
-          attachments: s.attachments
-        }))
-      }
-    })
+          attachments: s.attachments,
+        })),
+      };
+    });
 
-    console.log(`Found ${assignmentsWithStats.length} assignments for teacher ${teacher.id}`)
-    
+    console.log(
+      `Found ${assignmentsWithStats.length} assignments for teacher ${teacher.id}`
+    );
+
     return NextResponse.json({
       assignments: assignmentsWithStats,
       pagination: {
         page,
         limit,
         total: totalCount,
-        pages: Math.ceil(totalCount / limit)
-      }
-    })
-
+        pages: Math.ceil(totalCount / limit),
+      },
+    });
   } catch (error) {
-    console.error('Error fetching assignments:', error)
+    console.error('Error fetching assignments:', error);
     return NextResponse.json(
       { error: 'Failed to fetch assignments' },
       { status: 500 }
-    )
+    );
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    
+    const session = await getServerSession(authOptions);
+
     if (!session || session.user.role !== 'TEACHER') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get teacher profile
     const teacher = await prisma.teacher.findUnique({
       where: { userId: session.user.id },
-      include: { school: true }
-    })
+      include: { school: true },
+    });
 
     if (!teacher) {
-      return NextResponse.json({ error: 'Teacher profile not found' }, { status: 404 })
+      return NextResponse.json(
+        { error: 'Teacher profile not found' },
+        { status: 404 }
+      );
     }
 
-    const body = await request.json()
+    const body = await request.json();
     const {
       title,
       description,
@@ -171,15 +180,15 @@ export async function POST(request: NextRequest) {
       status,
       classId,
       subjectId,
-      attachments = []
-    } = body
+      attachments = [],
+    } = body;
 
     // Validate required fields
     if (!title || !type) {
       return NextResponse.json(
         { error: 'Title and type are required' },
         { status: 400 }
-      )
+      );
     }
 
     // Create assignment
@@ -194,36 +203,35 @@ export async function POST(request: NextRequest) {
         status: status || 'DRAFT',
         schoolId: teacher.schoolId,
         teacherId: teacher.id,
-        classId: (classId && classId !== 'all') ? classId : null,
-        subjectId: (subjectId && subjectId !== 'general') ? subjectId : null,
+        classId: classId && classId !== 'all' ? classId : null,
+        subjectId: subjectId && subjectId !== 'general' ? subjectId : null,
         attachments: {
           create: attachments.map((attachment: any) => ({
             fileName: attachment.fileName,
             originalName: attachment.originalName,
             filePath: attachment.filePath,
             fileSize: attachment.fileSize,
-            mimeType: attachment.mimeType
-          }))
-        }
+            mimeType: attachment.mimeType,
+          })),
+        },
       },
       include: {
         subject: {
-          select: { name: true, code: true }
+          select: { name: true, code: true },
         },
         class: {
-          select: { name: true, section: true }
+          select: { name: true, section: true },
         },
-        attachments: true
-      }
-    })
+        attachments: true,
+      },
+    });
 
-    return NextResponse.json({ assignment }, { status: 201 })
-
+    return NextResponse.json({ assignment }, { status: 201 });
   } catch (error) {
-    console.error('Error creating assignment:', error)
+    console.error('Error creating assignment:', error);
     return NextResponse.json(
       { error: 'Failed to create assignment' },
       { status: 500 }
-    )
+    );
   }
 }

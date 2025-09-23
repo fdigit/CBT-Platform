@@ -1,17 +1,17 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from '../ui/table'
-import { Button } from '../ui/button'
-import { Badge } from '../ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
+import { useState } from 'react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../ui/table';
+import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,7 +19,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '../ui/dropdown-menu'
+} from '../ui/dropdown-menu';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,139 +29,142 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '../ui/alert-dialog'
-import { 
-  MoreHorizontal, 
-  Eye, 
-  CheckCircle, 
-  XCircle, 
-  Pause, 
-  Play, 
-  Edit, 
+} from '../ui/alert-dialog';
+import {
+  MoreHorizontal,
+  Eye,
+  CheckCircle,
+  XCircle,
+  Pause,
+  Play,
+  Edit,
   Trash2,
   Building,
   Users,
-  GraduationCap
-} from 'lucide-react'
-import { useToast } from '../../hooks/use-toast'
+  GraduationCap,
+} from 'lucide-react';
+import { useToast } from '../../hooks/use-toast';
 
 interface School {
-  id: string
-  name: string
-  email: string
-  phone?: string
-  logoUrl?: string
-  status: 'PENDING' | 'APPROVED' | 'SUSPENDED' | 'REJECTED'
-  createdAt: string
-  updatedAt: string
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  logoUrl?: string;
+  status: 'PENDING' | 'APPROVED' | 'SUSPENDED' | 'REJECTED';
+  createdAt: string;
+  updatedAt: string;
   admins: Array<{
     user: {
-      id: string
-      name: string
-      email: string
-    }
-  }>
+      id: string;
+      name: string;
+      email: string;
+    };
+  }>;
   _count: {
-    students: number
-    exams: number
-    users: number
-  }
+    students: number;
+    exams: number;
+    users: number;
+  };
 }
 
 interface SchoolManagementTableProps {
-  schools: School[]
-  onSchoolUpdate: (schoolId: string, updates: Partial<School>) => void
-  onSchoolDelete: (schoolId: string) => void
+  schools: School[];
+  onSchoolUpdate: (schoolId: string, updates: Partial<School>) => void;
+  onSchoolDelete: (schoolId: string) => void;
 }
 
-export function SchoolManagementTable({ 
-  schools, 
-  onSchoolUpdate, 
-  onSchoolDelete 
+export function SchoolManagementTable({
+  schools,
+  onSchoolUpdate,
+  onSchoolDelete,
 }: SchoolManagementTableProps) {
   const [deleteDialog, setDeleteDialog] = useState<{
-    open: boolean
-    school: School | null
-  }>({ open: false, school: null })
-  const { toast } = useToast()
+    open: boolean;
+    school: School | null;
+  }>({ open: false, school: null });
+  const { toast } = useToast();
 
   const getStatusBadge = (status: School['status']) => {
     const variants = {
       PENDING: { variant: 'secondary' as const, label: 'Pending' },
       APPROVED: { variant: 'default' as const, label: 'Active' },
       SUSPENDED: { variant: 'destructive' as const, label: 'Suspended' },
-      REJECTED: { variant: 'outline' as const, label: 'Rejected' }
-    }
-    
-    const { variant, label } = variants[status]
-    return <Badge variant={variant}>{label}</Badge>
-  }
+      REJECTED: { variant: 'outline' as const, label: 'Rejected' },
+    };
+
+    const { variant, label } = variants[status];
+    return <Badge variant={variant}>{label}</Badge>;
+  };
 
   const handleAction = async (action: string, school: School) => {
     try {
       const response = await fetch('/api/schools', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          schoolId: school.id, 
-          action 
-        })
-      })
+        body: JSON.stringify({
+          schoolId: school.id,
+          action,
+        }),
+      });
 
       if (!response.ok) {
-        throw new Error('Failed to update school')
+        throw new Error('Failed to update school');
       }
 
-      const updatedSchool = await response.json()
-      onSchoolUpdate(school.id, updatedSchool)
+      const updatedSchool = await response.json();
+      onSchoolUpdate(school.id, updatedSchool);
 
       const actionLabels = {
         approve: 'approved',
         reject: 'rejected',
         suspend: 'suspended',
-        reactivate: 'reactivated'
-      }
+        reactivate: 'reactivated',
+      };
 
       toast({
         title: 'Success',
-        description: `School ${actionLabels[action as keyof typeof actionLabels]} successfully`
-      })
+        description: `School ${actionLabels[action as keyof typeof actionLabels]} successfully`,
+      });
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to update school status',
-        variant: 'destructive'
-      })
+        variant: 'destructive',
+      });
     }
-  }
+  };
 
   const handleDelete = async () => {
-    if (!deleteDialog.school) return
+    if (!deleteDialog.school) return;
 
     try {
-      const response = await fetch(`/api/schools?id=${deleteDialog.school.id}`, {
-        method: 'DELETE'
-      })
+      const response = await fetch(
+        `/api/schools?id=${deleteDialog.school.id}`,
+        {
+          method: 'DELETE',
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to delete school')
+        throw new Error('Failed to delete school');
       }
 
-      onSchoolDelete(deleteDialog.school.id)
-      setDeleteDialog({ open: false, school: null })
+      onSchoolDelete(deleteDialog.school.id);
+      setDeleteDialog({ open: false, school: null });
 
       toast({
         title: 'Success',
-        description: 'School deleted successfully'
-      })
+        description: 'School deleted successfully',
+      });
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to delete school',
-        variant: 'destructive'
-      })
+        variant: 'destructive',
+      });
     }
-  }
+  };
 
   const getSchoolInitials = (name: string) => {
     return name
@@ -169,8 +172,8 @@ export function SchoolManagementTable({
       .map(word => word[0])
       .join('')
       .toUpperCase()
-      .slice(0, 2)
-  }
+      .slice(0, 2);
+  };
 
   return (
     <>
@@ -190,7 +193,7 @@ export function SchoolManagementTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {schools.map((school) => (
+            {schools.map(school => (
               <TableRow key={school.id}>
                 <TableCell>
                   <Avatar className="h-10 w-10">
@@ -209,12 +212,12 @@ export function SchoolManagementTable({
                 <TableCell>
                   <div className="text-sm">{school.email}</div>
                   {school.phone && (
-                    <div className="text-sm text-muted-foreground">{school.phone}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {school.phone}
+                    </div>
                   )}
                 </TableCell>
-                <TableCell>
-                  {getStatusBadge(school.status)}
-                </TableCell>
+                <TableCell>{getStatusBadge(school.status)}</TableCell>
                 <TableCell>
                   <div className="text-sm">
                     {new Date(school.createdAt).toLocaleDateString()}
@@ -226,7 +229,9 @@ export function SchoolManagementTable({
                 <TableCell>
                   <div className="flex items-center gap-1">
                     <Users className="h-4 w-4 text-blue-500" />
-                    <span className="font-medium">{school._count.students}</span>
+                    <span className="font-medium">
+                      {school._count.students}
+                    </span>
                   </div>
                 </TableCell>
                 <TableCell>
@@ -256,7 +261,7 @@ export function SchoolManagementTable({
                         View Details
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      
+
                       {school.status === 'PENDING' && (
                         <>
                           <DropdownMenuItem
@@ -275,7 +280,7 @@ export function SchoolManagementTable({
                           </DropdownMenuItem>
                         </>
                       )}
-                      
+
                       {school.status === 'APPROVED' && (
                         <DropdownMenuItem
                           onClick={() => handleAction('suspend', school)}
@@ -285,7 +290,7 @@ export function SchoolManagementTable({
                           Suspend
                         </DropdownMenuItem>
                       )}
-                      
+
                       {school.status === 'SUSPENDED' && (
                         <DropdownMenuItem
                           onClick={() => handleAction('reactivate', school)}
@@ -295,7 +300,7 @@ export function SchoolManagementTable({
                           Reactivate
                         </DropdownMenuItem>
                       )}
-                      
+
                       <DropdownMenuSeparator />
                       <DropdownMenuItem>
                         <Edit className="mr-2 h-4 w-4" />
@@ -317,21 +322,27 @@ export function SchoolManagementTable({
         </Table>
       </div>
 
-      <AlertDialog open={deleteDialog.open} onOpenChange={(open) => 
-        setDeleteDialog({ open, school: deleteDialog.school })
-      }>
+      <AlertDialog
+        open={deleteDialog.open}
+        onOpenChange={open =>
+          setDeleteDialog({ open, school: deleteDialog.school })
+        }
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
               This action cannot be undone. This will permanently delete{' '}
-              <strong>{deleteDialog.school?.name}</strong> and all associated data.
-              {deleteDialog.school && deleteDialog.school._count.students > 0 && (
-                <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded">
-                  <strong>Warning:</strong> This school has {deleteDialog.school._count.students} students.
-                  Deleting it will affect their accounts.
-                </div>
-              )}
+              <strong>{deleteDialog.school?.name}</strong> and all associated
+              data.
+              {deleteDialog.school &&
+                deleteDialog.school._count.students > 0 && (
+                  <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded">
+                    <strong>Warning:</strong> This school has{' '}
+                    {deleteDialog.school._count.students} students. Deleting it
+                    will affect their accounts.
+                  </div>
+                )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -346,6 +357,5 @@ export function SchoolManagementTable({
         </AlertDialogContent>
       </AlertDialog>
     </>
-  )
+  );
 }
-

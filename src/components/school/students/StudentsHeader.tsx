@@ -1,15 +1,14 @@
-'use client'
+'use client';
 
-import { Button } from '../../ui/button'
-import { Input } from '../../ui/input'
-import { Badge } from '../../ui/badge'
+import { Button } from '../../ui/button';
+import { Badge } from '../../ui/badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
-} from '../../ui/dropdown-menu'
+} from '../../ui/dropdown-menu';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,48 +19,46 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '../../ui/alert-dialog'
-import { 
-  UserPlus, 
-  Upload, 
-  Download, 
-  Search, 
+} from '../../ui/alert-dialog';
+import {
+  UserPlus,
+  Upload,
+  Download,
   MoreVertical,
-  Users,
   UserCheck,
   UserX,
   GraduationCap,
-  Trash2
-} from 'lucide-react'
-import { useState } from 'react'
+  Trash2,
+} from 'lucide-react';
+import { useState } from 'react';
 
 interface StudentsHeaderProps {
-  onAddStudent: () => void
-  onBulkUpload: () => void
-  onExport: () => void
-  selectedCount: number
-  onBulkAction: (action: string, studentIds: string[]) => Promise<void>
-  selectedStudents: string[]
+  onAddStudent: () => void;
+  onBulkUpload: () => void;
+  onExport: () => void;
+  selectedCount: number;
+  onBulkAction: (action: string, studentIds: string[]) => Promise<void>;
+  selectedStudents: string[];
 }
 
-export function StudentsHeader({ 
-  onAddStudent, 
-  onBulkUpload, 
-  onExport, 
+export function StudentsHeader({
+  onAddStudent,
+  onBulkUpload,
+  onExport,
   selectedCount,
   onBulkAction,
-  selectedStudents
+  selectedStudents,
 }: StudentsHeaderProps) {
-  const [isPerformingAction, setIsPerformingAction] = useState(false)
+  const [isPerformingAction, setIsPerformingAction] = useState(false);
 
   const handleBulkAction = async (action: string) => {
-    setIsPerformingAction(true)
+    setIsPerformingAction(true);
     try {
-      await onBulkAction(action, selectedStudents)
+      await onBulkAction(action, selectedStudents);
     } finally {
-      setIsPerformingAction(false)
+      setIsPerformingAction(false);
     }
-  }
+  };
 
   return (
     <div className="space-y-4">
@@ -70,34 +67,27 @@ export function StudentsHeader({
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Students</h1>
           <p className="text-sm text-gray-600">
-            Manage your school's student records and information
+            Manage your school&apos;s student records and information
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <Button 
-            onClick={onExport} 
-            variant="outline" 
+          <Button
+            onClick={onExport}
+            variant="outline"
             size="sm"
             className="hidden sm:flex"
           >
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
-          
-          <Button 
-            onClick={onBulkUpload} 
-            variant="outline" 
-            size="sm"
-          >
+
+          <Button onClick={onBulkUpload} variant="outline" size="sm">
             <Upload className="h-4 w-4 mr-2" />
             Bulk Upload
           </Button>
-          
-          <Button 
-            onClick={onAddStudent}
-            size="sm"
-          >
+
+          <Button onClick={onAddStudent} size="sm">
             <UserPlus className="h-4 w-4 mr-2" />
             Add Student
           </Button>
@@ -155,17 +145,17 @@ export function StudentsHeader({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     onClick={() => handleBulkAction('promote')}
                     disabled={isPerformingAction}
                   >
                     <GraduationCap className="h-4 w-4 mr-2" />
                     Promote Class
                   </DropdownMenuItem>
-                  
+
                   <DropdownMenuSeparator />
-                  
-                  <DropdownMenuItem 
+
+                  <DropdownMenuItem
                     onClick={onExport}
                     disabled={isPerformingAction}
                   >
@@ -174,12 +164,12 @@ export function StudentsHeader({
                   </DropdownMenuItem>
 
                   <DropdownMenuSeparator />
-                  
+
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <DropdownMenuItem 
+                      <DropdownMenuItem
                         className="text-red-600 focus:text-red-600"
-                        onSelect={(e) => e.preventDefault()}
+                        onSelect={e => e.preventDefault()}
                       >
                         <Trash2 className="h-4 w-4 mr-2" />
                         Delete Selected
@@ -189,13 +179,14 @@ export function StudentsHeader({
                       <AlertDialogHeader>
                         <AlertDialogTitle>Delete Students</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Are you sure you want to delete {selectedCount} selected students? 
-                          This action cannot be undone and will also delete all their exam records and results.
+                          Are you sure you want to delete {selectedCount}{' '}
+                          selected students? This action cannot be undone and
+                          will also delete all their exam records and results.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction 
+                        <AlertDialogAction
                           onClick={() => handleBulkAction('delete')}
                           className="bg-red-600 hover:bg-red-700"
                           disabled={isPerformingAction}
@@ -214,9 +205,9 @@ export function StudentsHeader({
 
       {/* Mobile Export Button */}
       <div className="sm:hidden">
-        <Button 
-          onClick={onExport} 
-          variant="outline" 
+        <Button
+          onClick={onExport}
+          variant="outline"
           size="sm"
           className="w-full"
         >
@@ -225,5 +216,5 @@ export function StudentsHeader({
         </Button>
       </div>
     </div>
-  )
+  );
 }

@@ -1,8 +1,8 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useSession, signOut } from 'next-auth/react'
-import { Button } from '../ui/button'
+import { useState } from 'react';
+import { useSession, signOut } from 'next-auth/react';
+import { Button } from '../ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,28 +10,22 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '../ui/dropdown-menu'
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
-import { Badge } from '../ui/badge'
-import {
-  Bell,
-  User,
-  Settings,
-  LogOut,
-  GraduationCap,
-} from 'lucide-react'
+} from '../ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { Badge } from '../ui/badge';
+import { Bell, User, Settings, LogOut, GraduationCap } from 'lucide-react';
 
 interface StudentTopNavbarProps {
-  className?: string
+  className?: string;
 }
 
 export function StudentTopNavbar({ className }: StudentTopNavbarProps) {
-  const { data: session } = useSession()
-  const [notificationCount] = useState(3) // Mock notification count
+  const { data: session } = useSession();
+  const [notificationCount] = useState(3); // Mock notification count
 
   const handleSignOut = () => {
-    signOut({ callbackUrl: '/auth/signin' })
-  }
+    signOut({ callbackUrl: '/auth/signin' });
+  };
 
   return (
     <header className={`bg-white border-b border-gray-200 ${className}`}>
@@ -48,8 +42,8 @@ export function StudentTopNavbar({ className }: StudentTopNavbarProps) {
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-5 w-5" />
             {notificationCount > 0 && (
-              <Badge 
-                variant="destructive" 
+              <Badge
+                variant="destructive"
                 className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
               >
                 {notificationCount}
@@ -98,6 +92,5 @@ export function StudentTopNavbar({ className }: StudentTopNavbarProps) {
         </div>
       </div>
     </header>
-  )
+  );
 }
-

@@ -1,21 +1,21 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params
+  const { id } = await params;
   try {
-    const session = await getServerSession(authOptions)
-    
+    const session = await getServerSession(authOptions);
+
     if (!session || session.user.role !== 'SUPER_ADMIN') {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const examId = id
+    const examId = id;
 
     // Check if exam exists
     const exam = await prisma.exam.findUnique({
@@ -24,19 +24,19 @@ export async function DELETE(
         _count: {
           select: {
             results: true,
-            answers: true
-          }
+            answers: true,
+          },
         },
         school: {
           select: {
-            name: true
-          }
-        }
-      }
-    })
+            name: true,
+          },
+        },
+      },
+    });
 
     if (!exam) {
-      return NextResponse.json({ message: 'Exam not found' }, { status: 404 })
+      return NextResponse.json({ message: 'Exam not found' }, { status: 404 });
     }
 
     // Check if exam has results or answers (prevent deletion if students have taken it)
@@ -44,20 +44,20 @@ export async function DELETE(
       return NextResponse.json(
         { message: 'Cannot delete exam with existing student responses' },
         { status: 400 }
-      )
+      );
     }
 
     // Delete exam and related questions in a transaction
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async tx => {
       // Delete questions first (due to foreign key constraint)
       await tx.question.deleteMany({
-        where: { examId: examId }
-      })
+        where: { examId: examId },
+      });
 
       // Delete exam
       await tx.exam.delete({
-        where: { id: examId }
-      })
+        where: { id: examId },
+      });
 
       // Create notification to the school about deletion
       await tx.notification.create({
@@ -69,21 +69,21 @@ export async function DELETE(
           metadata: {
             examId: examId,
             schoolId: exam.schoolId,
-            action: 'DELETED'
-          }
-        }
-      })
-    })
+            action: 'DELETED',
+          },
+        },
+      });
+    });
 
     return NextResponse.json({
       message: 'Exam deleted successfully',
-      examId: examId
-    })
+      examId: examId,
+    });
   } catch (error) {
-    console.error('Error deleting exam:', error)
+    console.error('Error deleting exam:', error);
     return NextResponse.json(
       { message: 'Failed to delete exam' },
       { status: 500 }
-    )
+    );
   }
 }

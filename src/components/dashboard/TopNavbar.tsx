@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useSession, signOut } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { Button } from '../ui/button'
-import { Input } from '../ui/input'
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
+import { useState } from 'react';
+import { useSession, signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,34 +13,36 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '../ui/dropdown-menu'
-import { Badge } from '../ui/badge'
-import { Search, Bell, User, LogOut, Settings } from 'lucide-react'
-import { NotificationDropdown } from './NotificationDropdown'
+} from '../ui/dropdown-menu';
+import { Badge } from '../ui/badge';
+import { Search, Bell, User, LogOut, Settings } from 'lucide-react';
+import { NotificationDropdown } from './NotificationDropdown';
 
 interface TopNavbarProps {
-  className?: string
+  className?: string;
 }
 
 export function TopNavbar({ className }: TopNavbarProps) {
-  const { data: session } = useSession()
-  const router = useRouter()
-  const [searchQuery, setSearchQuery] = useState('')
+  const { data: session } = useSession();
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (searchQuery.trim()) {
       // Implement search functionality
-      console.log('Searching for:', searchQuery)
+      console.log('Searching for:', searchQuery);
     }
-  }
+  };
 
   const handleSignOut = async () => {
-    await signOut({ callbackUrl: '/auth/signin' })
-  }
+    await signOut({ callbackUrl: '/auth/signin' });
+  };
 
   return (
-    <header className={`bg-white border-b border-gray-200 px-4 py-3 ${className}`}>
+    <header
+      className={`bg-white border-b border-gray-200 px-4 py-3 ${className}`}
+    >
       <div className="flex items-center justify-between">
         {/* Search Bar */}
         <div className="flex-1 max-w-md">
@@ -50,7 +52,7 @@ export function TopNavbar({ className }: TopNavbarProps) {
               type="text"
               placeholder="Search schools, exams, users..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               className="pl-10 pr-4 py-2 w-full"
             />
           </form>
@@ -66,7 +68,10 @@ export function TopNavbar({ className }: TopNavbarProps) {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src="/avatars/01.png" alt={session?.user?.name || ''} />
+                  <AvatarImage
+                    src="/avatars/01.png"
+                    alt={session?.user?.name || ''}
+                  />
                   <AvatarFallback>
                     {session?.user?.name?.charAt(0).toUpperCase() || 'SA'}
                   </AvatarFallback>
@@ -103,5 +108,5 @@ export function TopNavbar({ className }: TopNavbarProps) {
         </div>
       </div>
     </header>
-  )
+  );
 }

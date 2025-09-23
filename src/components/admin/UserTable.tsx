@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
+import { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -8,10 +8,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../ui/table'
-import { Badge } from '../ui/badge'
-import { Button } from '../ui/button'
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
+} from '../ui/table';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,8 +19,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '../ui/dropdown-menu'
-import { Checkbox } from '../ui/checkbox'
+} from '../ui/dropdown-menu';
+import { Checkbox } from '../ui/checkbox';
 import {
   MoreHorizontal,
   Eye,
@@ -29,36 +29,36 @@ import {
   UserCheck,
   Key,
   Trash2,
-} from 'lucide-react'
-import { format } from 'date-fns'
+} from 'lucide-react';
+import { format } from 'date-fns';
 
 export interface User {
-  id: string
-  name: string
-  email: string
-  role: 'SUPER_ADMIN' | 'SCHOOL_ADMIN' | 'STUDENT'
+  id: string;
+  name: string;
+  email: string;
+  role: 'SUPER_ADMIN' | 'SCHOOL_ADMIN' | 'STUDENT';
   school?: {
-    id: string
-    name: string
-    status: string
-  } | null
-  regNumber?: string
-  createdAt: string
-  updatedAt: string
-  notificationCount: number
+    id: string;
+    name: string;
+    status: string;
+  } | null;
+  regNumber?: string;
+  createdAt: string;
+  updatedAt: string;
+  notificationCount: number;
 }
 
 interface UserTableProps {
-  users: User[]
-  onEdit: (user: User) => void
-  onView: (user: User) => void
-  onSuspend: (userId: string) => void
-  onReactivate: (userId: string) => void
-  onDelete: (userId: string) => void
-  onResetPassword: (userId: string) => void
-  selectedUsers: string[]
-  onSelectionChange: (selectedUsers: string[]) => void
-  loading?: boolean
+  users: User[];
+  onEdit: (user: User) => void;
+  onView: (user: User) => void;
+  onSuspend: (userId: string) => void;
+  onReactivate: (userId: string) => void;
+  onDelete: (userId: string) => void;
+  onResetPassword: (userId: string) => void;
+  selectedUsers: string[];
+  onSelectionChange: (selectedUsers: string[]) => void;
+  loading?: boolean;
 }
 
 export function UserTable({
@@ -73,77 +73,77 @@ export function UserTable({
   onSelectionChange,
   loading = false,
 }: UserTableProps) {
-  const [hoveredUser, setHoveredUser] = useState<string | null>(null)
+  const [hoveredUser, setHoveredUser] = useState<string | null>(null);
 
   const getRoleBadgeVariant = (role: string) => {
     switch (role) {
       case 'SUPER_ADMIN':
-        return 'destructive'
+        return 'destructive';
       case 'SCHOOL_ADMIN':
-        return 'default'
+        return 'default';
       case 'STUDENT':
-        return 'secondary'
+        return 'secondary';
       default:
-        return 'outline'
+        return 'outline';
     }
-  }
+  };
 
   const getRoleBadgeText = (role: string) => {
     switch (role) {
       case 'SUPER_ADMIN':
-        return 'Super Admin'
+        return 'Super Admin';
       case 'SCHOOL_ADMIN':
-        return 'School Admin'
+        return 'School Admin';
       case 'STUDENT':
-        return 'Student'
+        return 'Student';
       default:
-        return role
+        return role;
     }
-  }
+  };
 
   const getStatusBadgeVariant = (email: string, name: string) => {
     if (email.includes('.suspended.') || name.startsWith('[SUSPENDED]')) {
-      return 'destructive'
+      return 'destructive';
     }
     if (email.includes('.deleted.') || name.startsWith('[DELETED]')) {
-      return 'outline'
+      return 'outline';
     }
-    return 'secondary'
-  }
+    return 'secondary';
+  };
 
   const getStatusBadgeText = (email: string, name: string) => {
     if (email.includes('.suspended.') || name.startsWith('[SUSPENDED]')) {
-      return 'Suspended'
+      return 'Suspended';
     }
     if (email.includes('.deleted.') || name.startsWith('[DELETED]')) {
-      return 'Deleted'
+      return 'Deleted';
     }
-    return 'Active'
-  }
+    return 'Active';
+  };
 
   const isUserSuspended = (email: string, name: string) => {
-    return email.includes('.suspended.') || name.startsWith('[SUSPENDED]')
-  }
+    return email.includes('.suspended.') || name.startsWith('[SUSPENDED]');
+  };
 
   const isUserDeleted = (email: string, name: string) => {
-    return email.includes('.deleted.') || name.startsWith('[DELETED]')
-  }
+    return email.includes('.deleted.') || name.startsWith('[DELETED]');
+  };
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      onSelectionChange(users.map(user => user.id))
+      onSelectionChange(users.map(user => user.id));
     } else {
-      onSelectionChange([])
+      onSelectionChange([]);
     }
-  }
+  };
 
   const handleSelectUser = (userId: string, checked: boolean) => {
     if (checked) {
-      onSelectionChange([...selectedUsers, userId])
+      onSelectionChange([...selectedUsers, userId]);
     } else {
-      onSelectionChange(selectedUsers.filter(id => id !== userId))
+      onSelectionChange(selectedUsers.filter(id => id !== userId));
     }
-  }
+  };
 
   const getInitials = (name: string) => {
     return name
@@ -151,8 +151,8 @@ export function UserTable({
       .map(word => word[0])
       .join('')
       .toUpperCase()
-      .slice(0, 2)
-  }
+      .slice(0, 2);
+  };
 
   if (loading) {
     return (
@@ -164,7 +164,7 @@ export function UserTable({
           ))}
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -174,7 +174,9 @@ export function UserTable({
           <TableRow>
             <TableHead className="w-12">
               <Checkbox
-                checked={selectedUsers.length === users.length && users.length > 0}
+                checked={
+                  selectedUsers.length === users.length && users.length > 0
+                }
                 onCheckedChange={handleSelectAll}
                 aria-label="Select all users"
               />
@@ -196,7 +198,7 @@ export function UserTable({
               </TableCell>
             </TableRow>
           ) : (
-            users.map((user) => (
+            users.map(user => (
               <TableRow
                 key={user.id}
                 className={`transition-colors ${
@@ -208,7 +210,7 @@ export function UserTable({
                 <TableCell>
                   <Checkbox
                     checked={selectedUsers.includes(user.id)}
-                    onCheckedChange={(checked) => 
+                    onCheckedChange={checked =>
                       handleSelectUser(user.id, checked as boolean)
                     }
                     aria-label={`Select ${user.name}`}
@@ -248,8 +250,12 @@ export function UserTable({
                       <p className="text-sm font-medium text-gray-900">
                         {user.school.name}
                       </p>
-                      <Badge 
-                        variant={user.school.status === 'APPROVED' ? 'secondary' : 'outline'}
+                      <Badge
+                        variant={
+                          user.school.status === 'APPROVED'
+                            ? 'secondary'
+                            : 'outline'
+                        }
                         className="text-xs"
                       >
                         {user.school.status}
@@ -299,7 +305,7 @@ export function UserTable({
                           Reactivate User
                         </DropdownMenuItem>
                       ) : !isUserDeleted(user.email, user.name) ? (
-                        <DropdownMenuItem 
+                        <DropdownMenuItem
                           onClick={() => onSuspend(user.id)}
                           className="text-orange-600"
                         >
@@ -307,7 +313,7 @@ export function UserTable({
                           Suspend User
                         </DropdownMenuItem>
                       ) : null}
-                      <DropdownMenuItem 
+                      <DropdownMenuItem
                         onClick={() => onResetPassword(user.id)}
                         className="text-blue-600"
                       >
@@ -315,7 +321,7 @@ export function UserTable({
                         Reset Password
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem 
+                      <DropdownMenuItem
                         onClick={() => onDelete(user.id)}
                         className="text-red-600"
                         disabled={isUserDeleted(user.email, user.name)}
@@ -332,5 +338,5 @@ export function UserTable({
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }

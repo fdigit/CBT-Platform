@@ -1,26 +1,32 @@
-'use client'
+'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
-import { Badge } from '../ui/badge'
-import { 
-  Building, 
-  Clock, 
-  CheckCircle, 
-  Pause, 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../ui/card';
+import { Badge } from '../ui/badge';
+import {
+  Building,
+  Clock,
+  CheckCircle,
+  Pause,
   XCircle,
   TrendingUp,
-  AlertTriangle
-} from 'lucide-react'
+  AlertTriangle,
+} from 'lucide-react';
 
 interface SchoolsSummaryProps {
   summary: {
-    total: number
-    pending: number
-    approved: number
-    suspended: number
-    rejected: number
-  }
-  loading?: boolean
+    total: number;
+    pending: number;
+    approved: number;
+    suspended: number;
+    rejected: number;
+  };
+  loading?: boolean;
 }
 
 export function SchoolsSummary({ summary, loading }: SchoolsSummaryProps) {
@@ -42,7 +48,7 @@ export function SchoolsSummary({ summary, loading }: SchoolsSummaryProps) {
           </Card>
         ))}
       </div>
-    )
+    );
   }
 
   const cards = [
@@ -52,7 +58,7 @@ export function SchoolsSummary({ summary, loading }: SchoolsSummaryProps) {
       description: 'All registered schools',
       icon: Building,
       color: 'text-blue-600',
-      bgColor: 'bg-blue-50'
+      bgColor: 'bg-blue-50',
     },
     {
       title: 'Pending Approval',
@@ -61,7 +67,7 @@ export function SchoolsSummary({ summary, loading }: SchoolsSummaryProps) {
       icon: Clock,
       color: 'text-yellow-600',
       bgColor: 'bg-yellow-50',
-      badge: summary.pending > 0 ? 'Action Required' : undefined
+      badge: summary.pending > 0 ? 'Action Required' : undefined,
     },
     {
       title: 'Active Schools',
@@ -69,7 +75,7 @@ export function SchoolsSummary({ summary, loading }: SchoolsSummaryProps) {
       description: 'Currently operational',
       icon: CheckCircle,
       color: 'text-green-600',
-      bgColor: 'bg-green-50'
+      bgColor: 'bg-green-50',
     },
     {
       title: 'Suspended',
@@ -77,7 +83,7 @@ export function SchoolsSummary({ summary, loading }: SchoolsSummaryProps) {
       description: 'Temporarily disabled',
       icon: Pause,
       color: 'text-orange-600',
-      bgColor: 'bg-orange-50'
+      bgColor: 'bg-orange-50',
     },
     {
       title: 'Rejected',
@@ -85,9 +91,9 @@ export function SchoolsSummary({ summary, loading }: SchoolsSummaryProps) {
       description: 'Application denied',
       icon: XCircle,
       color: 'text-red-600',
-      bgColor: 'bg-red-50'
-    }
-  ]
+      bgColor: 'bg-red-50',
+    },
+  ];
 
   return (
     <div className="space-y-4">
@@ -96,8 +102,9 @@ export function SchoolsSummary({ summary, loading }: SchoolsSummaryProps) {
         <div className="flex items-center gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
           <AlertTriangle className="h-4 w-4 text-yellow-600" />
           <span className="text-sm text-yellow-800">
-            You have <strong>{summary.pending}</strong> school{summary.pending !== 1 ? 's' : ''} 
-            {' '}pending approval that require{summary.pending === 1 ? 's' : ''} your attention.
+            You have <strong>{summary.pending}</strong> school
+            {summary.pending !== 1 ? 's' : ''} pending approval that require
+            {summary.pending === 1 ? 's' : ''} your attention.
           </span>
         </div>
       )}
@@ -116,7 +123,9 @@ export function SchoolsSummary({ summary, loading }: SchoolsSummaryProps) {
             </CardHeader>
             <CardContent>
               <div className="flex items-baseline gap-2">
-                <div className="text-2xl font-bold">{card.value.toLocaleString()}</div>
+                <div className="text-2xl font-bold">
+                  {card.value.toLocaleString()}
+                </div>
                 {card.badge && (
                   <Badge variant="outline" className="text-xs">
                     {card.badge}
@@ -142,9 +151,13 @@ export function SchoolsSummary({ summary, loading }: SchoolsSummaryProps) {
           <CardContent>
             <div className="flex items-center gap-2">
               <div className="text-xl font-bold">
-                {summary.total > 0 
-                  ? Math.round((summary.approved / (summary.total - summary.pending)) * 100) 
-                  : 0}%
+                {summary.total > 0
+                  ? Math.round(
+                      (summary.approved / (summary.total - summary.pending)) *
+                        100
+                    )
+                  : 0}
+                %
               </div>
               <TrendingUp className="h-4 w-4 text-green-500" />
             </div>
@@ -163,9 +176,10 @@ export function SchoolsSummary({ summary, loading }: SchoolsSummaryProps) {
           <CardContent>
             <div className="flex items-center gap-2">
               <div className="text-xl font-bold">
-                {summary.total > 0 
-                  ? Math.round((summary.approved / summary.total) * 100) 
-                  : 0}%
+                {summary.total > 0
+                  ? Math.round((summary.approved / summary.total) * 100)
+                  : 0}
+                %
               </div>
               <CheckCircle className="h-4 w-4 text-blue-500" />
             </div>
@@ -186,7 +200,7 @@ export function SchoolsSummary({ summary, loading }: SchoolsSummaryProps) {
               <div className="text-xl font-bold">
                 {summary.pending + summary.suspended}
               </div>
-              {(summary.pending + summary.suspended) > 0 ? (
+              {summary.pending + summary.suspended > 0 ? (
                 <AlertTriangle className="h-4 w-4 text-yellow-500" />
               ) : (
                 <CheckCircle className="h-4 w-4 text-green-500" />
@@ -199,6 +213,5 @@ export function SchoolsSummary({ summary, loading }: SchoolsSummaryProps) {
         </Card>
       </div>
     </div>
-  )
+  );
 }
-

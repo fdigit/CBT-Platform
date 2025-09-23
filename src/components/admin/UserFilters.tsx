@@ -1,36 +1,36 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Search, Filter, X, Download } from 'lucide-react'
-import { Button } from '../ui/button'
-import { Input } from '../ui/input'
-import { Label } from '../ui/label'
+import { useState } from 'react';
+import { Search, Filter, X, Download } from 'lucide-react';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../ui/select'
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
-import { Badge } from '../ui/badge'
+} from '../ui/select';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Badge } from '../ui/badge';
 
 export interface UserFilters {
-  search: string
-  role: string
-  schoolId: string
-  status: string
-  dateFrom: string
-  dateTo: string
+  search: string;
+  role: string;
+  schoolId: string;
+  status: string;
+  dateFrom: string;
+  dateTo: string;
 }
 
 interface UserFiltersProps {
-  filters: UserFilters
-  onFiltersChange: (filters: UserFilters) => void
-  schools: Array<{ id: string; name: string; status: string }>
-  onExport: (format?: 'csv' | 'json') => void
-  selectedCount: number
-  onBulkAction: (action: string) => void
+  filters: UserFilters;
+  onFiltersChange: (filters: UserFilters) => void;
+  schools: Array<{ id: string; name: string; status: string }>;
+  onExport: (format?: 'csv' | 'json') => void;
+  selectedCount: number;
+  onBulkAction: (action: string) => void;
 }
 
 export function UserFilters({
@@ -41,14 +41,14 @@ export function UserFilters({
   selectedCount,
   onBulkAction,
 }: UserFiltersProps) {
-  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
   const updateFilter = (key: keyof UserFilters, value: string) => {
     onFiltersChange({
       ...filters,
       [key]: value,
-    })
-  }
+    });
+  };
 
   const clearFilters = () => {
     onFiltersChange({
@@ -58,14 +58,14 @@ export function UserFilters({
       status: '',
       dateFrom: '',
       dateTo: '',
-    })
-  }
+    });
+  };
 
-  const hasActiveFilters = Object.values(filters).some(value => value !== '')
+  const hasActiveFilters = Object.values(filters).some(value => value !== '');
 
   const getActiveFilterCount = () => {
-    return Object.values(filters).filter(value => value !== '').length
-  }
+    return Object.values(filters).filter(value => value !== '').length;
+  };
 
   return (
     <Card>
@@ -93,7 +93,7 @@ export function UserFilters({
               <Input
                 placeholder="Search users by name or email..."
                 value={filters.search}
-                onChange={(e) => updateFilter('search', e.target.value)}
+                onChange={e => updateFilter('search', e.target.value)}
                 className="pl-10"
               />
             </div>
@@ -101,7 +101,7 @@ export function UserFilters({
           <div className="flex gap-2">
             <Select
               value={filters.role}
-              onValueChange={(value) => updateFilter('role', value)}
+              onValueChange={value => updateFilter('role', value)}
             >
               <SelectTrigger className="w-[140px]">
                 <SelectValue placeholder="All Roles" />
@@ -116,7 +116,7 @@ export function UserFilters({
 
             <Select
               value={filters.status}
-              onValueChange={(value) => updateFilter('status', value)}
+              onValueChange={value => updateFilter('status', value)}
             >
               <SelectTrigger className="w-[140px]">
                 <SelectValue placeholder="All Status" />
@@ -136,8 +136,8 @@ export function UserFilters({
               <Filter className="mr-2 h-4 w-4" />
               Filters
               {getActiveFilterCount() > 0 && (
-                <Badge 
-                  variant="destructive" 
+                <Badge
+                  variant="destructive"
                   className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
                 >
                   {getActiveFilterCount()}
@@ -155,14 +155,14 @@ export function UserFilters({
                 <Label htmlFor="school">School</Label>
                 <Select
                   value={filters.schoolId}
-                  onValueChange={(value) => updateFilter('schoolId', value)}
+                  onValueChange={value => updateFilter('schoolId', value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="All Schools" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Schools</SelectItem>
-                    {schools.map((school) => (
+                    {schools.map(school => (
                       <SelectItem key={school.id} value={school.id}>
                         {school.name}
                       </SelectItem>
@@ -177,7 +177,7 @@ export function UserFilters({
                   id="dateFrom"
                   type="date"
                   value={filters.dateFrom}
-                  onChange={(e) => updateFilter('dateFrom', e.target.value)}
+                  onChange={e => updateFilter('dateFrom', e.target.value)}
                 />
               </div>
 
@@ -187,7 +187,7 @@ export function UserFilters({
                   id="dateTo"
                   type="date"
                   value={filters.dateTo}
-                  onChange={(e) => updateFilter('dateTo', e.target.value)}
+                  onChange={e => updateFilter('dateTo', e.target.value)}
                 />
               </div>
             </div>
@@ -249,5 +249,5 @@ export function UserFilters({
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

@@ -1,23 +1,29 @@
-'use client'
+'use client';
 
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
-import { DashboardLayout } from '../../../components/dashboard/DashboardLayout'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../components/ui/card'
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { DashboardLayout } from '../../../components/dashboard/DashboardLayout';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../../../components/ui/card';
 
 export default function PaymentsPage() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
   useEffect(() => {
-    if (status === 'loading') return
-    
+    if (status === 'loading') return;
+
     if (!session || session.user.role !== 'SUPER_ADMIN') {
-      router.push('/auth/signin')
-      return
+      router.push('/auth/signin');
+      return;
     }
-  }, [session, status, router])
+  }, [session, status, router]);
 
   if (status === 'loading') {
     return (
@@ -27,19 +33,23 @@ export default function PaymentsPage() {
           <p className="mt-4 text-gray-600">Loading...</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (!session || session.user.role !== 'SUPER_ADMIN') {
-    return null
+    return null;
   }
 
   return (
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Payments Management</h1>
-          <p className="text-gray-600 mt-1">Monitor payments and subscriptions</p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Payments Management
+          </h1>
+          <p className="text-gray-600 mt-1">
+            Monitor payments and subscriptions
+          </p>
         </div>
 
         <Card>
@@ -50,10 +60,12 @@ export default function PaymentsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-500">Payment management features coming soon...</p>
+            <p className="text-gray-500">
+              Payment management features coming soon...
+            </p>
           </CardContent>
         </Card>
       </div>
     </DashboardLayout>
-  )
+  );
 }

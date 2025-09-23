@@ -1,18 +1,24 @@
-'use client'
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
-import { BookOpen, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react'
-import { cn } from '../../lib/utils'
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import {
+  BookOpen,
+  Clock,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+} from 'lucide-react';
+import { cn } from '../../lib/utils';
 
 interface ExamSummaryStatsProps {
   stats: {
-    totalExams: number
-    activeExams: number
-    scheduledExams: number
-    closedExams: number
-    pendingApprovals: number
-  }
-  className?: string
+    totalExams: number;
+    activeExams: number;
+    scheduledExams: number;
+    closedExams: number;
+    pendingApprovals: number;
+  };
+  className?: string;
 }
 
 export function ExamSummaryStats({ stats, className }: ExamSummaryStatsProps) {
@@ -23,7 +29,7 @@ export function ExamSummaryStats({ stats, className }: ExamSummaryStatsProps) {
       icon: BookOpen,
       color: 'text-blue-600',
       bgColor: 'bg-blue-50',
-      description: 'All exams across schools'
+      description: 'All exams across schools',
     },
     {
       title: 'Active Exams',
@@ -31,7 +37,7 @@ export function ExamSummaryStats({ stats, className }: ExamSummaryStatsProps) {
       icon: CheckCircle,
       color: 'text-green-600',
       bgColor: 'bg-green-50',
-      description: 'Currently running'
+      description: 'Currently running',
     },
     {
       title: 'Scheduled Exams',
@@ -39,7 +45,7 @@ export function ExamSummaryStats({ stats, className }: ExamSummaryStatsProps) {
       icon: Clock,
       color: 'text-blue-600',
       bgColor: 'bg-blue-50',
-      description: 'Starting soon'
+      description: 'Starting soon',
     },
     {
       title: 'Closed Exams',
@@ -47,7 +53,7 @@ export function ExamSummaryStats({ stats, className }: ExamSummaryStatsProps) {
       icon: XCircle,
       color: 'text-gray-600',
       bgColor: 'bg-gray-50',
-      description: 'Completed exams'
+      description: 'Completed exams',
     },
     {
       title: 'Pending Approvals',
@@ -55,14 +61,19 @@ export function ExamSummaryStats({ stats, className }: ExamSummaryStatsProps) {
       icon: AlertCircle,
       color: 'text-yellow-600',
       bgColor: 'bg-yellow-50',
-      description: 'Awaiting review'
-    }
-  ]
+      description: 'Awaiting review',
+    },
+  ];
 
   return (
-    <div className={cn('grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6', className)}>
+    <div
+      className={cn(
+        'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6',
+        className
+      )}
+    >
       {summaryCards.map((card, index) => {
-        const Icon = card.icon
+        const Icon = card.icon;
         return (
           <Card key={index} className="hover:shadow-md transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -77,13 +88,11 @@ export function ExamSummaryStats({ stats, className }: ExamSummaryStatsProps) {
               <div className="text-2xl font-bold text-gray-900">
                 {card.value.toLocaleString()}
               </div>
-              <p className="text-xs text-gray-500 mt-1">
-                {card.description}
-              </p>
+              <p className="text-xs text-gray-500 mt-1">{card.description}</p>
             </CardContent>
           </Card>
-        )
+        );
       })}
     </div>
-  )
+  );
 }

@@ -1,13 +1,13 @@
-import { PrismaClient } from '@prisma/client'
-import bcrypt from 'bcryptjs'
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Starting seed...')
+  console.log('🌱 Starting seed...');
 
   // Create Super Admin
-  const superAdminPassword = await bcrypt.hash('admin123', 12)
+  const superAdminPassword = await bcrypt.hash('admin123', 12);
   const superAdmin = await prisma.user.upsert({
     where: { email: 'admin@cbtplatform.com' },
     update: {},
@@ -17,9 +17,9 @@ async function main() {
       name: 'Super Admin',
       role: 'SUPER_ADMIN',
     },
-  })
+  });
 
-  console.log('✅ Super Admin created:', superAdmin.email)
+  console.log('✅ Super Admin created:', superAdmin.email);
 
   // Create Sample School
   const school = await prisma.school.upsert({
@@ -32,12 +32,12 @@ async function main() {
       phone: '+234-123-456-7890',
       status: 'APPROVED',
     },
-  })
+  });
 
-  console.log('✅ School created:', school.name)
+  console.log('✅ School created:', school.name);
 
   // Create School Admin
-  const schoolAdminPassword = await bcrypt.hash('admin123', 12)
+  const schoolAdminPassword = await bcrypt.hash('admin123', 12);
   const schoolAdmin = await prisma.user.upsert({
     where: { email: 'admin@school.com' },
     update: {},
@@ -48,7 +48,7 @@ async function main() {
       role: 'SCHOOL_ADMIN',
       schoolId: school.id,
     },
-  })
+  });
 
   // Create School Admin Profile
   await prisma.schoolAdmin.upsert({
@@ -58,12 +58,12 @@ async function main() {
       userId: schoolAdmin.id,
       schoolId: school.id,
     },
-  })
+  });
 
-  console.log('✅ School Admin created:', schoolAdmin.email)
+  console.log('✅ School Admin created:', schoolAdmin.email);
 
   // Create Sample Students
-  const studentPassword = await bcrypt.hash('student123', 12)
+  const studentPassword = await bcrypt.hash('student123', 12);
   const students = [
     {
       email: 'john.doe@student.com',
@@ -90,7 +90,7 @@ async function main() {
       name: 'David Brown',
       regNo: 'STU005',
     },
-  ]
+  ];
 
   for (const studentData of students) {
     const user = await prisma.user.upsert({
@@ -103,7 +103,7 @@ async function main() {
         role: 'STUDENT',
         schoolId: school.id,
       },
-    })
+    });
 
     await prisma.student.upsert({
       where: { userId: user.id },
@@ -113,9 +113,9 @@ async function main() {
         schoolId: school.id,
         regNumber: studentData.regNo,
       },
-    })
+    });
 
-    console.log('✅ Student created:', studentData.name)
+    console.log('✅ Student created:', studentData.name);
   }
 
   // Create Sample Exam
@@ -130,9 +130,9 @@ async function main() {
       negativeMarking: false,
       schoolId: school.id,
     },
-  })
+  });
 
-  console.log('✅ Exam created:', exam.title)
+  console.log('✅ Exam created:', exam.title);
 
   // Create Sample Questions
   const questions = [
@@ -154,7 +154,10 @@ async function main() {
       text: 'Calculate the area of a circle with radius 7cm. (Use π = 3.14)',
       type: 'ESSAY' as const,
       options: null,
-      correctAnswer: { expectedAnswer: '153.86 cm²', explanation: 'Area = πr² = 3.14 × 7² = 153.86 cm²' },
+      correctAnswer: {
+        expectedAnswer: '153.86 cm²',
+        explanation: 'Area = πr² = 3.14 × 7² = 153.86 cm²',
+      },
       points: 2,
     },
     {
@@ -171,7 +174,7 @@ async function main() {
       correctAnswer: 'True',
       points: 1,
     },
-  ]
+  ];
 
   for (const questionData of questions) {
     await prisma.question.create({
@@ -183,10 +186,10 @@ async function main() {
         points: questionData.points,
         examId: exam.id,
       },
-    })
+    });
   }
 
-  console.log('✅ Questions created:', questions.length)
+  console.log('✅ Questions created:', questions.length);
 
   // Create Sample Payment
   await prisma.payment.create({
@@ -197,22 +200,22 @@ async function main() {
       status: 'SUCCESS',
       reference: 'PAY_' + Date.now(),
     },
-  })
+  });
 
-  console.log('✅ Sample payment created')
+  console.log('✅ Sample payment created');
 
-  console.log('🎉 Seed completed successfully!')
-  console.log('\n📋 Test Credentials:')
-  console.log('Super Admin: admin@cbtplatform.com / admin123')
-  console.log('School Admin: admin@school.com / admin123')
-  console.log('Student: john.doe@student.com / student123')
+  console.log('🎉 Seed completed successfully!');
+  console.log('\n📋 Test Credentials:');
+  console.log('Super Admin: admin@cbtplatform.com / admin123');
+  console.log('School Admin: admin@school.com / admin123');
+  console.log('Student: john.doe@student.com / student123');
 }
 
 main()
-  .catch((e) => {
-    console.error('❌ Seed failed:', e)
-    process.exit(1)
+  .catch(e => {
+    console.error('❌ Seed failed:', e);
+    process.exit(1);
   })
   .finally(async () => {
-    await prisma.$disconnect()
-  })
+    await prisma.$disconnect();
+  });

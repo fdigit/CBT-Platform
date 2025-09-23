@@ -1,7 +1,7 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
+import { useEffect, useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import {
   Table,
   TableBody,
@@ -9,76 +9,76 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../ui/table'
-import { Badge } from '../ui/badge'
-import { Button } from '../ui/button'
-import { School, CreditCard, BookOpen, Eye } from 'lucide-react'
+} from '../ui/table';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import { School, CreditCard, BookOpen, Eye } from 'lucide-react';
 
 interface Activity {
-  id: string
-  type: 'school' | 'payment' | 'exam'
-  title: string
-  description: string
-  timestamp: string
-  status?: 'pending' | 'completed' | 'active'
+  id: string;
+  type: 'school' | 'payment' | 'exam';
+  title: string;
+  description: string;
+  timestamp: string;
+  status?: 'pending' | 'completed' | 'active';
 }
 
 const getActivityIcon = (type: Activity['type']) => {
   switch (type) {
     case 'school':
-      return <School className="h-4 w-4" />
+      return <School className="h-4 w-4" />;
     case 'payment':
-      return <CreditCard className="h-4 w-4" />
+      return <CreditCard className="h-4 w-4" />;
     case 'exam':
-      return <BookOpen className="h-4 w-4" />
+      return <BookOpen className="h-4 w-4" />;
     default:
-      return null
+      return null;
   }
-}
+};
 
 const getStatusBadge = (status?: Activity['status']) => {
-  if (!status) return null
+  if (!status) return null;
 
   switch (status) {
     case 'pending':
-      return <Badge variant="secondary">Pending</Badge>
+      return <Badge variant="secondary">Pending</Badge>;
     case 'completed':
-      return <Badge variant="default">Completed</Badge>
+      return <Badge variant="default">Completed</Badge>;
     case 'active':
-      return <Badge variant="outline">Active</Badge>
+      return <Badge variant="outline">Active</Badge>;
     default:
-      return null
+      return null;
   }
-}
+};
 
 interface RecentActivitiesProps {
-  className?: string
+  className?: string;
 }
 
 export function RecentActivities({ className }: RecentActivitiesProps) {
-  const [activities, setActivities] = useState<Activity[]>([])
-  const [loading, setLoading] = useState(true)
-  const [mounted, setMounted] = useState(false)
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true)
-    
+    setMounted(true);
+
     const fetchActivities = async () => {
       try {
-        const response = await fetch('/api/admin/activities')
+        const response = await fetch('/api/admin/activities');
         if (response.ok) {
-          const data = await response.json()
-          setActivities(data)
+          const data = await response.json();
+          setActivities(data);
         }
       } catch (error) {
-        console.error('Error fetching activities:', error)
+        console.error('Error fetching activities:', error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchActivities()
-  }, [])
+    fetchActivities();
+  }, []);
 
   // Prevent hydration mismatch by not rendering until mounted
   if (!mounted) {
@@ -89,7 +89,7 @@ export function RecentActivities({ className }: RecentActivitiesProps) {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {[1, 2, 3, 4, 5].map((i) => (
+            {[1, 2, 3, 4, 5].map(i => (
               <div key={i} className="animate-pulse">
                 <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
                 <div className="h-3 bg-gray-200 rounded w-1/2"></div>
@@ -98,7 +98,7 @@ export function RecentActivities({ className }: RecentActivitiesProps) {
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -109,7 +109,7 @@ export function RecentActivities({ className }: RecentActivitiesProps) {
       <CardContent>
         {loading ? (
           <div className="space-y-3">
-            {[1, 2, 3, 4, 5].map((i) => (
+            {[1, 2, 3, 4, 5].map(i => (
               <div key={i} className="animate-pulse">
                 <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
                 <div className="h-3 bg-gray-200 rounded w-1/2"></div>
@@ -129,7 +129,7 @@ export function RecentActivities({ className }: RecentActivitiesProps) {
             </TableHeader>
             <TableBody>
               {activities.length > 0 ? (
-                activities.map((activity) => (
+                activities.map(activity => (
                   <TableRow key={activity.id}>
                     <TableCell>
                       <div className="flex items-center space-x-2">
@@ -140,9 +140,7 @@ export function RecentActivities({ className }: RecentActivitiesProps) {
                     <TableCell className="text-gray-600">
                       {activity.description}
                     </TableCell>
-                    <TableCell>
-                      {getStatusBadge(activity.status)}
-                    </TableCell>
+                    <TableCell>{getStatusBadge(activity.status)}</TableCell>
                     <TableCell className="text-gray-500">
                       {activity.timestamp}
                     </TableCell>
@@ -155,7 +153,10 @@ export function RecentActivities({ className }: RecentActivitiesProps) {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-gray-500 py-8">
+                  <TableCell
+                    colSpan={5}
+                    className="text-center text-gray-500 py-8"
+                  >
                     No recent activities found
                   </TableCell>
                 </TableRow>
@@ -165,5 +166,5 @@ export function RecentActivities({ className }: RecentActivitiesProps) {
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

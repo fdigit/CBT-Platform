@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
+import { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -8,11 +8,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../../ui/table'
-import { Button } from '../../ui/button'
-import { Badge } from '../../ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar'
-import { Card, CardContent } from '../../ui/card'
+} from '../../ui/table';
+import { Button } from '../../ui/button';
+import { Badge } from '../../ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
+import { Card, CardContent } from '../../ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +20,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '../../ui/dropdown-menu'
+} from '../../ui/dropdown-menu';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,15 +30,15 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '../../ui/alert-dialog'
-import { Checkbox } from '../../ui/checkbox'
-import { 
-  MoreHorizontal, 
-  Edit, 
-  Trash2, 
-  UserCheck, 
-  UserX, 
-  Mail, 
+} from '../../ui/alert-dialog';
+import { Checkbox } from '../../ui/checkbox';
+import {
+  MoreHorizontal,
+  Edit,
+  Trash2,
+  UserCheck,
+  UserX,
+  Mail,
   Phone,
   ChevronLeft,
   ChevronRight,
@@ -50,29 +50,29 @@ import {
   Users,
   GraduationCap,
   Clock,
-  MapPin
-} from 'lucide-react'
-import { format } from 'date-fns'
-import { cn } from '../../../lib/utils'
-import { Teacher } from '../../app/school/teachers/page'
+  MapPin,
+} from 'lucide-react';
+import { format } from 'date-fns';
+import { cn } from '../../../lib/utils';
+import { Teacher } from '../../app/school/teachers/page';
 
 interface TeachersTableProps {
-  teachers: Teacher[]
-  loading: boolean
-  onTeacherClick: (teacher: Teacher) => void
+  teachers: Teacher[];
+  loading: boolean;
+  onTeacherClick: (teacher: Teacher) => void;
   pagination: {
-    page: number
-    limit: number
-    total: number
-    totalPages: number
-  }
-  onPageChange: (page: number) => void
-  onTeacherUpdate: (teacher: Teacher) => void
-  onTeacherDelete: (teacherId: string) => void
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  onPageChange: (page: number) => void;
+  onTeacherUpdate: (teacher: Teacher) => void;
+  onTeacherDelete: (teacherId: string) => void;
 }
 
-type SortField = 'name' | 'employeeId' | 'status' | 'hireDate' | 'classCount'
-type SortDirection = 'asc' | 'desc'
+type SortField = 'name' | 'employeeId' | 'status' | 'hireDate' | 'classCount';
+type SortDirection = 'asc' | 'desc';
 
 export function TeachersTable({
   teachers,
@@ -81,78 +81,90 @@ export function TeachersTable({
   pagination,
   onPageChange,
   onTeacherUpdate,
-  onTeacherDelete
+  onTeacherDelete,
 }: TeachersTableProps) {
-  const [selectedTeachers, setSelectedTeachers] = useState<string[]>([])
-  const [deleteTeacherId, setDeleteTeacherId] = useState<string | null>(null)
-  const [sortField, setSortField] = useState<SortField>('name')
-  const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
+  const [selectedTeachers, setSelectedTeachers] = useState<string[]>([]);
+  const [deleteTeacherId, setDeleteTeacherId] = useState<string | null>(null);
+  const [sortField, setSortField] = useState<SortField>('name');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'ACTIVE': return 'bg-green-100 text-green-800 border-green-200'
-      case 'ON_LEAVE': return 'bg-yellow-100 text-yellow-800 border-yellow-200'
-      case 'SUSPENDED': return 'bg-red-100 text-red-800 border-red-200'
-      case 'TERMINATED': return 'bg-gray-100 text-gray-800 border-gray-200'
-      default: return 'bg-gray-100 text-gray-800 border-gray-200'
+      case 'ACTIVE':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'ON_LEAVE':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'SUSPENDED':
+        return 'bg-red-100 text-red-800 border-red-200';
+      case 'TERMINATED':
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
     }
-  }
+  };
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'ACTIVE': return 'Active'
-      case 'ON_LEAVE': return 'On Leave'
-      case 'SUSPENDED': return 'Suspended'
-      case 'TERMINATED': return 'Retired'
-      default: return status
+      case 'ACTIVE':
+        return 'Active';
+      case 'ON_LEAVE':
+        return 'On Leave';
+      case 'SUSPENDED':
+        return 'Suspended';
+      case 'TERMINATED':
+        return 'Retired';
+      default:
+        return status;
     }
-  }
+  };
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
-      setSortField(field)
-      setSortDirection('asc')
+      setSortField(field);
+      setSortDirection('asc');
     }
-  }
+  };
 
   const getSortIcon = (field: SortField) => {
     if (sortField !== field) {
-      return <ArrowUpDown className="h-4 w-4" />
+      return <ArrowUpDown className="h-4 w-4" />;
     }
-    return sortDirection === 'asc' ? 
-      <ArrowUp className="h-4 w-4" /> : 
+    return sortDirection === 'asc' ? (
+      <ArrowUp className="h-4 w-4" />
+    ) : (
       <ArrowDown className="h-4 w-4" />
-  }
+    );
+  };
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedTeachers(teachers.map(t => t.id))
+      setSelectedTeachers(teachers.map(t => t.id));
     } else {
-      setSelectedTeachers([])
+      setSelectedTeachers([]);
     }
-  }
+  };
 
   const handleSelectTeacher = (teacherId: string, checked: boolean) => {
     if (checked) {
-      setSelectedTeachers(prev => [...prev, teacherId])
+      setSelectedTeachers(prev => [...prev, teacherId]);
     } else {
-      setSelectedTeachers(prev => prev.filter(id => id !== teacherId))
+      setSelectedTeachers(prev => prev.filter(id => id !== teacherId));
     }
-  }
+  };
 
   const handleStatusToggle = async (teacher: Teacher) => {
-    const newStatus = teacher.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE'
+    const newStatus = teacher.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE';
     // TODO: API call to update status
-    const updatedTeacher = { ...teacher, status: newStatus as any }
-    onTeacherUpdate(updatedTeacher)
-  }
+    const updatedTeacher = { ...teacher, status: newStatus as any };
+    onTeacherUpdate(updatedTeacher);
+  };
 
   const renderPagination = () => {
-    const { page, totalPages, total } = pagination
-    const startItem = (page - 1) * pagination.limit + 1
-    const endItem = Math.min(page * pagination.limit, total)
+    const { page, totalPages, total } = pagination;
+    const startItem = (page - 1) * pagination.limit + 1;
+    const endItem = Math.min(page * pagination.limit, total);
 
     return (
       <div className="flex items-center justify-between px-2">
@@ -202,8 +214,8 @@ export function TeachersTable({
           </Button>
         </div>
       </div>
-    )
-  }
+    );
+  };
 
   if (loading) {
     return (
@@ -214,7 +226,7 @@ export function TeachersTable({
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -225,7 +237,8 @@ export function TeachersTable({
           <div className="p-4 bg-blue-50 border-b border-blue-200">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-blue-900">
-                {selectedTeachers.length} teacher{selectedTeachers.length !== 1 ? 's' : ''} selected
+                {selectedTeachers.length} teacher
+                {selectedTeachers.length !== 1 ? 's' : ''} selected
               </span>
               <div className="flex items-center space-x-2">
                 <Button size="sm" variant="outline">
@@ -236,8 +249,8 @@ export function TeachersTable({
                   <Users className="h-4 w-4 mr-2" />
                   Assign Classes
                 </Button>
-                <Button 
-                  size="sm" 
+                <Button
+                  size="sm"
                   variant="outline"
                   onClick={() => setSelectedTeachers([])}
                 >
@@ -255,7 +268,10 @@ export function TeachersTable({
               <TableRow>
                 <TableHead className="w-12">
                   <Checkbox
-                    checked={selectedTeachers.length === teachers.length && teachers.length > 0}
+                    checked={
+                      selectedTeachers.length === teachers.length &&
+                      teachers.length > 0
+                    }
                     onCheckedChange={handleSelectAll}
                     aria-label="Select all teachers"
                   />
@@ -311,23 +327,23 @@ export function TeachersTable({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {teachers.map((teacher) => (
-                <TableRow 
-                  key={teacher.id} 
+              {teachers.map(teacher => (
+                <TableRow
+                  key={teacher.id}
                   className="hover:bg-gray-50 cursor-pointer"
-                  onClick={(e) => {
+                  onClick={e => {
                     if (!(e.target as HTMLElement).closest('button, input')) {
-                      onTeacherClick(teacher)
+                      onTeacherClick(teacher);
                     }
                   }}
                 >
                   <TableCell>
                     <Checkbox
                       checked={selectedTeachers.includes(teacher.id)}
-                      onCheckedChange={(checked) => 
+                      onCheckedChange={checked =>
                         handleSelectTeacher(teacher.id, checked as boolean)
                       }
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={e => e.stopPropagation()}
                       aria-label={`Select ${teacher.name}`}
                     />
                   </TableCell>
@@ -335,21 +351,31 @@ export function TeachersTable({
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={teacher.avatar} alt={teacher.name} />
                       <AvatarFallback className="bg-blue-100 text-blue-700">
-                        {teacher.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                        {teacher.name
+                          .split(' ')
+                          .map(n => n[0])
+                          .join('')
+                          .substring(0, 2)}
                       </AvatarFallback>
                     </Avatar>
                   </TableCell>
                   <TableCell>
                     <div>
-                      <p className="font-medium text-gray-900">{teacher.name}</p>
+                      <p className="font-medium text-gray-900">
+                        {teacher.name}
+                      </p>
                       <p className="text-sm text-gray-500">{teacher.email}</p>
                       {teacher.specialization && (
-                        <p className="text-xs text-blue-600">{teacher.specialization}</p>
+                        <p className="text-xs text-blue-600">
+                          {teacher.specialization}
+                        </p>
                       )}
                     </div>
                   </TableCell>
                   <TableCell>
-                    <span className="font-mono text-sm">{teacher.employeeId}</span>
+                    <span className="font-mono text-sm">
+                      {teacher.employeeId}
+                    </span>
                   </TableCell>
                   <TableCell>
                     <div className="space-y-1">
@@ -357,8 +383,12 @@ export function TeachersTable({
                         <GraduationCap className="h-4 w-4 mr-1 text-gray-400" />
                         <span>{teacher.classCount} classes</span>
                       </div>
-                      {teacher.classes.slice(0, 2).map((cls) => (
-                        <Badge key={cls.id} variant="outline" className="text-xs">
+                      {teacher.classes.slice(0, 2).map(cls => (
+                        <Badge
+                          key={cls.id}
+                          variant="outline"
+                          className="text-xs"
+                        >
                           {cls.displayName}
                         </Badge>
                       ))}
@@ -370,8 +400,8 @@ export function TeachersTable({
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge 
-                      variant="outline" 
+                    <Badge
+                      variant="outline"
                       className={cn('border', getStatusColor(teacher.status))}
                     >
                       {getStatusLabel(teacher.status)}
@@ -381,7 +411,9 @@ export function TeachersTable({
                     <div className="space-y-1">
                       <div className="flex items-center text-sm text-gray-600">
                         <Mail className="h-4 w-4 mr-2" />
-                        <span className="truncate max-w-[120px]">{teacher.email}</span>
+                        <span className="truncate max-w-[120px]">
+                          {teacher.email}
+                        </span>
                       </div>
                       {teacher.phone && (
                         <div className="flex items-center text-sm text-gray-600">
@@ -396,7 +428,9 @@ export function TeachersTable({
                       {teacher.hireDate && (
                         <div className="flex items-center text-gray-600">
                           <Clock className="h-4 w-4 mr-1" />
-                          <span>{format(new Date(teacher.hireDate), 'MMM yyyy')}</span>
+                          <span>
+                            {format(new Date(teacher.hireDate), 'MMM yyyy')}
+                          </span>
                         </div>
                       )}
                       {teacher.experience && (
@@ -409,29 +443,39 @@ export function TeachersTable({
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button 
-                          variant="ghost" 
+                        <Button
+                          variant="ghost"
                           className="h-8 w-8 p-0"
-                          onClick={(e) => e.stopPropagation()}
+                          onClick={e => e.stopPropagation()}
                         >
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-48">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => onTeacherClick(teacher)}>
+                        <DropdownMenuItem
+                          onClick={() => onTeacherClick(teacher)}
+                        >
                           <Edit className="h-4 w-4 mr-2" />
                           View Profile
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleStatusToggle(teacher)}>
+                        <DropdownMenuItem
+                          onClick={() => handleStatusToggle(teacher)}
+                        >
                           {teacher.status === 'ACTIVE' ? (
-                            <><UserX className="h-4 w-4 mr-2" />Suspend</>
+                            <>
+                              <UserX className="h-4 w-4 mr-2" />
+                              Suspend
+                            </>
                           ) : (
-                            <><UserCheck className="h-4 w-4 mr-2" />Activate</>
+                            <>
+                              <UserCheck className="h-4 w-4 mr-2" />
+                              Activate
+                            </>
                           )}
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem 
+                        <DropdownMenuItem
                           onClick={() => setDeleteTeacherId(teacher.id)}
                           className="text-red-600 focus:text-red-600"
                         >
@@ -449,9 +493,9 @@ export function TeachersTable({
 
         {/* Mobile Card View */}
         <div className="lg:hidden space-y-4 p-4">
-          {teachers.map((teacher) => (
-            <Card 
-              key={teacher.id} 
+          {teachers.map(teacher => (
+            <Card
+              key={teacher.id}
               className="hover:shadow-md transition-shadow cursor-pointer"
               onClick={() => onTeacherClick(teacher)}
             >
@@ -460,23 +504,34 @@ export function TeachersTable({
                   <Avatar className="h-12 w-12">
                     <AvatarImage src={teacher.avatar} alt={teacher.name} />
                     <AvatarFallback className="bg-blue-100 text-blue-700">
-                      {teacher.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                      {teacher.name
+                        .split(' ')
+                        .map(n => n[0])
+                        .join('')
+                        .substring(0, 2)}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between">
                       <div>
-                        <h3 className="font-medium text-gray-900 truncate">{teacher.name}</h3>
-                        <p className="text-sm text-gray-500">{teacher.employeeId}</p>
+                        <h3 className="font-medium text-gray-900 truncate">
+                          {teacher.name}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          {teacher.employeeId}
+                        </p>
                       </div>
-                      <Badge 
-                        variant="outline" 
-                        className={cn('border text-xs', getStatusColor(teacher.status))}
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          'border text-xs',
+                          getStatusColor(teacher.status)
+                        )}
                       >
                         {getStatusLabel(teacher.status)}
                       </Badge>
                     </div>
-                    
+
                     <div className="mt-2 space-y-1">
                       <div className="flex items-center text-sm text-gray-600">
                         <Mail className="h-4 w-4 mr-2" />
@@ -495,7 +550,9 @@ export function TeachersTable({
                     </div>
 
                     {teacher.specialization && (
-                      <p className="text-sm text-blue-600 mt-2">{teacher.specialization}</p>
+                      <p className="text-sm text-blue-600 mt-2">
+                        {teacher.specialization}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -508,9 +565,12 @@ export function TeachersTable({
         {teachers.length === 0 && !loading && (
           <div className="text-center py-12">
             <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No teachers found</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              No teachers found
+            </h3>
             <p className="text-gray-500 mb-4">
-              No teachers match your current filters. Try adjusting your search criteria.
+              No teachers match your current filters. Try adjusting your search
+              criteria.
             </p>
           </div>
         )}
@@ -523,13 +583,17 @@ export function TeachersTable({
         )}
 
         {/* Delete Confirmation Dialog */}
-        <AlertDialog open={!!deleteTeacherId} onOpenChange={() => setDeleteTeacherId(null)}>
+        <AlertDialog
+          open={!!deleteTeacherId}
+          onOpenChange={() => setDeleteTeacherId(null)}
+        >
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Delete Teacher</AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to delete this teacher? This action cannot be undone.
-                All associated data including class assignments will be removed.
+                Are you sure you want to delete this teacher? This action cannot
+                be undone. All associated data including class assignments will
+                be removed.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -537,8 +601,8 @@ export function TeachersTable({
               <AlertDialogAction
                 onClick={() => {
                   if (deleteTeacherId) {
-                    onTeacherDelete(deleteTeacherId)
-                    setDeleteTeacherId(null)
+                    onTeacherDelete(deleteTeacherId);
+                    setDeleteTeacherId(null);
                   }
                 }}
                 className="bg-red-600 hover:bg-red-700"
@@ -550,5 +614,5 @@ export function TeachersTable({
         </AlertDialog>
       </CardContent>
     </Card>
-  )
+  );
 }

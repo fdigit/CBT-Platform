@@ -1,53 +1,65 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '../../../lib/auth'
-import { uploadAssignmentAttachment } from '../../../lib/cloudinary'
-import { prisma } from '../../../lib/prisma'
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { uploadAssignmentAttachment } from '@/lib/cloudinary';
+import { prisma } from '@/lib/prisma';
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    
+    const session = await getServerSession(authOptions);
+
     if (!session || session.user.role !== 'TEACHER') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get teacher profile
     const teacher = await prisma.teacher.findUnique({
-      where: { userId: session.user.id }
-    })
+      where: { userId: session.user.id },
+    });
 
     if (!teacher) {
-      return NextResponse.json({ error: 'Teacher profile not found' }, { status: 404 })
+      return NextResponse.json(
+        { error: 'Teacher profile not found' },
+        { status: 404 }
+      );
     }
 
-    const formData = await request.formData()
-    const file = formData.get('file') as File
-    const assignmentId = formData.get('assignmentId') as string
+    const formData = await request.formData();
+    const file = formData.get('file') as File;
+    const assignmentId = formData.get('assignmentId') as string;
 
     if (!file) {
-      return NextResponse.json({ error: 'No file provided' }, { status: 400 })
+      return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
     if (!assignmentId) {
-      return NextResponse.json({ error: 'Assignment ID is required' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Assignment ID is required' },
+        { status: 400 }
+      );
     }
 
     // Verify assignment belongs to teacher
     const assignment = await prisma.assignment.findFirst({
       where: {
         id: assignmentId,
-        teacherId: teacher.id
-      }
-    })
+        teacherId: teacher.id,
+      },
+    });
 
     if (!assignment) {
-      return NextResponse.json({ error: 'Assignment not found' }, { status: 404 })
+      return NextResponse.json(
+        { error: 'Assignment not found' },
+        { status: 404 }
+      );
     }
 
     // Validate file size (25MB limit)
     if (file.size > 25 * 1024 * 1024) {
-      return NextResponse.json({ error: 'File size exceeds 25MB limit' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'File size exceeds 25MB limit' },
+        { status: 400 }
+      );
     }
 
     // Validate file type
@@ -65,22 +77,25 @@ export async function POST(request: NextRequest) {
       'image/gif',
       'video/mp4',
       'audio/mpeg',
-    ]
+    ];
 
     if (!allowedTypes.includes(file.type)) {
-      return NextResponse.json({ error: 'File type not supported' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'File type not supported' },
+        { status: 400 }
+      );
     }
 
     // Convert file to buffer
-    const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
 
     // Upload to Cloudinary
     const uploadResult = await uploadAssignmentAttachment(
       `data:${file.type};base64,${buffer.toString('base64')}`,
       assignmentId,
       file.name
-    )
+    );
 
     // Save attachment to database
     const attachment = await prisma.assignmentAttachment.create({
@@ -91,8 +106,8 @@ export async function POST(request: NextRequest) {
         filePath: uploadResult.secure_url,
         fileSize: uploadResult.bytes,
         mimeType: file.type,
-      }
-    })
+      },
+    });
 
     return NextResponse.json({
       attachment: {
@@ -103,15 +118,13 @@ export async function POST(request: NextRequest) {
         size: attachment.fileSize,
         mimeType: attachment.mimeType,
         uploadedAt: attachment.uploadedAt,
-      }
-    })
-
+      },
+    });
   } catch (error) {
-    console.error('Error uploading assignment attachment:', error)
+    console.error('Error uploading assignment attachment:', error);
     return NextResponse.json(
       { error: 'Failed to upload file' },
       { status: 500 }
-    )
+    );
   }
 }
-

@@ -1,9 +1,9 @@
-'use client'
+'use client';
 
-import { useState, useRef, useCallback } from 'react'
-import { Button } from './button'
-import { Progress } from './progress'
-import { cn } from '../../lib/utils'
+import { useState, useRef, useCallback } from 'react';
+import { Button } from './button';
+import { Progress } from './progress';
+import { cn } from '../../lib/utils';
 import {
   Upload,
   X,
@@ -14,32 +14,32 @@ import {
   File,
   AlertCircle,
   CheckCircle,
-} from 'lucide-react'
-import { useToast } from '../../hooks/use-toast'
+} from 'lucide-react';
+import { useToast } from '../../hooks/use-toast';
 
 export interface UploadedFile {
-  id?: string
-  name: string
-  url: string
-  size: number
-  type: string
-  uploadedAt?: string
+  id?: string;
+  name: string;
+  url: string;
+  size: number;
+  type: string;
+  uploadedAt?: string;
 }
 
 interface FileUploadProps {
-  onUpload: (files: UploadedFile[]) => void
-  onRemove?: (file: UploadedFile) => void
-  uploadEndpoint: string
-  maxFiles?: number
-  maxSize?: number // in MB
-  acceptedTypes?: string[]
-  existingFiles?: UploadedFile[]
-  disabled?: boolean
-  className?: string
-  multiple?: boolean
-  label?: string
-  description?: string
-  additionalData?: Record<string, string>
+  onUpload: (files: UploadedFile[]) => void;
+  onRemove?: (file: UploadedFile) => void;
+  uploadEndpoint: string;
+  maxFiles?: number;
+  maxSize?: number; // in MB
+  acceptedTypes?: string[];
+  existingFiles?: UploadedFile[];
+  disabled?: boolean;
+  className?: string;
+  multiple?: boolean;
+  label?: string;
+  description?: string;
+  additionalData?: Record<string, string>;
 }
 
 export function FileUpload({
@@ -48,7 +48,22 @@ export function FileUpload({
   uploadEndpoint,
   maxFiles = 5,
   maxSize = 25,
-  acceptedTypes = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'txt', 'jpg', 'jpeg', 'png', 'gif', 'mp4', 'mp3'],
+  acceptedTypes = [
+    'pdf',
+    'doc',
+    'docx',
+    'ppt',
+    'pptx',
+    'xls',
+    'xlsx',
+    'txt',
+    'jpg',
+    'jpeg',
+    'png',
+    'gif',
+    'mp4',
+    'mp3',
+  ],
   existingFiles = [],
   disabled = false,
   className,
@@ -57,27 +72,27 @@ export function FileUpload({
   description = 'Drag and drop files here or click to browse',
   additionalData = {},
 }: FileUploadProps) {
-  const [uploading, setUploading] = useState(false)
-  const [uploadProgress, setUploadProgress] = useState(0)
-  const [dragActive, setDragActive] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const { toast } = useToast()
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [dragActive, setDragActive] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   const getFileIcon = (type: string) => {
-    if (type.startsWith('image/')) return Image
-    if (type.startsWith('video/')) return Video
-    if (type.startsWith('audio/')) return Music
-    if (type.includes('pdf')) return FileText
-    return File
-  }
+    if (type.startsWith('image/')) return Image;
+    if (type.startsWith('video/')) return Video;
+    if (type.startsWith('audio/')) return Music;
+    if (type.includes('pdf')) return FileText;
+    return File;
+  };
 
   const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes'
-    const k = 1024
-    const sizes = ['Bytes', 'KB', 'MB', 'GB']
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-  }
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
 
   const validateFile = (file: File) => {
     // Check file size
@@ -86,140 +101,186 @@ export function FileUpload({
         title: 'File too large',
         description: `${file.name} exceeds the ${maxSize}MB limit`,
         variant: 'destructive',
-      })
-      return false
+      });
+      return false;
     }
 
     // Check file type
-    const fileExtension = file.name.split('.').pop()?.toLowerCase()
+    const fileExtension = file.name.split('.').pop()?.toLowerCase();
     if (fileExtension && !acceptedTypes.includes(fileExtension)) {
       toast({
         title: 'File type not supported',
         description: `${file.name} has an unsupported file type`,
         variant: 'destructive',
-      })
-      return false
+      });
+      return false;
     }
 
-    return true
-  }
+    return true;
+  };
 
-  const uploadFiles = useCallback(async (files: File[]) => {
-    if (files.length === 0) return
+  const uploadFiles = useCallback(
+    async (files: File[]) => {
+      if (files.length === 0) return;
 
-    // Check total file count
-    if (existingFiles.length + files.length > maxFiles) {
-      toast({
-        title: 'Too many files',
-        description: `Maximum ${maxFiles} files allowed`,
-        variant: 'destructive',
-      })
-      return
-    }
-
-    setUploading(true)
-    setUploadProgress(0)
-
-    const uploadedFiles: UploadedFile[] = []
-
-    try {
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i]
-        
-        if (!validateFile(file)) continue
-
-        const formData = new FormData()
-        formData.append('file', file)
-        
-        // Add additional data
-        Object.entries(additionalData).forEach(([key, value]) => {
-          formData.append(key, value)
-        })
-
-        const response = await fetch(uploadEndpoint, {
-          method: 'POST',
-          body: formData,
-        })
-
-        if (!response.ok) {
-          const error = await response.json()
-          throw new Error(error.error || 'Upload failed')
-        }
-
-        const result = await response.json()
-        
-        // Handle different response structures
-        const uploadedFile: UploadedFile = {
-          id: result.attachment?.id || result.resource?.id || result.file?.id || result.id,
-          name: result.attachment?.originalName || result.resource?.originalName || result.file?.name || result.name || file.name,
-          url: result.attachment?.url || result.resource?.url || result.file?.url || result.url,
-          size: result.attachment?.size || result.resource?.size || result.file?.size || result.size || file.size,
-          type: result.attachment?.mimeType || result.resource?.mimeType || result.file?.type || result.type || file.type,
-          uploadedAt: result.attachment?.uploadedAt || result.resource?.uploadedAt || result.file?.uploadedAt || result.uploadedAt,
-        }
-
-        uploadedFiles.push(uploadedFile)
-        setUploadProgress(((i + 1) / files.length) * 100)
-      }
-
-      if (uploadedFiles.length > 0) {
-        onUpload(uploadedFiles)
+      // Check total file count
+      if (existingFiles.length + files.length > maxFiles) {
         toast({
-          title: 'Upload successful',
-          description: `${uploadedFiles.length} file(s) uploaded successfully`,
-        })
+          title: 'Too many files',
+          description: `Maximum ${maxFiles} files allowed`,
+          variant: 'destructive',
+        });
+        return;
       }
-    } catch (error) {
-      console.error('Upload error:', error)
-      toast({
-        title: 'Upload failed',
-        description: error instanceof Error ? error.message : 'Failed to upload files',
-        variant: 'destructive',
-      })
-    } finally {
-      setUploading(false)
-      setUploadProgress(0)
-    }
-  }, [uploadEndpoint, additionalData, existingFiles.length, maxFiles, maxSize, acceptedTypes, onUpload, toast])
+
+      setUploading(true);
+      setUploadProgress(0);
+
+      const uploadedFiles: UploadedFile[] = [];
+
+      try {
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+
+          if (!validateFile(file)) continue;
+
+          const formData = new FormData();
+          formData.append('file', file);
+
+          // Add additional data
+          Object.entries(additionalData).forEach(([key, value]) => {
+            formData.append(key, value);
+          });
+
+          const response = await fetch(uploadEndpoint, {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Upload failed');
+          }
+
+          const result = await response.json();
+
+          // Handle different response structures
+          const uploadedFile: UploadedFile = {
+            id:
+              result.attachment?.id ||
+              result.resource?.id ||
+              result.file?.id ||
+              result.id,
+            name:
+              result.attachment?.originalName ||
+              result.resource?.originalName ||
+              result.file?.name ||
+              result.name ||
+              file.name,
+            url:
+              result.attachment?.url ||
+              result.resource?.url ||
+              result.file?.url ||
+              result.url,
+            size:
+              result.attachment?.size ||
+              result.resource?.size ||
+              result.file?.size ||
+              result.size ||
+              file.size,
+            type:
+              result.attachment?.mimeType ||
+              result.resource?.mimeType ||
+              result.file?.type ||
+              result.type ||
+              file.type,
+            uploadedAt:
+              result.attachment?.uploadedAt ||
+              result.resource?.uploadedAt ||
+              result.file?.uploadedAt ||
+              result.uploadedAt,
+          };
+
+          uploadedFiles.push(uploadedFile);
+          setUploadProgress(((i + 1) / files.length) * 100);
+        }
+
+        if (uploadedFiles.length > 0) {
+          onUpload(uploadedFiles);
+          toast({
+            title: 'Upload successful',
+            description: `${uploadedFiles.length} file(s) uploaded successfully`,
+          });
+        }
+      } catch (error) {
+        console.error('Upload error:', error);
+        toast({
+          title: 'Upload failed',
+          description:
+            error instanceof Error ? error.message : 'Failed to upload files',
+          variant: 'destructive',
+        });
+      } finally {
+        setUploading(false);
+        setUploadProgress(0);
+      }
+    },
+    [
+      uploadEndpoint,
+      additionalData,
+      existingFiles.length,
+      maxFiles,
+      maxSize,
+      acceptedTypes,
+      onUpload,
+      toast,
+    ]
+  );
 
   const handleDrag = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
+    e.preventDefault();
+    e.stopPropagation();
     if (e.type === 'dragenter' || e.type === 'dragover') {
-      setDragActive(true)
+      setDragActive(true);
     } else if (e.type === 'dragleave') {
-      setDragActive(false)
+      setDragActive(false);
     }
-  }, [])
+  }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setDragActive(false)
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setDragActive(false);
 
-    if (disabled || uploading) return
+      if (disabled || uploading) return;
 
-    const files = Array.from(e.dataTransfer.files)
-    uploadFiles(files)
-  }, [disabled, uploading, uploadFiles])
+      const files = Array.from(e.dataTransfer.files);
+      uploadFiles(files);
+    },
+    [disabled, uploading, uploadFiles]
+  );
 
-  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (disabled || uploading) return
+  const handleFileSelect = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (disabled || uploading) return;
 
-    const files = Array.from(e.target.files || [])
-    uploadFiles(files)
-    
-    // Reset input value
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ''
-    }
-  }, [disabled, uploading, uploadFiles])
+      const files = Array.from(e.target.files || []);
+      uploadFiles(files);
+
+      // Reset input value
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    },
+    [disabled, uploading, uploadFiles]
+  );
 
   const handleRemove = (file: UploadedFile) => {
     if (onRemove) {
-      onRemove(file)
+      onRemove(file);
     }
-  }
+  };
 
   return (
     <div className={cn('space-y-4', className)}>
@@ -228,7 +289,9 @@ export function FileUpload({
         className={cn(
           'border-2 border-dashed rounded-lg p-6 text-center transition-colors',
           dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300',
-          disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-gray-400',
+          disabled
+            ? 'opacity-50 cursor-not-allowed'
+            : 'cursor-pointer hover:border-gray-400',
           uploading && 'pointer-events-none'
         )}
         onDragEnter={handleDrag}
@@ -251,7 +314,10 @@ export function FileUpload({
           <div className="space-y-2">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
             <p className="text-sm text-gray-600">Uploading...</p>
-            <Progress value={uploadProgress} className="w-full max-w-xs mx-auto" />
+            <Progress
+              value={uploadProgress}
+              className="w-full max-w-xs mx-auto"
+            />
           </div>
         ) : (
           <div className="space-y-2">
@@ -261,7 +327,8 @@ export function FileUpload({
               <p className="text-sm text-gray-500">{description}</p>
             </div>
             <p className="text-xs text-gray-400">
-              Max {maxSize}MB per file • {acceptedTypes.join(', ').toUpperCase()}
+              Max {maxSize}MB per file •{' '}
+              {acceptedTypes.join(', ').toUpperCase()}
             </p>
           </div>
         )}
@@ -273,7 +340,7 @@ export function FileUpload({
           <h4 className="text-sm font-medium text-gray-900">Uploaded Files</h4>
           <div className="space-y-2">
             {existingFiles.map((file, index) => {
-              const FileIcon = getFileIcon(file.type)
+              const FileIcon = getFileIcon(file.type);
               return (
                 <div
                   key={file.id || index}
@@ -288,7 +355,10 @@ export function FileUpload({
                       <p className="text-xs text-gray-500">
                         {formatFileSize(file.size)}
                         {file.uploadedAt && (
-                          <span> • {new Date(file.uploadedAt).toLocaleDateString()}</span>
+                          <span>
+                            {' '}
+                            • {new Date(file.uploadedAt).toLocaleDateString()}
+                          </span>
                         )}
                       </p>
                     </div>
@@ -308,7 +378,7 @@ export function FileUpload({
                     )}
                   </div>
                 </div>
-              )
+              );
             })}
           </div>
         </div>
@@ -321,5 +391,5 @@ export function FileUpload({
         </p>
       )}
     </div>
-  )
+  );
 }

@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
-import { z } from 'zod'
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+import { z } from 'zod';
 
 const updateTeacherSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').optional(),
@@ -13,7 +13,7 @@ const updateTeacherSchema = z.object({
   specialization: z.string().optional(),
   experience: z.coerce.number().int().min(0).max(50).optional(),
   status: z.enum(['ACTIVE', 'SUSPENDED', 'TERMINATED', 'ON_LEAVE']).optional(),
-})
+});
 
 // GET single teacher
 export async function GET(
@@ -21,18 +21,18 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions)
-    
+    const session = await getServerSession(authOptions);
+
     if (!session || session.user.role !== 'SCHOOL_ADMIN') {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = await params
+    const { id } = await params;
 
     const teacher = await prisma.teacher.findFirst({
       where: {
         id,
-        schoolId: session.user.schoolId
+        schoolId: session.user.schoolId,
       },
       include: {
         user: {
@@ -41,27 +41,30 @@ export async function GET(
             name: true,
             email: true,
             createdAt: true,
-            updatedAt: true
-          }
+            updatedAt: true,
+          },
         },
         classes: {
           select: {
             id: true,
             name: true,
             section: true,
-            academicYear: true
-          }
+            academicYear: true,
+          },
         },
         _count: {
           select: {
-            classes: true
-          }
-        }
-      }
-    })
+            classes: true,
+          },
+        },
+      },
+    });
 
     if (!teacher) {
-      return NextResponse.json({ message: 'Teacher not found' }, { status: 404 })
+      return NextResponse.json(
+        { message: 'Teacher not found' },
+        { status: 404 }
+      );
     }
 
     const transformedTeacher = {
@@ -84,19 +87,19 @@ export async function GET(
         name: cls.name,
         section: cls.section,
         academicYear: cls.academicYear,
-        displayName: `${cls.name}${cls.section ? ` - ${cls.section}` : ''} (${cls.academicYear})`
+        displayName: `${cls.name}${cls.section ? ` - ${cls.section}` : ''} (${cls.academicYear})`,
       })),
       createdAt: teacher.user.createdAt.toISOString(),
-      updatedAt: teacher.user.updatedAt.toISOString()
-    }
+      updatedAt: teacher.user.updatedAt.toISOString(),
+    };
 
-    return NextResponse.json(transformedTeacher)
+    return NextResponse.json(transformedTeacher);
   } catch (error) {
-    console.error('Error fetching teacher:', error)
+    console.error('Error fetching teacher:', error);
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 }
-    )
+    );
   }
 }
 
@@ -106,50 +109,56 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions)
-    
+    const session = await getServerSession(authOptions);
+
     if (!session || session.user.role !== 'SCHOOL_ADMIN') {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = await params
-    const body = await request.json()
-    const validatedData = updateTeacherSchema.parse(body)
+    const { id } = await params;
+    const body = await request.json();
+    const validatedData = updateTeacherSchema.parse(body);
 
     // Check if teacher exists and belongs to the school
     const existingTeacher = await prisma.teacher.findFirst({
       where: {
         id,
-        schoolId: session.user.schoolId
+        schoolId: session.user.schoolId,
       },
       include: {
-        user: true
-      }
-    })
+        user: true,
+      },
+    });
 
     if (!existingTeacher) {
-      return NextResponse.json({ message: 'Teacher not found' }, { status: 404 })
+      return NextResponse.json(
+        { message: 'Teacher not found' },
+        { status: 404 }
+      );
     }
 
     // Check for email conflicts if email is being updated
-    if (validatedData.email && validatedData.email !== existingTeacher.user.email) {
+    if (
+      validatedData.email &&
+      validatedData.email !== existingTeacher.user.email
+    ) {
       const emailExists = await prisma.user.findFirst({
         where: {
           email: validatedData.email,
-          id: { not: existingTeacher.userId }
-        }
-      })
+          id: { not: existingTeacher.userId },
+        },
+      });
 
       if (emailExists) {
         return NextResponse.json(
           { message: 'Email already exists' },
           { status: 400 }
-        )
+        );
       }
     }
 
     // Update teacher and user in a transaction
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async tx => {
       // Update user fields if provided
       if (validatedData.name || validatedData.email) {
         await tx.user.update({
@@ -157,19 +166,29 @@ export async function PUT(
           data: {
             ...(validatedData.name && { name: validatedData.name }),
             ...(validatedData.email && { email: validatedData.email }),
-          }
-        })
+          },
+        });
       }
 
       // Update teacher fields
       const updatedTeacher = await tx.teacher.update({
         where: { id },
         data: {
-          ...(validatedData.phone !== undefined && { phone: validatedData.phone }),
-          ...(validatedData.address !== undefined && { address: validatedData.address }),
-          ...(validatedData.qualification !== undefined && { qualification: validatedData.qualification }),
-          ...(validatedData.specialization !== undefined && { specialization: validatedData.specialization }),
-          ...(validatedData.experience !== undefined && { experience: validatedData.experience }),
+          ...(validatedData.phone !== undefined && {
+            phone: validatedData.phone,
+          }),
+          ...(validatedData.address !== undefined && {
+            address: validatedData.address,
+          }),
+          ...(validatedData.qualification !== undefined && {
+            qualification: validatedData.qualification,
+          }),
+          ...(validatedData.specialization !== undefined && {
+            specialization: validatedData.specialization,
+          }),
+          ...(validatedData.experience !== undefined && {
+            experience: validatedData.experience,
+          }),
           ...(validatedData.status && { status: validatedData.status }),
         },
         include: {
@@ -179,27 +198,27 @@ export async function PUT(
               name: true,
               email: true,
               createdAt: true,
-              updatedAt: true
-            }
+              updatedAt: true,
+            },
           },
           classes: {
             select: {
               id: true,
               name: true,
               section: true,
-              academicYear: true
-            }
+              academicYear: true,
+            },
           },
           _count: {
             select: {
-              classes: true
-            }
-          }
-        }
-      })
+              classes: true,
+            },
+          },
+        },
+      });
 
-      return updatedTeacher
-    })
+      return updatedTeacher;
+    });
 
     const transformedTeacher = {
       id: result.id,
@@ -221,26 +240,26 @@ export async function PUT(
         name: cls.name,
         section: cls.section,
         academicYear: cls.academicYear,
-        displayName: `${cls.name}${cls.section ? ` - ${cls.section}` : ''} (${cls.academicYear})`
+        displayName: `${cls.name}${cls.section ? ` - ${cls.section}` : ''} (${cls.academicYear})`,
       })),
       createdAt: result.user.createdAt.toISOString(),
-      updatedAt: result.user.updatedAt.toISOString()
-    }
+      updatedAt: result.user.updatedAt.toISOString(),
+    };
 
-    return NextResponse.json(transformedTeacher)
+    return NextResponse.json(transformedTeacher);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { message: 'Validation error', errors: error.errors },
         { status: 400 }
-      )
+      );
     }
-    
-    console.error('Error updating teacher:', error)
+
+    console.error('Error updating teacher:', error);
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 }
-    )
+    );
   }
 }
 
@@ -250,45 +269,48 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions)
-    
+    const session = await getServerSession(authOptions);
+
     if (!session || session.user.role !== 'SCHOOL_ADMIN') {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = await params
+    const { id } = await params;
 
     // Check if teacher exists and belongs to the school
     const existingTeacher = await prisma.teacher.findFirst({
       where: {
         id,
-        schoolId: session.user.schoolId
-      }
-    })
+        schoolId: session.user.schoolId,
+      },
+    });
 
     if (!existingTeacher) {
-      return NextResponse.json({ message: 'Teacher not found' }, { status: 404 })
+      return NextResponse.json(
+        { message: 'Teacher not found' },
+        { status: 404 }
+      );
     }
 
     // Delete teacher and associated user in a transaction
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async tx => {
       // Delete teacher first (due to foreign key constraints)
       await tx.teacher.delete({
-        where: { id }
-      })
+        where: { id },
+      });
 
       // Delete associated user
       await tx.user.delete({
-        where: { id: existingTeacher.userId }
-      })
-    })
+        where: { id: existingTeacher.userId },
+      });
+    });
 
-    return NextResponse.json({ message: 'Teacher deleted successfully' })
+    return NextResponse.json({ message: 'Teacher deleted successfully' });
   } catch (error) {
-    console.error('Error deleting teacher:', error)
+    console.error('Error deleting teacher:', error);
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 }
-    )
+    );
   }
 }

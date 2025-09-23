@@ -1,51 +1,57 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { signIn, getSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { Button } from '../../../components/ui/button'
-import { Input } from '../../../components/ui/input'
-import { Label } from '../../../components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../components/ui/card'
-import { useToast } from '../../../hooks/use-toast'
-import { loginSchema } from '../../../lib/validations'
+import { useState } from 'react';
+import { signIn, getSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { Button } from '../../../components/ui/button';
+import { Input } from '../../../components/ui/input';
+import { Label } from '../../../components/ui/label';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../../../components/ui/card';
+import { useToast } from '../../../hooks/use-toast';
+import { loginSchema } from '../../../lib/validations';
 
 export default function SignInPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
-  const { toast } = useToast()
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
     try {
-      const validatedData = loginSchema.parse({ email, password })
-      
+      const validatedData = loginSchema.parse({ email, password });
+
       const result = await signIn('credentials', {
         email: validatedData.email,
         password: validatedData.password,
         redirect: false,
-      })
+      });
 
       if (result?.error) {
         toast({
           title: 'Error',
           description: 'Invalid credentials. Please try again.',
           variant: 'destructive',
-        })
+        });
       } else {
-        const session = await getSession()
+        const session = await getSession();
         if (session?.user.role === 'SUPER_ADMIN') {
-          router.push('/admin')
+          router.push('/admin');
         } else if (session?.user.role === 'SCHOOL_ADMIN') {
-          router.push('/school')
+          router.push('/school');
         } else if (session?.user.role === 'STUDENT') {
-          router.push('/student')
+          router.push('/student');
         } else {
-          router.push('/')
+          router.push('/');
         }
       }
     } catch (error) {
@@ -53,11 +59,11 @@ export default function SignInPage() {
         title: 'Error',
         description: 'Please check your input and try again.',
         variant: 'destructive',
-      })
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -77,7 +83,7 @@ export default function SignInPage() {
                 type="email"
                 placeholder="Enter your email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={e => setEmail(e.target.value)}
                 required
               />
             </div>
@@ -88,7 +94,7 @@ export default function SignInPage() {
                 type="password"
                 placeholder="Enter your password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={e => setPassword(e.target.value)}
                 required
               />
             </div>
@@ -98,7 +104,7 @@ export default function SignInPage() {
           </form>
           <div className="mt-4 text-center text-sm">
             <p className="text-gray-600">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <a href="/auth/signup" className="text-blue-600 hover:underline">
                 Sign up
               </a>
@@ -107,5 +113,5 @@ export default function SignInPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

@@ -1,10 +1,10 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Button } from '../../ui/button'
-import { Card } from '../../ui/card'
-import { Input } from '../../ui/input'
-import { Badge } from '../../ui/badge'
+import { useState } from 'react';
+import { Button } from '../../ui/button';
+import { Card } from '../../ui/card';
+import { Input } from '../../ui/input';
+import { Badge } from '../../ui/badge';
 import {
   Table,
   TableBody,
@@ -12,107 +12,126 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../../ui/table'
+} from '../../ui/table';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '../../ui/dropdown-menu'
-import { Search, MoreHorizontal, Trash2, UserCheck } from 'lucide-react'
-import { useToast } from '../../../hooks/use-toast'
+} from '../../ui/dropdown-menu';
+import { Search, MoreHorizontal, Trash2, UserCheck } from 'lucide-react';
+import { useToast } from '../../../hooks/use-toast';
 
 interface TeacherSubjectAssignment {
-  id: string
+  id: string;
   teacher: {
-    id: string
-    name: string
-    email: string
-    employeeId: string
-  }
+    id: string;
+    name: string;
+    email: string;
+    employeeId: string;
+  };
   subject: {
-    id: string
-    name: string
-    code?: string
-  }
-  createdAt: string
+    id: string;
+    name: string;
+    code?: string;
+  };
+  createdAt: string;
 }
 
 interface TeacherSubjectsTableProps {
-  assignments: TeacherSubjectAssignment[]
-  loading: boolean
-  onRefresh: () => void
+  assignments: TeacherSubjectAssignment[];
+  loading: boolean;
+  onRefresh: () => void;
 }
 
 export function TeacherSubjectsTable({
   assignments,
   loading,
-  onRefresh
+  onRefresh,
 }: TeacherSubjectsTableProps) {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [removingId, setRemovingId] = useState<string | null>(null)
-  const { toast } = useToast()
+  const [searchTerm, setSearchTerm] = useState('');
+  const [removingId, setRemovingId] = useState<string | null>(null);
+  const { toast } = useToast();
 
-  const filteredAssignments = assignments.filter(assignment =>
-    assignment.teacher.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    assignment.subject.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    assignment.subject.code?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    assignment.teacher.email.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredAssignments = assignments.filter(
+    assignment =>
+      assignment.teacher.name
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      assignment.subject.name
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      assignment.subject.code
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      assignment.teacher.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  const handleRemoveAssignment = async (assignment: TeacherSubjectAssignment) => {
-    if (!confirm(`Remove ${assignment.teacher.name} from ${assignment.subject.name}?`)) {
-      return
+  const handleRemoveAssignment = async (
+    assignment: TeacherSubjectAssignment
+  ) => {
+    if (
+      !confirm(
+        `Remove ${assignment.teacher.name} from ${assignment.subject.name}?`
+      )
+    ) {
+      return;
     }
 
-    setRemovingId(assignment.id)
+    setRemovingId(assignment.id);
 
     try {
       const response = await fetch('/api/school/subjects/assign-teachers', {
         method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           subjectId: assignment.subject.id,
-          teacherId: assignment.teacher.id
-        })
-      })
+          teacherId: assignment.teacher.id,
+        }),
+      });
 
       if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.message || 'Failed to remove assignment')
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to remove assignment');
       }
 
       toast({
         title: 'Success',
-        description: 'Teacher assignment removed successfully'
-      })
+        description: 'Teacher assignment removed successfully',
+      });
 
-      onRefresh()
+      onRefresh();
     } catch (error) {
       toast({
         title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to remove assignment',
-        variant: 'destructive'
-      })
+        description:
+          error instanceof Error
+            ? error.message
+            : 'Failed to remove assignment',
+        variant: 'destructive',
+      });
     } finally {
-      setRemovingId(null)
+      setRemovingId(null);
     }
-  }
+  };
 
   // Group assignments by subject
-  const groupedAssignments = filteredAssignments.reduce((acc, assignment) => {
-    const subjectId = assignment.subject.id
-    if (!acc[subjectId]) {
-      acc[subjectId] = {
-        subject: assignment.subject,
-        teachers: []
+  const groupedAssignments = filteredAssignments.reduce(
+    (acc, assignment) => {
+      const subjectId = assignment.subject.id;
+      if (!acc[subjectId]) {
+        acc[subjectId] = {
+          subject: assignment.subject,
+          teachers: [],
+        };
       }
-    }
-    acc[subjectId].teachers.push(assignment)
-    return acc
-  }, {} as Record<string, { subject: any; teachers: TeacherSubjectAssignment[] }>)
+      acc[subjectId].teachers.push(assignment);
+      return acc;
+    },
+    {} as Record<string, { subject: any; teachers: TeacherSubjectAssignment[] }>
+  );
 
   if (loading) {
     return (
@@ -121,7 +140,7 @@ export function TeacherSubjectsTable({
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
         </div>
       </Card>
-    )
+    );
   }
 
   return (
@@ -134,7 +153,8 @@ export function TeacherSubjectsTable({
               Teacher ↔ Subject Assignments
             </h2>
             <p className="text-gray-600 text-sm mt-1">
-              {assignments.length} assignment{assignments.length !== 1 ? 's' : ''} total
+              {assignments.length} assignment
+              {assignments.length !== 1 ? 's' : ''} total
             </p>
           </div>
 
@@ -143,7 +163,7 @@ export function TeacherSubjectsTable({
             <Input
               placeholder="Search assignments..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               className="pl-10"
             />
           </div>
@@ -154,7 +174,9 @@ export function TeacherSubjectsTable({
         <div className="text-center py-8">
           <UserCheck className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <p className="text-gray-500 mb-2">
-            {searchTerm ? 'No assignments found matching your search' : 'No teacher assignments yet'}
+            {searchTerm
+              ? 'No assignments found matching your search'
+              : 'No teacher assignments yet'}
           </p>
           {!searchTerm && (
             <p className="text-gray-400 text-sm">
@@ -168,7 +190,9 @@ export function TeacherSubjectsTable({
             <div key={subject.id} className="border rounded-lg p-4">
               <div className="mb-4">
                 <div className="flex items-center gap-3">
-                  <h3 className="font-semibold text-gray-900">{subject.name}</h3>
+                  <h3 className="font-semibold text-gray-900">
+                    {subject.name}
+                  </h3>
                   {subject.code && (
                     <Badge variant="outline" className="font-mono text-xs">
                       {subject.code}
@@ -192,7 +216,7 @@ export function TeacherSubjectsTable({
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {teachers.map((assignment) => (
+                    {teachers.map(assignment => (
                       <TableRow key={assignment.id}>
                         <TableCell className="font-medium">
                           {assignment.teacher.name}
@@ -201,7 +225,10 @@ export function TeacherSubjectsTable({
                           {assignment.teacher.email}
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="font-mono text-xs">
+                          <Badge
+                            variant="outline"
+                            className="font-mono text-xs"
+                          >
                             {assignment.teacher.employeeId}
                           </Badge>
                         </TableCell>
@@ -211,8 +238,8 @@ export function TeacherSubjectsTable({
                         <TableCell>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button 
-                                variant="ghost" 
+                              <Button
+                                variant="ghost"
                                 size="sm"
                                 disabled={removingId === assignment.id}
                               >
@@ -221,7 +248,9 @@ export function TeacherSubjectsTable({
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem
-                                onClick={() => handleRemoveAssignment(assignment)}
+                                onClick={() =>
+                                  handleRemoveAssignment(assignment)
+                                }
                                 className="text-red-600 focus:text-red-600"
                               >
                                 <Trash2 className="h-4 w-4 mr-2" />
@@ -240,5 +269,5 @@ export function TeacherSubjectsTable({
         </div>
       )}
     </Card>
-  )
+  );
 }

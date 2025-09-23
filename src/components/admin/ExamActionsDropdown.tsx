@@ -1,14 +1,14 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Button } from '../ui/button'
+import { useState } from 'react';
+import { Button } from '../ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator
-} from '../ui/dropdown-menu'
+  DropdownMenuSeparator,
+} from '../ui/dropdown-menu';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,151 +18,161 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '../ui/alert-dialog'
-import { Input } from '../ui/input'
-import { Textarea } from '../ui/textarea'
-import { Label } from '../ui/label'
-import { MoreHorizontal, Eye, CheckCircle, XCircle, Edit, Trash2, BarChart3 } from 'lucide-react'
-import { useToast } from '../../hooks/use-toast'
+} from '../ui/alert-dialog';
+import { Textarea } from '../ui/textarea';
+import { Label } from '../ui/label';
+import {
+  MoreHorizontal,
+  Eye,
+  CheckCircle,
+  XCircle,
+  Edit,
+  Trash2,
+  BarChart3,
+} from 'lucide-react';
+import { useToast } from '../../hooks/use-toast';
 
 interface ExamActionsDropdownProps {
   exam: {
-    id: string
-    title: string
-    examStatus: string
-    registeredStudents: number
-  }
-  onExamUpdated: () => void
+    id: string;
+    title: string;
+    examStatus: string;
+    registeredStudents: number;
+  };
+  onExamUpdated: () => void;
 }
 
-export function ExamActionsDropdown({ exam, onExamUpdated }: ExamActionsDropdownProps) {
-  const [showApproveDialog, setShowApproveDialog] = useState(false)
-  const [showRejectDialog, setShowRejectDialog] = useState(false)
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-  const [rejectReason, setRejectReason] = useState('')
-  const [loading, setLoading] = useState(false)
-  const { toast } = useToast()
+export function ExamActionsDropdown({
+  exam,
+  onExamUpdated,
+}: ExamActionsDropdownProps) {
+  const [showApproveDialog, setShowApproveDialog] = useState(false);
+  const [showRejectDialog, setShowRejectDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
   const handleApprove = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const response = await fetch(`/api/admin/exams/${exam.id}/approve`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
-        }
-      })
+          'Content-Type': 'application/json',
+        },
+      });
 
       if (response.ok) {
         toast({
           title: 'Success',
-          description: 'Exam approved successfully'
-        })
-        onExamUpdated()
+          description: 'Exam approved successfully',
+        });
+        onExamUpdated();
       } else {
-        const error = await response.json()
+        const error = await response.json();
         toast({
           title: 'Error',
           description: error.message || 'Failed to approve exam',
-          variant: 'destructive'
-        })
+          variant: 'destructive',
+        });
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to approve exam',
-        variant: 'destructive'
-      })
+        variant: 'destructive',
+      });
     } finally {
-      setLoading(false)
-      setShowApproveDialog(false)
+      setLoading(false);
+      setShowApproveDialog(false);
     }
-  }
+  };
 
   const handleReject = async () => {
     if (!rejectReason.trim()) {
       toast({
         title: 'Error',
         description: 'Please provide a reason for rejection',
-        variant: 'destructive'
-      })
-      return
+        variant: 'destructive',
+      });
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
       const response = await fetch(`/api/admin/exams/${exam.id}/reject`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ reason: rejectReason })
-      })
+        body: JSON.stringify({ reason: rejectReason }),
+      });
 
       if (response.ok) {
         toast({
           title: 'Success',
-          description: 'Exam rejected successfully'
-        })
-        onExamUpdated()
+          description: 'Exam rejected successfully',
+        });
+        onExamUpdated();
       } else {
-        const error = await response.json()
+        const error = await response.json();
         toast({
           title: 'Error',
           description: error.message || 'Failed to reject exam',
-          variant: 'destructive'
-        })
+          variant: 'destructive',
+        });
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to reject exam',
-        variant: 'destructive'
-      })
+        variant: 'destructive',
+      });
     } finally {
-      setLoading(false)
-      setShowRejectDialog(false)
-      setRejectReason('')
+      setLoading(false);
+      setShowRejectDialog(false);
+      setRejectReason('');
     }
-  }
+  };
 
   const handleDelete = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const response = await fetch(`/api/admin/exams/${exam.id}/delete`, {
-        method: 'DELETE'
-      })
+        method: 'DELETE',
+      });
 
       if (response.ok) {
         toast({
           title: 'Success',
-          description: 'Exam deleted successfully'
-        })
-        onExamUpdated()
+          description: 'Exam deleted successfully',
+        });
+        onExamUpdated();
       } else {
-        const error = await response.json()
+        const error = await response.json();
         toast({
           title: 'Error',
           description: error.message || 'Failed to delete exam',
-          variant: 'destructive'
-        })
+          variant: 'destructive',
+        });
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to delete exam',
-        variant: 'destructive'
-      })
+        variant: 'destructive',
+      });
     } finally {
-      setLoading(false)
-      setShowDeleteDialog(false)
+      setLoading(false);
+      setShowDeleteDialog(false);
     }
-  }
+  };
 
   const handleViewStats = () => {
     // Open stats modal or navigate to stats page
-    window.open(`/admin/exams/${exam.id}/stats`, '_blank')
-  }
+    window.open(`/admin/exams/${exam.id}/stats`, '_blank');
+  };
 
   return (
     <>
@@ -174,7 +184,9 @@ export function ExamActionsDropdown({ exam, onExamUpdated }: ExamActionsDropdown
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuItem onClick={() => window.open(`/exams/${exam.id}`, '_blank')}>
+          <DropdownMenuItem
+            onClick={() => window.open(`/exams/${exam.id}`, '_blank')}
+          >
             <Eye className="mr-2 h-4 w-4" />
             View Exam
           </DropdownMenuItem>
@@ -185,14 +197,14 @@ export function ExamActionsDropdown({ exam, onExamUpdated }: ExamActionsDropdown
           <DropdownMenuSeparator />
           {exam.examStatus !== 'ACTIVE' && (
             <>
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 onClick={() => setShowApproveDialog(true)}
                 className="text-green-600"
               >
                 <CheckCircle className="mr-2 h-4 w-4" />
                 Approve
               </DropdownMenuItem>
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 onClick={() => setShowRejectDialog(true)}
                 className="text-yellow-600"
               >
@@ -201,15 +213,17 @@ export function ExamActionsDropdown({ exam, onExamUpdated }: ExamActionsDropdown
               </DropdownMenuItem>
             </>
           )}
-          <DropdownMenuItem 
-            onClick={() => window.open(`/admin/exams/${exam.id}/edit`, '_blank')}
+          <DropdownMenuItem
+            onClick={() =>
+              window.open(`/admin/exams/${exam.id}/edit`, '_blank')
+            }
             disabled={exam.examStatus === 'ACTIVE'}
           >
             <Edit className="mr-2 h-4 w-4" />
             Edit
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem 
+          <DropdownMenuItem
             onClick={() => setShowDeleteDialog(true)}
             className="text-red-600"
             disabled={exam.registeredStudents > 0}
@@ -226,7 +240,9 @@ export function ExamActionsDropdown({ exam, onExamUpdated }: ExamActionsDropdown
           <AlertDialogHeader>
             <AlertDialogTitle>Approve Exam</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to approve the exam "{exam.title}"? This will notify the school that their exam has been approved.
+              Are you sure you want to approve the exam &quot;{exam.title}
+              &quot;? This will notify the school that their exam has been
+              approved.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -244,7 +260,8 @@ export function ExamActionsDropdown({ exam, onExamUpdated }: ExamActionsDropdown
           <AlertDialogHeader>
             <AlertDialogTitle>Reject Exam</AlertDialogTitle>
             <AlertDialogDescription>
-              Please provide a reason for rejecting the exam "{exam.title}". This will be sent to the school.
+              Please provide a reason for rejecting the exam &quot;{exam.title}
+              &quot;. This will be sent to the school.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="py-4">
@@ -253,7 +270,7 @@ export function ExamActionsDropdown({ exam, onExamUpdated }: ExamActionsDropdown
               id="reject-reason"
               placeholder="Enter reason for rejection..."
               value={rejectReason}
-              onChange={(e) => setRejectReason(e.target.value)}
+              onChange={e => setRejectReason(e.target.value)}
               className="mt-2"
               rows={3}
             />
@@ -273,18 +290,20 @@ export function ExamActionsDropdown({ exam, onExamUpdated }: ExamActionsDropdown
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Exam</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete the exam "{exam.title}"? This action cannot be undone.
+              Are you sure you want to delete the exam &quot;{exam.title}&quot;?
+              This action cannot be undone.
               {exam.registeredStudents > 0 && (
                 <span className="block mt-2 text-red-600 font-medium">
-                  This exam has {exam.registeredStudents} registered students and cannot be deleted.
+                  This exam has {exam.registeredStudents} registered students
+                  and cannot be deleted.
                 </span>
               )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={handleDelete} 
+            <AlertDialogAction
+              onClick={handleDelete}
               disabled={loading || exam.registeredStudents > 0}
               className="bg-red-600 hover:bg-red-700"
             >
@@ -294,5 +313,5 @@ export function ExamActionsDropdown({ exam, onExamUpdated }: ExamActionsDropdown
         </AlertDialogContent>
       </AlertDialog>
     </>
-  )
+  );
 }

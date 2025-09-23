@@ -1,21 +1,26 @@
-'use client'
+'use client';
 
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { TeacherDashboardLayout } from '../../../components/teacher/TeacherDashboardLayout'
-import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card'
-import { Button } from '../../../components/ui/button'
-import { Badge } from '../../../components/ui/badge'
-import { Input } from '../../../components/ui/input'
-import { Textarea } from '../../../components/ui/textarea'
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { TeacherDashboardLayout } from '../../../components/teacher/TeacherDashboardLayout';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '../../../components/ui/card';
+import { Button } from '../../../components/ui/button';
+import { Badge } from '../../../components/ui/badge';
+import { Input } from '../../../components/ui/input';
+import { Textarea } from '../../../components/ui/textarea';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../../components/ui/select'
+} from '../../../components/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -24,9 +29,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '../../../components/ui/dialog'
-import { Label } from '../../../components/ui/label'
-import { FileUpload, UploadedFile } from '../../../components/ui/file-upload'
+} from '../../../components/ui/dialog';
+import { Label } from '../../../components/ui/label';
+import { FileUpload, UploadedFile } from '../../../components/ui/file-upload';
 import {
   FileText,
   Plus,
@@ -47,52 +52,54 @@ import {
   Share,
   Copy,
   Send,
-} from 'lucide-react'
+} from 'lucide-react';
 
 interface LessonPlan {
-  id: string
-  title: string
-  subject: string
-  class: string
-  topic: string
-  duration: number // in minutes
-  objectives: string[]
-  materials: string[]
-  activities: string[]
-  assessment: string
-  homework?: string
-  notes?: string
+  id: string;
+  title: string;
+  subject: string;
+  class: string;
+  topic: string;
+  duration: number; // in minutes
+  objectives: string[];
+  materials: string[];
+  activities: string[];
+  assessment: string;
+  homework?: string;
+  notes?: string;
   resources: {
-    id: string
-    name: string
-    type: 'pdf' | 'video' | 'image' | 'document'
-    url: string
-    size: string
-  }[]
-  status: 'draft' | 'published' | 'archived'
-  reviewStatus: 'pending' | 'approved' | 'rejected' | 'needs_revision'
-  reviewNotes?: string
-  reviewedBy?: string
-  reviewedAt?: string
-  createdAt: string
-  updatedAt: string
-  scheduledDate?: string
+    id: string;
+    name: string;
+    type: 'pdf' | 'video' | 'image' | 'document';
+    url: string;
+    size: string;
+  }[];
+  status: 'draft' | 'published' | 'archived';
+  reviewStatus: 'pending' | 'approved' | 'rejected' | 'needs_revision';
+  reviewNotes?: string;
+  reviewedBy?: string;
+  reviewedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+  scheduledDate?: string;
 }
 
 export default function TeacherLessons() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
-  const [lessonPlans, setLessonPlans] = useState<LessonPlan[]>([])
-  const [searchQuery, setSearchQuery] = useState('')
-  const [filterStatus, setFilterStatus] = useState('all')
-  const [filterSubject, setFilterSubject] = useState('all')
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
-  const [selectedLesson, setSelectedLesson] = useState<LessonPlan | null>(null)
-  const [isViewModalOpen, setIsViewModalOpen] = useState(false)
-  const [uploadedResources, setUploadedResources] = useState<UploadedFile[]>([])
-  const [subjects, setSubjects] = useState<any[]>([])
-  const [classes, setClasses] = useState<any[]>([])
-  const [loadingData, setLoadingData] = useState(false)
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [lessonPlans, setLessonPlans] = useState<LessonPlan[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterSubject, setFilterSubject] = useState('all');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [selectedLesson, setSelectedLesson] = useState<LessonPlan | null>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [uploadedResources, setUploadedResources] = useState<UploadedFile[]>(
+    []
+  );
+  const [subjects, setSubjects] = useState<any[]>([]);
+  const [classes, setClasses] = useState<any[]>([]);
+  const [loadingData, setLoadingData] = useState(false);
 
   // New lesson form state
   const [newLesson, setNewLesson] = useState({
@@ -108,43 +115,43 @@ export default function TeacherLessons() {
     homework: '',
     notes: '',
     scheduledDate: '',
-  })
+  });
 
   useEffect(() => {
-    if (status === 'loading') return
-    
+    if (status === 'loading') return;
+
     if (!session || session.user.role !== 'TEACHER') {
-      router.push('/auth/signin')
-      return
+      router.push('/auth/signin');
+      return;
     }
 
-    fetchLessonPlans()
-    fetchTeacherData()
-  }, [session, status, router])
+    fetchLessonPlans();
+    fetchTeacherData();
+  }, [session, status, router]);
 
   const fetchTeacherData = async () => {
     try {
-      setLoadingData(true)
+      setLoadingData(true);
       const [subjectsResponse, classesResponse] = await Promise.all([
         fetch('/api/teacher/subjects'),
-        fetch('/api/teacher/school-classes') // Fetch all school classes via teacher endpoint
-      ])
+        fetch('/api/teacher/school-classes'), // Fetch all school classes via teacher endpoint
+      ]);
 
       if (subjectsResponse.ok) {
-        const subjectsData = await subjectsResponse.json()
-        setSubjects(subjectsData.subjects || [])
+        const subjectsData = await subjectsResponse.json();
+        setSubjects(subjectsData.subjects || []);
       }
 
       if (classesResponse.ok) {
-        const classesData = await classesResponse.json()
-        setClasses(classesData.classes || [])
+        const classesData = await classesResponse.json();
+        setClasses(classesData.classes || []);
       }
     } catch (error) {
-      console.error('Error fetching teacher data:', error)
+      console.error('Error fetching teacher data:', error);
     } finally {
-      setLoadingData(false)
+      setLoadingData(false);
     }
-  }
+  };
 
   const fetchLessonPlans = async () => {
     // Mock data - replace with actual API call
@@ -159,20 +166,20 @@ export default function TeacherLessons() {
         objectives: [
           'Define quadratic equations',
           'Identify coefficients in quadratic equations',
-          'Solve simple quadratic equations'
+          'Solve simple quadratic equations',
         ],
         materials: [
           'Whiteboard',
           'Calculator',
           'Textbook Chapter 5',
-          'Practice worksheets'
+          'Practice worksheets',
         ],
         activities: [
           'Warm-up review of linear equations (10 mins)',
           'Introduction to quadratic form (20 mins)',
           'Guided practice examples (30 mins)',
           'Independent practice (15 mins)',
-          'Wrap-up and homework assignment (5 mins)'
+          'Wrap-up and homework assignment (5 mins)',
         ],
         assessment: 'Exit ticket with 3 quadratic equation problems',
         homework: 'Complete exercises 5.1-5.10 in textbook',
@@ -182,15 +189,15 @@ export default function TeacherLessons() {
             name: 'Quadratic Equations Slides.pdf',
             type: 'pdf',
             url: '/resources/quadratic-slides.pdf',
-            size: '2.3 MB'
+            size: '2.3 MB',
           },
           {
             id: '2',
             name: 'Practice Worksheet.pdf',
             type: 'pdf',
             url: '/resources/practice-worksheet.pdf',
-            size: '1.1 MB'
-          }
+            size: '1.1 MB',
+          },
         ],
         status: 'published',
         reviewStatus: 'approved',
@@ -198,32 +205,32 @@ export default function TeacherLessons() {
         reviewedAt: '2024-01-16T09:00:00Z',
         createdAt: '2024-01-15',
         updatedAt: '2024-01-16',
-        scheduledDate: '2024-01-20'
+        scheduledDate: '2024-01-20',
       },
       {
         id: '2',
-        title: 'Newton\'s Laws of Motion',
+        title: 'Newton&apos;s Laws of Motion',
         subject: 'Physics',
         class: 'SS 1B',
         topic: 'Mechanics',
         duration: 60,
         objectives: [
-          'State Newton\'s three laws of motion',
-          'Apply Newton\'s laws to real-world scenarios',
-          'Calculate force, mass, and acceleration'
+          'State Newton&apos;s three laws of motion',
+          'Apply Newton&apos;s laws to real-world scenarios',
+          'Calculate force, mass, and acceleration',
         ],
         materials: [
           'Physics lab equipment',
           'Demonstration cart',
           'Weights and springs',
-          'Stopwatch'
+          'Stopwatch',
         ],
         activities: [
           'Review previous lesson (5 mins)',
           'Demonstration of inertia (15 mins)',
           'Interactive experiments (25 mins)',
           'Problem-solving session (10 mins)',
-          'Summary and questions (5 mins)'
+          'Summary and questions (5 mins)',
         ],
         assessment: 'Lab report on motion experiments',
         homework: 'Read Chapter 3 and answer review questions',
@@ -233,14 +240,14 @@ export default function TeacherLessons() {
             name: 'Newton Laws Demo Video.mp4',
             type: 'video',
             url: '/resources/newton-demo.mp4',
-            size: '45.2 MB'
-          }
+            size: '45.2 MB',
+          },
         ],
         status: 'draft',
         reviewStatus: 'pending',
         createdAt: '2024-01-14',
         updatedAt: '2024-01-17',
-        scheduledDate: '2024-01-22'
+        scheduledDate: '2024-01-22',
       },
       {
         id: '3',
@@ -252,20 +259,20 @@ export default function TeacherLessons() {
         objectives: [
           'Understand the concept of derivatives',
           'Calculate basic derivatives using rules',
-          'Apply derivatives to rate of change problems'
+          'Apply derivatives to rate of change problems',
         ],
         materials: [
           'Graphing calculator',
           'Graph paper',
           'Calculus textbook',
-          'Online graphing tools'
+          'Online graphing tools',
         ],
         activities: [
           'Review of limits (15 mins)',
           'Introduction to derivative concept (25 mins)',
           'Basic derivative rules (30 mins)',
           'Practice problems (15 mins)',
-          'Q&A session (5 mins)'
+          'Q&A session (5 mins)',
         ],
         assessment: 'Quiz on basic derivative calculations',
         resources: [],
@@ -274,62 +281,93 @@ export default function TeacherLessons() {
         reviewedBy: 'Dr. Johnson',
         reviewedAt: '2024-01-11T14:30:00Z',
         createdAt: '2024-01-10',
-        updatedAt: '2024-01-12'
-      }
-    ])
-  }
+        updatedAt: '2024-01-12',
+      },
+    ]);
+  };
 
   const filteredLessons = lessonPlans.filter(lesson => {
-    const matchesSearch = lesson.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         lesson.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         lesson.topic.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesStatus = filterStatus === 'all' || lesson.status === filterStatus
-    const matchesSubject = filterSubject === 'all' || lesson.subject === filterSubject
-    return matchesSearch && matchesStatus && matchesSubject
-  })
+    const matchesSearch =
+      lesson.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      lesson.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      lesson.topic.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus =
+      filterStatus === 'all' || lesson.status === filterStatus;
+    const matchesSubject =
+      filterSubject === 'all' || lesson.subject === filterSubject;
+    return matchesSearch && matchesStatus && matchesSubject;
+  });
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'published':
-        return <Badge variant="default" className="bg-green-600">Published</Badge>
+        return (
+          <Badge variant="default" className="bg-green-600">
+            Published
+          </Badge>
+        );
       case 'draft':
-        return <Badge variant="outline" className="text-orange-600 border-orange-600">Draft</Badge>
+        return (
+          <Badge
+            variant="outline"
+            className="text-orange-600 border-orange-600"
+          >
+            Draft
+          </Badge>
+        );
       case 'archived':
-        return <Badge variant="secondary">Archived</Badge>
+        return <Badge variant="secondary">Archived</Badge>;
       default:
-        return <Badge variant="outline">Unknown</Badge>
+        return <Badge variant="outline">Unknown</Badge>;
     }
-  }
+  };
 
   const getReviewStatusBadge = (reviewStatus: string) => {
     switch (reviewStatus) {
       case 'approved':
-        return <Badge variant="default" className="bg-green-600">Approved</Badge>
+        return (
+          <Badge variant="default" className="bg-green-600">
+            Approved
+          </Badge>
+        );
       case 'rejected':
-        return <Badge variant="destructive">Rejected</Badge>
+        return <Badge variant="destructive">Rejected</Badge>;
       case 'needs_revision':
-        return <Badge variant="outline" className="text-yellow-600 border-yellow-600">Needs Revision</Badge>
+        return (
+          <Badge
+            variant="outline"
+            className="text-yellow-600 border-yellow-600"
+          >
+            Needs Revision
+          </Badge>
+        );
       case 'pending':
-        return <Badge variant="outline" className="text-blue-600 border-blue-600">Pending Review</Badge>
+        return (
+          <Badge variant="outline" className="text-blue-600 border-blue-600">
+            Pending Review
+          </Badge>
+        );
       default:
-        return <Badge variant="outline">Unknown</Badge>
+        return <Badge variant="outline">Unknown</Badge>;
     }
-  }
+  };
 
   const getResourceIcon = (type: string) => {
     switch (type) {
       case 'pdf':
-        return <FileIcon className="h-4 w-4 text-red-600" />
+        return <FileIcon className="h-4 w-4 text-red-600" />;
       case 'video':
-        return <Video className="h-4 w-4 text-blue-600" />
+        return <Video className="h-4 w-4 text-blue-600" />;
       case 'image':
-        return <Image className="h-4 w-4 text-green-600" />
+        return <Image className="h-4 w-4 text-green-600" />;
       default:
-        return <FileText className="h-4 w-4 text-gray-600" />
+        return <FileText className="h-4 w-4 text-gray-600" />;
     }
-  }
+  };
 
-  const handleCreateLesson = async (status: 'draft' | 'published' = 'published') => {
+  const handleCreateLesson = async (
+    status: 'draft' | 'published' = 'published'
+  ) => {
     try {
       // First create the lesson plan
       const response = await fetch('/api/teacher/lesson-plans', {
@@ -357,23 +395,25 @@ export default function TeacherLessons() {
             filePath: file.url,
             fileSize: file.size,
             mimeType: file.type,
-          }))
+          })),
         }),
-      })
+      });
 
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || 'Failed to create lesson plan')
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create lesson plan');
       }
 
-      const { lessonPlan } = await response.json()
+      const { lessonPlan } = await response.json();
 
       // Add to local state for immediate UI update
       const createdLessonPlan: LessonPlan = {
         id: lessonPlan.id,
         title: lessonPlan.title,
         subject: lessonPlan.subject?.name || 'General',
-        class: lessonPlan.class ? `${lessonPlan.class.name}${lessonPlan.class.section ? ` ${lessonPlan.class.section}` : ''}` : 'All Classes',
+        class: lessonPlan.class
+          ? `${lessonPlan.class.name}${lessonPlan.class.section ? ` ${lessonPlan.class.section}` : ''}`
+          : 'All Classes',
         topic: lessonPlan.topic || '',
         duration: lessonPlan.duration,
         objectives: lessonPlan.objectives || [],
@@ -385,20 +425,28 @@ export default function TeacherLessons() {
         resources: uploadedResources.map(file => ({
           id: file.id || '',
           name: file.name,
-          type: file.type.includes('pdf') ? 'pdf' : file.type.includes('video') ? 'video' : file.type.includes('image') ? 'image' : 'document',
+          type: file.type.includes('pdf')
+            ? 'pdf'
+            : file.type.includes('video')
+              ? 'video'
+              : file.type.includes('image')
+                ? 'image'
+                : 'document',
           url: file.url,
-          size: `${Math.round(file.size / 1024)} KB`
+          size: `${Math.round(file.size / 1024)} KB`,
         })),
         status: lessonPlan.status.toLowerCase() as any,
         reviewStatus: lessonPlan.reviewStatus.toLowerCase() as any,
         createdAt: new Date(lessonPlan.createdAt).toISOString().split('T')[0],
         updatedAt: new Date(lessonPlan.updatedAt).toISOString().split('T')[0],
-        scheduledDate: lessonPlan.scheduledDate ? new Date(lessonPlan.scheduledDate).toISOString().split('T')[0] : undefined
-      }
-      
-      setLessonPlans([createdLessonPlan, ...lessonPlans])
-      setIsCreateModalOpen(false)
-      
+        scheduledDate: lessonPlan.scheduledDate
+          ? new Date(lessonPlan.scheduledDate).toISOString().split('T')[0]
+          : undefined,
+      };
+
+      setLessonPlans([createdLessonPlan, ...lessonPlans]);
+      setIsCreateModalOpen(false);
+
       // Reset form
       setNewLesson({
         title: '',
@@ -413,38 +461,47 @@ export default function TeacherLessons() {
         homework: '',
         notes: '',
         scheduledDate: '',
-      })
-      setUploadedResources([])
+      });
+      setUploadedResources([]);
 
       // Show success message
       // toast success would go here
-
     } catch (error) {
-      console.error('Error creating lesson plan:', error)
-      alert('Failed to create lesson plan: ' + (error instanceof Error ? error.message : 'Unknown error'))
+      console.error('Error creating lesson plan:', error);
+      alert(
+        'Failed to create lesson plan: ' +
+          (error instanceof Error ? error.message : 'Unknown error')
+      );
     }
-  }
+  };
 
   const addArrayField = (field: 'objectives' | 'materials' | 'activities') => {
     setNewLesson(prev => ({
       ...prev,
-      [field]: [...prev[field], '']
-    }))
-  }
+      [field]: [...prev[field], ''],
+    }));
+  };
 
-  const updateArrayField = (field: 'objectives' | 'materials' | 'activities', index: number, value: string) => {
+  const updateArrayField = (
+    field: 'objectives' | 'materials' | 'activities',
+    index: number,
+    value: string
+  ) => {
     setNewLesson(prev => ({
       ...prev,
-      [field]: prev[field].map((item, i) => i === index ? value : item)
-    }))
-  }
+      [field]: prev[field].map((item, i) => (i === index ? value : item)),
+    }));
+  };
 
-  const removeArrayField = (field: 'objectives' | 'materials' | 'activities', index: number) => {
+  const removeArrayField = (
+    field: 'objectives' | 'materials' | 'activities',
+    index: number
+  ) => {
     setNewLesson(prev => ({
       ...prev,
-      [field]: prev[field].filter((_, i) => i !== index)
-    }))
-  }
+      [field]: prev[field].filter((_, i) => i !== index),
+    }));
+  };
 
   if (status === 'loading') {
     return (
@@ -454,11 +511,11 @@ export default function TeacherLessons() {
           <p className="mt-4 text-gray-600">Loading...</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (!session || session.user.role !== 'TEACHER') {
-    return null
+    return null;
   }
 
   return (
@@ -467,11 +524,18 @@ export default function TeacherLessons() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Lesson Plans & Notes</h1>
-            <p className="text-gray-600 mt-1">Create, manage, and share your lesson plans and teaching resources</p>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Lesson Plans & Notes
+            </h1>
+            <p className="text-gray-600 mt-1">
+              Create, manage, and share your lesson plans and teaching resources
+            </p>
           </div>
           <div className="mt-4 sm:mt-0 flex space-x-2">
-            <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+            <Dialog
+              open={isCreateModalOpen}
+              onOpenChange={setIsCreateModalOpen}
+            >
               <DialogTrigger asChild>
                 <Button>
                   <Plus className="h-4 w-4 mr-2" />
@@ -482,10 +546,11 @@ export default function TeacherLessons() {
                 <DialogHeader>
                   <DialogTitle>Create New Lesson Plan</DialogTitle>
                   <DialogDescription>
-                    Design a comprehensive lesson plan with objectives, activities, and resources.
+                    Design a comprehensive lesson plan with objectives,
+                    activities, and resources.
                   </DialogDescription>
                 </DialogHeader>
-                
+
                 <div className="grid gap-4 py-4">
                   {/* Basic Information */}
                   <div className="grid grid-cols-2 gap-4">
@@ -494,7 +559,12 @@ export default function TeacherLessons() {
                       <Input
                         id="title"
                         value={newLesson.title}
-                        onChange={(e) => setNewLesson(prev => ({ ...prev, title: e.target.value }))}
+                        onChange={e =>
+                          setNewLesson(prev => ({
+                            ...prev,
+                            title: e.target.value,
+                          }))
+                        }
                         placeholder="Enter lesson title"
                       />
                     </div>
@@ -503,7 +573,12 @@ export default function TeacherLessons() {
                       <Input
                         id="topic"
                         value={newLesson.topic}
-                        onChange={(e) => setNewLesson(prev => ({ ...prev, topic: e.target.value }))}
+                        onChange={e =>
+                          setNewLesson(prev => ({
+                            ...prev,
+                            topic: e.target.value,
+                          }))
+                        }
                         placeholder="Enter lesson topic"
                       />
                     </div>
@@ -512,44 +587,63 @@ export default function TeacherLessons() {
                   <div className="grid grid-cols-3 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="class">Class</Label>
-                      <Select value={newLesson.class} onValueChange={(value) => setNewLesson(prev => ({ ...prev, class: value }))}>
+                      <Select
+                        value={newLesson.class}
+                        onValueChange={value =>
+                          setNewLesson(prev => ({ ...prev, class: value }))
+                        }
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Select class" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="all">All Classes</SelectItem>
                           {loadingData ? (
-                            <SelectItem value="loading" disabled>Loading classes...</SelectItem>
+                            <SelectItem value="loading" disabled>
+                              Loading classes...
+                            </SelectItem>
                           ) : classes.length > 0 ? (
-                            classes.map((cls) => (
+                            classes.map(cls => (
                               <SelectItem key={cls.id} value={cls.id}>
-                                {cls.name}{cls.section && ` ${cls.section}`}
+                                {cls.name}
+                                {cls.section && ` ${cls.section}`}
                               </SelectItem>
                             ))
                           ) : (
-                            <SelectItem value="none" disabled>No classes available</SelectItem>
+                            <SelectItem value="none" disabled>
+                              No classes available
+                            </SelectItem>
                           )}
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="subject">Subject</Label>
-                      <Select value={newLesson.subject} onValueChange={(value) => setNewLesson(prev => ({ ...prev, subject: value }))}>
+                      <Select
+                        value={newLesson.subject}
+                        onValueChange={value =>
+                          setNewLesson(prev => ({ ...prev, subject: value }))
+                        }
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Select subject" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="general">General</SelectItem>
                           {loadingData ? (
-                            <SelectItem value="loading" disabled>Loading subjects...</SelectItem>
+                            <SelectItem value="loading" disabled>
+                              Loading subjects...
+                            </SelectItem>
                           ) : subjects.length > 0 ? (
-                            subjects.map((subject) => (
+                            subjects.map(subject => (
                               <SelectItem key={subject.id} value={subject.id}>
                                 {subject.name}
                               </SelectItem>
                             ))
                           ) : (
-                            <SelectItem value="none" disabled>No subjects assigned</SelectItem>
+                            <SelectItem value="none" disabled>
+                              No subjects assigned
+                            </SelectItem>
                           )}
                         </SelectContent>
                       </Select>
@@ -560,19 +654,31 @@ export default function TeacherLessons() {
                         id="duration"
                         type="number"
                         value={newLesson.duration}
-                        onChange={(e) => setNewLesson(prev => ({ ...prev, duration: parseInt(e.target.value) }))}
+                        onChange={e =>
+                          setNewLesson(prev => ({
+                            ...prev,
+                            duration: parseInt(e.target.value),
+                          }))
+                        }
                         placeholder="60"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="scheduledDate">Scheduled Date (Optional)</Label>
+                    <Label htmlFor="scheduledDate">
+                      Scheduled Date (Optional)
+                    </Label>
                     <Input
                       id="scheduledDate"
                       type="date"
                       value={newLesson.scheduledDate}
-                      onChange={(e) => setNewLesson(prev => ({ ...prev, scheduledDate: e.target.value }))}
+                      onChange={e =>
+                        setNewLesson(prev => ({
+                          ...prev,
+                          scheduledDate: e.target.value,
+                        }))
+                      }
                     />
                   </div>
 
@@ -583,14 +689,22 @@ export default function TeacherLessons() {
                       <div key={index} className="flex gap-2">
                         <Input
                           value={objective}
-                          onChange={(e) => updateArrayField('objectives', index, e.target.value)}
+                          onChange={e =>
+                            updateArrayField(
+                              'objectives',
+                              index,
+                              e.target.value
+                            )
+                          }
                           placeholder={`Objective ${index + 1}`}
                         />
                         {newLesson.objectives.length > 1 && (
                           <Button
                             variant="outline"
                             size="icon"
-                            onClick={() => removeArrayField('objectives', index)}
+                            onClick={() =>
+                              removeArrayField('objectives', index)
+                            }
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -614,7 +728,9 @@ export default function TeacherLessons() {
                       <div key={index} className="flex gap-2">
                         <Input
                           value={material}
-                          onChange={(e) => updateArrayField('materials', index, e.target.value)}
+                          onChange={e =>
+                            updateArrayField('materials', index, e.target.value)
+                          }
                           placeholder={`Material ${index + 1}`}
                         />
                         {newLesson.materials.length > 1 && (
@@ -645,14 +761,22 @@ export default function TeacherLessons() {
                       <div key={index} className="flex gap-2">
                         <Input
                           value={activity}
-                          onChange={(e) => updateArrayField('activities', index, e.target.value)}
+                          onChange={e =>
+                            updateArrayField(
+                              'activities',
+                              index,
+                              e.target.value
+                            )
+                          }
                           placeholder={`Activity ${index + 1}`}
                         />
                         {newLesson.activities.length > 1 && (
                           <Button
                             variant="outline"
                             size="icon"
-                            onClick={() => removeArrayField('activities', index)}
+                            onClick={() =>
+                              removeArrayField('activities', index)
+                            }
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -675,7 +799,12 @@ export default function TeacherLessons() {
                     <Textarea
                       id="assessment"
                       value={newLesson.assessment}
-                      onChange={(e) => setNewLesson(prev => ({ ...prev, assessment: e.target.value }))}
+                      onChange={e =>
+                        setNewLesson(prev => ({
+                          ...prev,
+                          assessment: e.target.value,
+                        }))
+                      }
                       placeholder="Describe how you will assess student learning"
                       rows={3}
                     />
@@ -683,11 +812,18 @@ export default function TeacherLessons() {
 
                   {/* Homework */}
                   <div className="space-y-2">
-                    <Label htmlFor="homework">Homework Assignment (Optional)</Label>
+                    <Label htmlFor="homework">
+                      Homework Assignment (Optional)
+                    </Label>
                     <Textarea
                       id="homework"
                       value={newLesson.homework}
-                      onChange={(e) => setNewLesson(prev => ({ ...prev, homework: e.target.value }))}
+                      onChange={e =>
+                        setNewLesson(prev => ({
+                          ...prev,
+                          homework: e.target.value,
+                        }))
+                      }
                       placeholder="Describe homework assignment"
                       rows={2}
                     />
@@ -699,7 +835,12 @@ export default function TeacherLessons() {
                     <Textarea
                       id="notes"
                       value={newLesson.notes}
-                      onChange={(e) => setNewLesson(prev => ({ ...prev, notes: e.target.value }))}
+                      onChange={e =>
+                        setNewLesson(prev => ({
+                          ...prev,
+                          notes: e.target.value,
+                        }))
+                      }
                       placeholder="Any additional notes or reminders"
                       rows={2}
                     />
@@ -709,28 +850,52 @@ export default function TeacherLessons() {
                   <div className="space-y-2">
                     <Label>Resources & Materials</Label>
                     <FileUpload
-                      onUpload={(files) => setUploadedResources(prev => [...prev, ...files])}
-                      onRemove={(file) => setUploadedResources(prev => prev.filter(f => f.id !== file.id))}
+                      onUpload={files =>
+                        setUploadedResources(prev => [...prev, ...files])
+                      }
+                      onRemove={file =>
+                        setUploadedResources(prev =>
+                          prev.filter(f => f.id !== file.id)
+                        )
+                      }
                       uploadEndpoint="/api/upload/temp-file"
                       existingFiles={uploadedResources}
                       maxFiles={15}
                       maxSize={25}
-                      acceptedTypes={['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'txt', 'jpg', 'jpeg', 'png', 'gif', 'mp4', 'mp3']}
+                      acceptedTypes={[
+                        'pdf',
+                        'doc',
+                        'docx',
+                        'ppt',
+                        'pptx',
+                        'xls',
+                        'xlsx',
+                        'txt',
+                        'jpg',
+                        'jpeg',
+                        'png',
+                        'gif',
+                        'mp4',
+                        'mp3',
+                      ]}
                       label="Upload Lesson Resources"
                       description="Upload teaching materials, slides, videos, etc."
                       additionalData={{
-                        uploadType: 'lesson-plan'
+                        uploadType: 'lesson-plan',
                       }}
                     />
                   </div>
                 </div>
 
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setIsCreateModalOpen(false)}>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsCreateModalOpen(false)}
+                  >
                     Cancel
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={() => handleCreateLesson('draft')}
                   >
                     Save as Draft
@@ -755,7 +920,7 @@ export default function TeacherLessons() {
             <Input
               placeholder="Search lesson plans..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               className="pl-10"
             />
           </div>
@@ -778,7 +943,7 @@ export default function TeacherLessons() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Subjects</SelectItem>
-              {subjects.map((subject) => (
+              {subjects.map(subject => (
                 <SelectItem key={subject.id} value={subject.name}>
                   {subject.name}
                 </SelectItem>
@@ -789,19 +954,27 @@ export default function TeacherLessons() {
 
         {/* Lesson Plans Grid */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filteredLessons.map((lesson) => (
-            <Card key={lesson.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+          {filteredLessons.map(lesson => (
+            <Card
+              key={lesson.id}
+              className="overflow-hidden hover:shadow-lg transition-shadow"
+            >
               <CardHeader>
-                  <div className="flex items-start justify-between">
+                <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <CardTitle className="text-lg line-clamp-2">{lesson.title}</CardTitle>
+                    <CardTitle className="text-lg line-clamp-2">
+                      {lesson.title}
+                    </CardTitle>
                     <p className="text-sm text-gray-600 mt-1">
                       {lesson.subject} • {lesson.class}
                     </p>
-                    <p className="text-sm text-gray-500">Topic: {lesson.topic}</p>
+                    <p className="text-sm text-gray-500">
+                      Topic: {lesson.topic}
+                    </p>
                     <div className="flex items-center space-x-2 mt-2">
                       {getStatusBadge(lesson.status)}
-                      {lesson.status !== 'draft' && getReviewStatusBadge(lesson.reviewStatus)}
+                      {lesson.status !== 'draft' &&
+                        getReviewStatusBadge(lesson.reviewStatus)}
                     </div>
                   </div>
                 </div>
@@ -833,13 +1006,20 @@ export default function TeacherLessons() {
                 {/* Resources Preview */}
                 {lesson.resources.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-medium text-gray-900 mb-2">Resources</h4>
+                    <h4 className="text-sm font-medium text-gray-900 mb-2">
+                      Resources
+                    </h4>
                     <div className="space-y-1">
-                      {lesson.resources.slice(0, 2).map((resource) => (
-                        <div key={resource.id} className="flex items-center space-x-2 text-sm">
+                      {lesson.resources.slice(0, 2).map(resource => (
+                        <div
+                          key={resource.id}
+                          className="flex items-center space-x-2 text-sm"
+                        >
                           {getResourceIcon(resource.type)}
                           <span className="truncate">{resource.name}</span>
-                          <span className="text-gray-400">({resource.size})</span>
+                          <span className="text-gray-400">
+                            ({resource.size})
+                          </span>
                         </div>
                       ))}
                       {lesson.resources.length > 2 && (
@@ -858,8 +1038,8 @@ export default function TeacherLessons() {
                       variant="outline"
                       size="sm"
                       onClick={() => {
-                        setSelectedLesson(lesson)
-                        setIsViewModalOpen(true)
+                        setSelectedLesson(lesson);
+                        setIsViewModalOpen(true);
                       }}
                     >
                       <Eye className="h-4 w-4 mr-1" />
@@ -895,31 +1075,43 @@ export default function TeacherLessons() {
                 <DialogHeader>
                   <DialogTitle>{selectedLesson.title}</DialogTitle>
                   <DialogDescription>
-                    {selectedLesson.subject} • {selectedLesson.class} • {selectedLesson.topic}
+                    {selectedLesson.subject} • {selectedLesson.class} •{' '}
+                    {selectedLesson.topic}
                   </DialogDescription>
                 </DialogHeader>
-                
+
                 <div className="space-y-6">
                   {/* Basic Info */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label className="text-sm font-medium">Duration</Label>
-                      <p className="text-sm text-gray-600">{selectedLesson.duration} minutes</p>
+                      <p className="text-sm text-gray-600">
+                        {selectedLesson.duration} minutes
+                      </p>
                     </div>
                     {selectedLesson.scheduledDate && (
                       <div>
-                        <Label className="text-sm font-medium">Scheduled Date</Label>
-                        <p className="text-sm text-gray-600">{selectedLesson.scheduledDate}</p>
+                        <Label className="text-sm font-medium">
+                          Scheduled Date
+                        </Label>
+                        <p className="text-sm text-gray-600">
+                          {selectedLesson.scheduledDate}
+                        </p>
                       </div>
                     )}
                   </div>
 
                   {/* Objectives */}
                   <div>
-                    <Label className="text-sm font-medium">Learning Objectives</Label>
+                    <Label className="text-sm font-medium">
+                      Learning Objectives
+                    </Label>
                     <ul className="mt-2 space-y-1">
                       {selectedLesson.objectives.map((objective, index) => (
-                        <li key={index} className="text-sm text-gray-600 flex items-start">
+                        <li
+                          key={index}
+                          className="text-sm text-gray-600 flex items-start"
+                        >
                           <span className="mr-2">•</span>
                           {objective}
                         </li>
@@ -929,10 +1121,15 @@ export default function TeacherLessons() {
 
                   {/* Materials */}
                   <div>
-                    <Label className="text-sm font-medium">Materials Needed</Label>
+                    <Label className="text-sm font-medium">
+                      Materials Needed
+                    </Label>
                     <ul className="mt-2 space-y-1">
                       {selectedLesson.materials.map((material, index) => (
-                        <li key={index} className="text-sm text-gray-600 flex items-start">
+                        <li
+                          key={index}
+                          className="text-sm text-gray-600 flex items-start"
+                        >
                           <span className="mr-2">•</span>
                           {material}
                         </li>
@@ -942,10 +1139,15 @@ export default function TeacherLessons() {
 
                   {/* Activities */}
                   <div>
-                    <Label className="text-sm font-medium">Lesson Activities</Label>
+                    <Label className="text-sm font-medium">
+                      Lesson Activities
+                    </Label>
                     <ol className="mt-2 space-y-1">
                       {selectedLesson.activities.map((activity, index) => (
-                        <li key={index} className="text-sm text-gray-600 flex items-start">
+                        <li
+                          key={index}
+                          className="text-sm text-gray-600 flex items-start"
+                        >
                           <span className="mr-2">{index + 1}.</span>
                           {activity}
                         </li>
@@ -956,43 +1158,62 @@ export default function TeacherLessons() {
                   {/* Assessment */}
                   <div>
                     <Label className="text-sm font-medium">Assessment</Label>
-                    <p className="text-sm text-gray-600 mt-1">{selectedLesson.assessment}</p>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {selectedLesson.assessment}
+                    </p>
                   </div>
 
                   {/* Homework */}
                   {selectedLesson.homework && (
                     <div>
                       <Label className="text-sm font-medium">Homework</Label>
-                      <p className="text-sm text-gray-600 mt-1">{selectedLesson.homework}</p>
+                      <p className="text-sm text-gray-600 mt-1">
+                        {selectedLesson.homework}
+                      </p>
                     </div>
                   )}
 
                   {/* Additional Notes */}
                   {selectedLesson.notes && (
                     <div>
-                      <Label className="text-sm font-medium">Additional Notes</Label>
-                      <p className="text-sm text-gray-600 mt-1">{selectedLesson.notes}</p>
+                      <Label className="text-sm font-medium">
+                        Additional Notes
+                      </Label>
+                      <p className="text-sm text-gray-600 mt-1">
+                        {selectedLesson.notes}
+                      </p>
                     </div>
                   )}
 
                   {/* Review Status */}
                   {selectedLesson.status !== 'draft' && (
                     <div>
-                      <Label className="text-sm font-medium">Review Status</Label>
+                      <Label className="text-sm font-medium">
+                        Review Status
+                      </Label>
                       <div className="mt-1 space-y-2">
-                        <div>{getReviewStatusBadge(selectedLesson.reviewStatus)}</div>
+                        <div>
+                          {getReviewStatusBadge(selectedLesson.reviewStatus)}
+                        </div>
                         {selectedLesson.reviewedBy && (
                           <p className="text-sm text-gray-600">
                             Reviewed by {selectedLesson.reviewedBy}
                             {selectedLesson.reviewedAt && (
-                              <span> on {new Date(selectedLesson.reviewedAt).toLocaleDateString()}</span>
+                              <span>
+                                {' '}
+                                on{' '}
+                                {new Date(
+                                  selectedLesson.reviewedAt
+                                ).toLocaleDateString()}
+                              </span>
                             )}
                           </p>
                         )}
                         {selectedLesson.reviewNotes && (
                           <div className="p-3 bg-gray-50 rounded-lg">
                             <p className="text-sm text-gray-700">
-                              <strong>Review Notes:</strong> {selectedLesson.reviewNotes}
+                              <strong>Review Notes:</strong>{' '}
+                              {selectedLesson.reviewNotes}
                             </p>
                           </div>
                         )}
@@ -1005,12 +1226,19 @@ export default function TeacherLessons() {
                     <div>
                       <Label className="text-sm font-medium">Resources</Label>
                       <div className="mt-2 space-y-2">
-                        {selectedLesson.resources.map((resource) => (
-                          <div key={resource.id} className="flex items-center justify-between p-2 border rounded">
+                        {selectedLesson.resources.map(resource => (
+                          <div
+                            key={resource.id}
+                            className="flex items-center justify-between p-2 border rounded"
+                          >
                             <div className="flex items-center space-x-2">
                               {getResourceIcon(resource.type)}
-                              <span className="text-sm font-medium">{resource.name}</span>
-                              <span className="text-xs text-gray-500">({resource.size})</span>
+                              <span className="text-sm font-medium">
+                                {resource.name}
+                              </span>
+                              <span className="text-xs text-gray-500">
+                                ({resource.size})
+                              </span>
                             </div>
                             <Button variant="outline" size="sm">
                               <Download className="h-4 w-4 mr-1" />
@@ -1024,7 +1252,10 @@ export default function TeacherLessons() {
                 </div>
 
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setIsViewModalOpen(false)}>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsViewModalOpen(false)}
+                  >
                     Close
                   </Button>
                   {selectedLesson.reviewStatus !== 'approved' && (
@@ -1048,12 +1279,19 @@ export default function TeacherLessons() {
         {filteredLessons.length === 0 && (
           <div className="text-center py-12">
             <FileText className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No lesson plans found</h3>
+            <h3 className="mt-2 text-sm font-medium text-gray-900">
+              No lesson plans found
+            </h3>
             <p className="mt-1 text-sm text-gray-500">
-              {searchQuery ? 'Try adjusting your search criteria.' : 'Get started by creating your first lesson plan.'}
+              {searchQuery
+                ? 'Try adjusting your search criteria.'
+                : 'Get started by creating your first lesson plan.'}
             </p>
             {!searchQuery && (
-              <Button className="mt-4" onClick={() => setIsCreateModalOpen(true)}>
+              <Button
+                className="mt-4"
+                onClick={() => setIsCreateModalOpen(true)}
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Create Lesson Plan
               </Button>
@@ -1062,5 +1300,5 @@ export default function TeacherLessons() {
         )}
       </div>
     </TeacherDashboardLayout>
-  )
+  );
 }

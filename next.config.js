@@ -2,11 +2,11 @@
 const nextConfig = {
   serverExternalPackages: ['@prisma/client', 'bcryptjs'],
   images: {
-    domains: ['res.cloudinary.com', 'images.unsplash.com']
+    domains: ['res.cloudinary.com', 'images.unsplash.com'],
   },
   env: {
     CUSTOM_KEY: process.env.CUSTOM_KEY,
-  }
-}
+  },
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

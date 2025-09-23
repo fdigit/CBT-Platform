@@ -1,21 +1,26 @@
-'use client'
+'use client';
 
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card'
-import { Button } from '../../../components/ui/button'
-import { Badge } from '../../../components/ui/badge'
-import { Input } from '../../../components/ui/input'
-import { Textarea } from '../../../components/ui/textarea'
-import { Label } from '../../../components/ui/label'
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '../../../components/ui/card';
+import { Button } from '../../../components/ui/button';
+import { Badge } from '../../../components/ui/badge';
+import { Input } from '../../../components/ui/input';
+import { Textarea } from '../../../components/ui/textarea';
+import { Label } from '../../../components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../../components/ui/select'
+} from '../../../components/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -23,13 +28,13 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '../../../components/ui/dialog'
+} from '../../../components/ui/dialog';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from '../../../components/ui/tabs'
+} from '../../../components/ui/tabs';
 import {
   ClipboardList,
   Search,
@@ -48,112 +53,120 @@ import {
   Send,
   AlertTriangle,
   Calendar as CalendarIcon,
-} from 'lucide-react'
-import { useToast } from '../../../hooks/use-toast'
-import { StudentDashboardLayout } from '../../../components/student'
-import { FileUpload, UploadedFile } from '../../../components/ui/file-upload'
+} from 'lucide-react';
+import { useToast } from '../../../hooks/use-toast';
+import { StudentDashboardLayout } from '../../../components/student';
+import { FileUpload, UploadedFile } from '../../../components/ui/file-upload';
 
 interface Assignment {
-  id: string
-  title: string
-  subject: string
-  class: string
-  description: string
-  instructions: string
-  dueDate: string | null
-  createdAt: string
-  type: 'ASSIGNMENT' | 'NOTE' | 'RESOURCE' | 'HOMEWORK' | 'PROJECT' | 'QUIZ' | 'TEST'
-  maxScore: number
-  teacherName: string
+  id: string;
+  title: string;
+  subject: string;
+  class: string;
+  description: string;
+  instructions: string;
+  dueDate: string | null;
+  createdAt: string;
+  type:
+    | 'ASSIGNMENT'
+    | 'NOTE'
+    | 'RESOURCE'
+    | 'HOMEWORK'
+    | 'PROJECT'
+    | 'QUIZ'
+    | 'TEST';
+  maxScore: number;
+  teacherName: string;
   attachments: {
-    id: string
-    name: string
-    url: string
-    size: string
-  }[]
+    id: string;
+    name: string;
+    url: string;
+    size: string;
+  }[];
   submission?: {
-    id: string
-    status: 'SUBMITTED' | 'LATE' | 'GRADED' | 'RETURNED' | 'MISSING'
-    submittedAt?: string
-    score?: number
-    feedback?: string
+    id: string;
+    status: 'SUBMITTED' | 'LATE' | 'GRADED' | 'RETURNED' | 'MISSING';
+    submittedAt?: string;
+    score?: number;
+    feedback?: string;
     attachments: {
-      id: string
-      name: string
-      url: string
-    }[]
-  } | null
+      id: string;
+      name: string;
+      url: string;
+    }[];
+  } | null;
 }
 
 interface SubmissionForm {
-  textContent: string
-  files: UploadedFile[]
+  textContent: string;
+  files: UploadedFile[];
 }
 
 export default function StudentAssignments() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
-  const { toast } = useToast()
-  
-  const [assignments, setAssignments] = useState<Assignment[]>([])
-  const [searchQuery, setSearchQuery] = useState('')
-  const [filterType, setFilterType] = useState('all')
-  const [filterSubject, setFilterSubject] = useState('all')
-  const [filterStatus, setFilterStatus] = useState('all')
-  const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null)
-  const [isViewModalOpen, setIsViewModalOpen] = useState(false)
-  const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false)
-  const [activeTab, setActiveTab] = useState('all')
-  const [loading, setLoading] = useState(true)
-  
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const [assignments, setAssignments] = useState<Assignment[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterType, setFilterType] = useState('all');
+  const [filterSubject, setFilterSubject] = useState('all');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [selectedAssignment, setSelectedAssignment] =
+    useState<Assignment | null>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('all');
+  const [loading, setLoading] = useState(true);
+
   const [submissionForm, setSubmissionForm] = useState<SubmissionForm>({
     textContent: '',
-    files: []
-  })
-  const [submissionFiles, setSubmissionFiles] = useState<UploadedFile[]>([])
+    files: [],
+  });
+  const [submissionFiles, setSubmissionFiles] = useState<UploadedFile[]>([]);
 
   useEffect(() => {
-    if (status === 'loading') return
-    
+    if (status === 'loading') return;
+
     if (!session || session.user.role !== 'STUDENT') {
-      router.push('/auth/signin')
-      return
+      router.push('/auth/signin');
+      return;
     }
 
-    fetchAssignments()
-  }, [session, status, router])
+    fetchAssignments();
+  }, [session, status, router]);
 
   const fetchAssignments = async () => {
     try {
-      setLoading(true)
-      const response = await fetch('/api/student/assignments')
+      setLoading(true);
+      const response = await fetch('/api/student/assignments');
       if (response.ok) {
-        const data = await response.json()
-        console.log('Fetched student assignments:', data.assignments)
-        setAssignments(data.assignments || [])
+        const data = await response.json();
+        console.log('Fetched student assignments:', data.assignments);
+        setAssignments(data.assignments || []);
       } else {
-        console.error('Failed to fetch assignments:', response.statusText)
-        const errorData = await response.json().catch(() => ({}))
-        console.error('Error details:', errorData)
-        setAssignments([])
+        console.error('Failed to fetch assignments:', response.statusText);
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Error details:', errorData);
+        setAssignments([]);
         toast({
           title: 'Error',
           description: 'Failed to load assignments',
           variant: 'destructive',
-        })
+        });
       }
     } catch (error) {
-      console.error('Error fetching assignments:', error)
-      setAssignments([])
+      console.error('Error fetching assignments:', error);
+      setAssignments([]);
       toast({
         title: 'Error',
         description: 'Failed to load assignments',
         variant: 'destructive',
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const getTypeIcon = (type: string) => {
     const icons = {
@@ -163,11 +176,11 @@ export default function StudentAssignments() {
       HOMEWORK: BookOpen,
       PROJECT: FileText,
       QUIZ: AlertCircle,
-      TEST: CheckCircle
-    }
-    const Icon = icons[type as keyof typeof icons] || ClipboardList
-    return <Icon className="h-4 w-4" />
-  }
+      TEST: CheckCircle,
+    };
+    const Icon = icons[type as keyof typeof icons] || ClipboardList;
+    return <Icon className="h-4 w-4" />;
+  };
 
   const getTypeBadge = (type: string) => {
     const colors = {
@@ -177,117 +190,172 @@ export default function StudentAssignments() {
       HOMEWORK: 'bg-blue-100 text-blue-800',
       PROJECT: 'bg-purple-100 text-purple-800',
       QUIZ: 'bg-yellow-100 text-yellow-800',
-      TEST: 'bg-red-100 text-red-800'
-    }
-    return <Badge className={colors[type as keyof typeof colors]}>{type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()}</Badge>
-  }
+      TEST: 'bg-red-100 text-red-800',
+    };
+    return (
+      <Badge className={colors[type as keyof typeof colors]}>
+        {type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()}
+      </Badge>
+    );
+  };
 
   const getSubmissionStatusBadge = (status?: string) => {
-    if (!status) return <Badge variant="outline" className="text-gray-600 border-gray-600">Not Submitted</Badge>
-    
+    if (!status)
+      return (
+        <Badge variant="outline" className="text-gray-600 border-gray-600">
+          Not Submitted
+        </Badge>
+      );
+
     switch (status) {
       case 'GRADED':
-        return <Badge variant="default" className="bg-green-600">Graded</Badge>
+        return (
+          <Badge variant="default" className="bg-green-600">
+            Graded
+          </Badge>
+        );
       case 'SUBMITTED':
-        return <Badge variant="outline" className="text-blue-600 border-blue-600">Submitted</Badge>
+        return (
+          <Badge variant="outline" className="text-blue-600 border-blue-600">
+            Submitted
+          </Badge>
+        );
       case 'LATE':
-        return <Badge variant="destructive">Late</Badge>
+        return <Badge variant="destructive">Late</Badge>;
       case 'MISSING':
-        return <Badge variant="outline" className="text-red-600 border-red-600">Missing</Badge>
+        return (
+          <Badge variant="outline" className="text-red-600 border-red-600">
+            Missing
+          </Badge>
+        );
       case 'RETURNED':
-        return <Badge variant="outline" className="text-orange-600 border-orange-600">Returned</Badge>
+        return (
+          <Badge
+            variant="outline"
+            className="text-orange-600 border-orange-600"
+          >
+            Returned
+          </Badge>
+        );
       default:
-        return <Badge variant="outline">Unknown</Badge>
+        return <Badge variant="outline">Unknown</Badge>;
     }
-  }
+  };
 
   const getDueDateStatus = (dueDate: string | null) => {
-    if (!dueDate) return null
-    
-    const now = new Date()
-    const due = new Date(dueDate)
-    const diffInDays = Math.ceil((due.getTime() - now.getTime()) / (1000 * 3600 * 24))
-    
+    if (!dueDate) return null;
+
+    const now = new Date();
+    const due = new Date(dueDate);
+    const diffInDays = Math.ceil(
+      (due.getTime() - now.getTime()) / (1000 * 3600 * 24)
+    );
+
     if (diffInDays < 0) {
-      return { status: 'overdue', text: `Overdue by ${Math.abs(diffInDays)} day(s)`, color: 'text-red-600' }
+      return {
+        status: 'overdue',
+        text: `Overdue by ${Math.abs(diffInDays)} day(s)`,
+        color: 'text-red-600',
+      };
     } else if (diffInDays === 0) {
-      return { status: 'today', text: 'Due today', color: 'text-orange-600' }
+      return { status: 'today', text: 'Due today', color: 'text-orange-600' };
     } else if (diffInDays <= 3) {
-      return { status: 'soon', text: `Due in ${diffInDays} day(s)`, color: 'text-yellow-600' }
+      return {
+        status: 'soon',
+        text: `Due in ${diffInDays} day(s)`,
+        color: 'text-yellow-600',
+      };
     } else {
-      return { status: 'upcoming', text: `Due in ${diffInDays} day(s)`, color: 'text-gray-600' }
+      return {
+        status: 'upcoming',
+        text: `Due in ${diffInDays} day(s)`,
+        color: 'text-gray-600',
+      };
     }
-  }
+  };
 
   const filteredAssignments = assignments.filter(assignment => {
-    const matchesSearch = assignment.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         assignment.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         assignment.teacherName.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesType = filterType === 'all' || assignment.type.toLowerCase() === filterType
-    const matchesSubject = filterSubject === 'all' || assignment.subject === filterSubject
-    
-    let matchesStatus = true
+    const matchesSearch =
+      assignment.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      assignment.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      assignment.teacherName.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesType =
+      filterType === 'all' || assignment.type.toLowerCase() === filterType;
+    const matchesSubject =
+      filterSubject === 'all' || assignment.subject === filterSubject;
+
+    let matchesStatus = true;
     if (filterStatus === 'submitted') {
-      matchesStatus = !!assignment.submission
+      matchesStatus = !!assignment.submission;
     } else if (filterStatus === 'pending') {
-      matchesStatus = !assignment.submission && ['ASSIGNMENT', 'HOMEWORK', 'PROJECT', 'QUIZ', 'TEST'].includes(assignment.type)
+      matchesStatus =
+        !assignment.submission &&
+        ['ASSIGNMENT', 'HOMEWORK', 'PROJECT', 'QUIZ', 'TEST'].includes(
+          assignment.type
+        );
     } else if (filterStatus === 'graded') {
-      matchesStatus = assignment.submission?.status === 'GRADED'
+      matchesStatus = assignment.submission?.status === 'GRADED';
     }
-    
+
     // Tab filtering
     if (activeTab === 'assignments') {
-      matchesStatus = matchesStatus && ['ASSIGNMENT', 'HOMEWORK', 'PROJECT', 'QUIZ', 'TEST'].includes(assignment.type)
+      matchesStatus =
+        matchesStatus &&
+        ['ASSIGNMENT', 'HOMEWORK', 'PROJECT', 'QUIZ', 'TEST'].includes(
+          assignment.type
+        );
     } else if (activeTab === 'notes') {
-      matchesStatus = matchesStatus && assignment.type === 'NOTE'
+      matchesStatus = matchesStatus && assignment.type === 'NOTE';
     } else if (activeTab === 'resources') {
-      matchesStatus = matchesStatus && assignment.type === 'RESOURCE'
+      matchesStatus = matchesStatus && assignment.type === 'RESOURCE';
     }
-    
-    return matchesSearch && matchesType && matchesSubject && matchesStatus
-  })
+
+    return matchesSearch && matchesType && matchesSubject && matchesStatus;
+  });
 
   const handleDownload = async (attachment: { url: string; name: string }) => {
     try {
       // Create a temporary link element and trigger download
-      const link = document.createElement('a')
-      link.href = attachment.url
-      link.download = attachment.name
-      link.target = '_blank'
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      
+      const link = document.createElement('a');
+      link.href = attachment.url;
+      link.download = attachment.name;
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
       toast({
         title: 'Download Started',
         description: `Downloading ${attachment.name}`,
-      })
+      });
     } catch (error) {
-      console.error('Error downloading file:', error)
+      console.error('Error downloading file:', error);
       toast({
         title: 'Download Failed',
         description: 'Failed to download the file',
         variant: 'destructive',
-      })
+      });
     }
-  }
+  };
 
-  const handleDownloadAll = async (attachments: { url: string; name: string }[]) => {
+  const handleDownloadAll = async (
+    attachments: { url: string; name: string }[]
+  ) => {
     try {
       for (const attachment of attachments) {
-        await handleDownload(attachment)
+        await handleDownload(attachment);
         // Small delay between downloads to avoid overwhelming the browser
-        await new Promise(resolve => setTimeout(resolve, 500))
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
     } catch (error) {
-      console.error('Error downloading files:', error)
+      console.error('Error downloading files:', error);
       toast({
         title: 'Download Failed',
         description: 'Failed to download some files',
         variant: 'destructive',
-      })
+      });
     }
-  }
+  };
 
   const handleSubmit = async (assignmentId: string) => {
     try {
@@ -295,20 +363,20 @@ export default function StudentAssignments() {
       toast({
         title: 'Success',
         description: 'Assignment submitted successfully',
-      })
-      setIsSubmissionModalOpen(false)
-      setSubmissionForm({ textContent: '', files: [] })
-      setSubmissionFiles([])
+      });
+      setIsSubmissionModalOpen(false);
+      setSubmissionForm({ textContent: '', files: [] });
+      setSubmissionFiles([]);
       // Refresh assignments
-      fetchAssignments()
+      fetchAssignments();
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to submit assignment',
         variant: 'destructive',
-      })
+      });
     }
-  }
+  };
 
   if (status === 'loading' || loading) {
     return (
@@ -318,11 +386,11 @@ export default function StudentAssignments() {
           <p className="mt-4 text-gray-600">Loading...</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (!session || session.user.role !== 'STUDENT') {
-    return null
+    return null;
   }
 
   return (
@@ -331,8 +399,12 @@ export default function StudentAssignments() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Assignments & Notes</h1>
-            <p className="text-gray-600 mt-1">View and submit your assignments, notes, and resources</p>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Assignments & Notes
+            </h1>
+            <p className="text-gray-600 mt-1">
+              View and submit your assignments, notes, and resources
+            </p>
           </div>
         </div>
 
@@ -353,7 +425,7 @@ export default function StudentAssignments() {
                 <Input
                   placeholder="Search assignments, notes, or resources..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={e => setSearchQuery(e.target.value)}
                   className="pl-10"
                 />
               </div>
@@ -387,16 +459,27 @@ export default function StudentAssignments() {
 
             {/* Assignments Grid */}
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {filteredAssignments.map((assignment) => {
-                const dueDateStatus = getDueDateStatus(assignment.dueDate)
-                const isSubmittable = ['ASSIGNMENT', 'HOMEWORK', 'PROJECT', 'QUIZ', 'TEST'].includes(assignment.type)
-                
+              {filteredAssignments.map(assignment => {
+                const dueDateStatus = getDueDateStatus(assignment.dueDate);
+                const isSubmittable = [
+                  'ASSIGNMENT',
+                  'HOMEWORK',
+                  'PROJECT',
+                  'QUIZ',
+                  'TEST',
+                ].includes(assignment.type);
+
                 return (
-                  <Card key={assignment.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <Card
+                    key={assignment.id}
+                    className="overflow-hidden hover:shadow-lg transition-shadow"
+                  >
                     <CardHeader>
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <CardTitle className="text-lg line-clamp-2">{assignment.title}</CardTitle>
+                          <CardTitle className="text-lg line-clamp-2">
+                            {assignment.title}
+                          </CardTitle>
                           <p className="text-sm text-gray-600 mt-1">
                             {assignment.subject} • {assignment.teacherName}
                           </p>
@@ -405,7 +488,10 @@ export default function StudentAssignments() {
                               {getTypeIcon(assignment.type)}
                               {getTypeBadge(assignment.type)}
                             </div>
-                            {isSubmittable && getSubmissionStatusBadge(assignment.submission?.status)}
+                            {isSubmittable &&
+                              getSubmissionStatusBadge(
+                                assignment.submission?.status
+                              )}
                           </div>
                         </div>
                       </div>
@@ -418,9 +504,13 @@ export default function StudentAssignments() {
                           <div className="flex items-center justify-between">
                             <span className="text-gray-600">Due Date:</span>
                             <div className="text-right">
-                              <div className="font-medium">{assignment.dueDate}</div>
+                              <div className="font-medium">
+                                {assignment.dueDate}
+                              </div>
                               {dueDateStatus && (
-                                <div className={`text-xs ${dueDateStatus.color}`}>
+                                <div
+                                  className={`text-xs ${dueDateStatus.color}`}
+                                >
                                   {dueDateStatus.text}
                                 </div>
                               )}
@@ -430,20 +520,25 @@ export default function StudentAssignments() {
                         {isSubmittable && (
                           <div className="flex items-center justify-between">
                             <span className="text-gray-600">Max Score:</span>
-                            <span className="font-medium">{assignment.maxScore} pts</span>
+                            <span className="font-medium">
+                              {assignment.maxScore} pts
+                            </span>
                           </div>
                         )}
                         {assignment.attachments.length > 0 && (
                           <div className="flex items-center justify-between">
                             <span className="text-gray-600">Attachments:</span>
-                            <span className="font-medium">{assignment.attachments.length} file(s)</span>
+                            <span className="font-medium">
+                              {assignment.attachments.length} file(s)
+                            </span>
                           </div>
                         )}
                         {assignment.submission?.score !== undefined && (
                           <div className="flex items-center justify-between">
                             <span className="text-gray-600">Score:</span>
                             <span className="font-medium text-green-600">
-                              {assignment.submission.score}/{assignment.maxScore} pts
+                              {assignment.submission.score}/
+                              {assignment.maxScore} pts
                             </span>
                           </div>
                         )}
@@ -455,21 +550,29 @@ export default function StudentAssignments() {
                           <div className="flex items-center space-x-2 text-sm">
                             <CheckCircle className="h-4 w-4 text-blue-600" />
                             <span className="text-blue-800">
-                              Submitted on {new Date(assignment.submission.submittedAt).toLocaleDateString()}
+                              Submitted on{' '}
+                              {new Date(
+                                assignment.submission.submittedAt
+                              ).toLocaleDateString()}
                             </span>
                           </div>
                         </div>
                       )}
 
                       {/* Due Date Warning */}
-                      {dueDateStatus && (dueDateStatus.status === 'today' || dueDateStatus.status === 'soon') && !assignment.submission && (
-                        <div className="p-3 bg-yellow-50 rounded-lg">
-                          <div className="flex items-center space-x-2 text-sm">
-                            <AlertTriangle className="h-4 w-4 text-yellow-600" />
-                            <span className="text-yellow-800">{dueDateStatus.text}</span>
+                      {dueDateStatus &&
+                        (dueDateStatus.status === 'today' ||
+                          dueDateStatus.status === 'soon') &&
+                        !assignment.submission && (
+                          <div className="p-3 bg-yellow-50 rounded-lg">
+                            <div className="flex items-center space-x-2 text-sm">
+                              <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                              <span className="text-yellow-800">
+                                {dueDateStatus.text}
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
 
                       {/* Actions */}
                       <div className="flex justify-between pt-4 border-t">
@@ -478,36 +581,39 @@ export default function StudentAssignments() {
                             variant="outline"
                             size="sm"
                             onClick={() => {
-                              setSelectedAssignment(assignment)
-                              setIsViewModalOpen(true)
+                              setSelectedAssignment(assignment);
+                              setIsViewModalOpen(true);
                             }}
                           >
                             <Eye className="h-4 w-4 mr-1" />
                             View
                           </Button>
                           {assignment.attachments.length > 0 && (
-                            <Button 
-                              variant="outline" 
+                            <Button
+                              variant="outline"
                               size="sm"
                               onClick={() => {
                                 if (assignment.attachments.length === 1) {
-                                  handleDownload(assignment.attachments[0])
+                                  handleDownload(assignment.attachments[0]);
                                 } else {
-                                  handleDownloadAll(assignment.attachments)
+                                  handleDownloadAll(assignment.attachments);
                                 }
                               }}
                             >
                               <Download className="h-4 w-4 mr-1" />
-                              Download {assignment.attachments.length > 1 ? `(${assignment.attachments.length})` : ''}
+                              Download{' '}
+                              {assignment.attachments.length > 1
+                                ? `(${assignment.attachments.length})`
+                                : ''}
                             </Button>
                           )}
                         </div>
                         {isSubmittable && !assignment.submission && (
-                          <Button 
+                          <Button
                             size="sm"
                             onClick={() => {
-                              setSelectedAssignment(assignment)
-                              setIsSubmissionModalOpen(true)
+                              setSelectedAssignment(assignment);
+                              setIsSubmissionModalOpen(true);
                             }}
                           >
                             <Send className="h-4 w-4 mr-1" />
@@ -517,7 +623,7 @@ export default function StudentAssignments() {
                       </div>
                     </CardContent>
                   </Card>
-                )
+                );
               })}
             </div>
 
@@ -528,7 +634,9 @@ export default function StudentAssignments() {
                   No {activeTab === 'all' ? 'items' : activeTab} found
                 </h3>
                 <p className="mt-1 text-sm text-gray-500">
-                  {searchQuery ? 'Try adjusting your search criteria.' : `No ${activeTab === 'all' ? 'assignments, notes, or resources' : activeTab} available at the moment.`}
+                  {searchQuery
+                    ? 'Try adjusting your search criteria.'
+                    : `No ${activeTab === 'all' ? 'assignments, notes, or resources' : activeTab} available at the moment.`}
                 </p>
               </div>
             )}
@@ -546,21 +654,26 @@ export default function StudentAssignments() {
                     <span>{selectedAssignment.title}</span>
                   </DialogTitle>
                   <DialogDescription>
-                    {selectedAssignment.subject} • {selectedAssignment.teacherName}
+                    {selectedAssignment.subject} •{' '}
+                    {selectedAssignment.teacherName}
                   </DialogDescription>
                 </DialogHeader>
-                
+
                 <div className="space-y-6">
                   {/* Basic Info */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label className="text-sm font-medium">Type</Label>
-                      <div className="mt-1">{getTypeBadge(selectedAssignment.type)}</div>
+                      <div className="mt-1">
+                        {getTypeBadge(selectedAssignment.type)}
+                      </div>
                     </div>
                     {selectedAssignment.dueDate && (
                       <div>
                         <Label className="text-sm font-medium">Due Date</Label>
-                        <p className="text-sm text-gray-600 mt-1">{selectedAssignment.dueDate}</p>
+                        <p className="text-sm text-gray-600 mt-1">
+                          {selectedAssignment.dueDate}
+                        </p>
                       </div>
                     )}
                   </div>
@@ -568,15 +681,19 @@ export default function StudentAssignments() {
                   {/* Description */}
                   <div>
                     <Label className="text-sm font-medium">Description</Label>
-                    <p className="text-sm text-gray-600 mt-1">{selectedAssignment.description}</p>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {selectedAssignment.description}
+                    </p>
                   </div>
 
                   {/* Instructions/Content */}
                   <div>
                     <Label className="text-sm font-medium">
-                      {selectedAssignment.type === 'NOTE' ? 'Note Content' :
-                       selectedAssignment.type === 'RESOURCE' ? 'Resource Details' :
-                       'Instructions'}
+                      {selectedAssignment.type === 'NOTE'
+                        ? 'Note Content'
+                        : selectedAssignment.type === 'RESOURCE'
+                          ? 'Resource Details'
+                          : 'Instructions'}
                     </Label>
                     <div className="text-sm text-gray-600 mt-1 whitespace-pre-line">
                       {selectedAssignment.instructions}
@@ -588,15 +705,22 @@ export default function StudentAssignments() {
                     <div>
                       <Label className="text-sm font-medium">Attachments</Label>
                       <div className="mt-2 space-y-2">
-                        {selectedAssignment.attachments.map((attachment) => (
-                          <div key={attachment.id} className="flex items-center justify-between p-2 border rounded">
+                        {selectedAssignment.attachments.map(attachment => (
+                          <div
+                            key={attachment.id}
+                            className="flex items-center justify-between p-2 border rounded"
+                          >
                             <div className="flex items-center space-x-2">
                               <FileText className="h-4 w-4 text-gray-500" />
-                              <span className="text-sm font-medium">{attachment.name}</span>
-                              <span className="text-xs text-gray-500">({attachment.size})</span>
+                              <span className="text-sm font-medium">
+                                {attachment.name}
+                              </span>
+                              <span className="text-xs text-gray-500">
+                                ({attachment.size})
+                              </span>
                             </div>
-                            <Button 
-                              variant="outline" 
+                            <Button
+                              variant="outline"
                               size="sm"
                               onClick={() => handleDownload(attachment)}
                             >
@@ -612,32 +736,47 @@ export default function StudentAssignments() {
                   {/* Submission Info */}
                   {selectedAssignment.submission && (
                     <div>
-                      <Label className="text-sm font-medium">Your Submission</Label>
+                      <Label className="text-sm font-medium">
+                        Your Submission
+                      </Label>
                       <div className="mt-2 p-4 bg-gray-50 rounded-lg">
                         <div className="flex items-center justify-between mb-2">
                           <span className="text-sm text-gray-600">Status:</span>
-                          {getSubmissionStatusBadge(selectedAssignment.submission.status)}
+                          {getSubmissionStatusBadge(
+                            selectedAssignment.submission.status
+                          )}
                         </div>
                         {selectedAssignment.submission.submittedAt && (
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm text-gray-600">Submitted:</span>
+                            <span className="text-sm text-gray-600">
+                              Submitted:
+                            </span>
                             <span className="text-sm font-medium">
-                              {new Date(selectedAssignment.submission.submittedAt).toLocaleString()}
+                              {new Date(
+                                selectedAssignment.submission.submittedAt
+                              ).toLocaleString()}
                             </span>
                           </div>
                         )}
                         {selectedAssignment.submission.score !== undefined && (
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm text-gray-600">Score:</span>
+                            <span className="text-sm text-gray-600">
+                              Score:
+                            </span>
                             <span className="text-sm font-medium text-green-600">
-                              {selectedAssignment.submission.score}/{selectedAssignment.maxScore} pts
+                              {selectedAssignment.submission.score}/
+                              {selectedAssignment.maxScore} pts
                             </span>
                           </div>
                         )}
                         {selectedAssignment.submission.feedback && (
                           <div className="mt-3">
-                            <span className="text-sm text-gray-600">Feedback:</span>
-                            <p className="text-sm text-gray-800 mt-1">{selectedAssignment.submission.feedback}</p>
+                            <span className="text-sm text-gray-600">
+                              Feedback:
+                            </span>
+                            <p className="text-sm text-gray-800 mt-1">
+                              {selectedAssignment.submission.feedback}
+                            </p>
                           </div>
                         )}
                       </div>
@@ -646,18 +785,30 @@ export default function StudentAssignments() {
                 </div>
 
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setIsViewModalOpen(false)}>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsViewModalOpen(false)}
+                  >
                     Close
                   </Button>
-                  {['assignment', 'homework', 'project', 'quiz', 'test'].includes(selectedAssignment.type) && !selectedAssignment.submission && (
-                    <Button onClick={() => {
-                      setIsViewModalOpen(false)
-                      setIsSubmissionModalOpen(true)
-                    }}>
-                      <Send className="h-4 w-4 mr-2" />
-                      Submit Assignment
-                    </Button>
-                  )}
+                  {[
+                    'assignment',
+                    'homework',
+                    'project',
+                    'quiz',
+                    'test',
+                  ].includes(selectedAssignment.type) &&
+                    !selectedAssignment.submission && (
+                      <Button
+                        onClick={() => {
+                          setIsViewModalOpen(false);
+                          setIsSubmissionModalOpen(true);
+                        }}
+                      >
+                        <Send className="h-4 w-4 mr-2" />
+                        Submit Assignment
+                      </Button>
+                    )}
                 </DialogFooter>
               </>
             )}
@@ -665,7 +816,10 @@ export default function StudentAssignments() {
         </Dialog>
 
         {/* Submission Modal */}
-        <Dialog open={isSubmissionModalOpen} onOpenChange={setIsSubmissionModalOpen}>
+        <Dialog
+          open={isSubmissionModalOpen}
+          onOpenChange={setIsSubmissionModalOpen}
+        >
           <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
             {selectedAssignment && (
               <>
@@ -675,14 +829,21 @@ export default function StudentAssignments() {
                     Submit your work for "{selectedAssignment.title}"
                   </DialogDescription>
                 </DialogHeader>
-                
+
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="textContent">Written Response (Optional)</Label>
+                    <Label htmlFor="textContent">
+                      Written Response (Optional)
+                    </Label>
                     <Textarea
                       id="textContent"
                       value={submissionForm.textContent}
-                      onChange={(e) => setSubmissionForm(prev => ({ ...prev, textContent: e.target.value }))}
+                      onChange={e =>
+                        setSubmissionForm(prev => ({
+                          ...prev,
+                          textContent: e.target.value,
+                        }))
+                      }
                       placeholder="Enter your written response here..."
                       rows={6}
                     />
@@ -691,17 +852,31 @@ export default function StudentAssignments() {
                   <div className="space-y-2">
                     <Label>File Attachments</Label>
                     <FileUpload
-                      onUpload={(files) => setSubmissionFiles(prev => [...prev, ...files])}
-                      onRemove={(file) => setSubmissionFiles(prev => prev.filter(f => f.id !== file.id))}
+                      onUpload={files =>
+                        setSubmissionFiles(prev => [...prev, ...files])
+                      }
+                      onRemove={file =>
+                        setSubmissionFiles(prev =>
+                          prev.filter(f => f.id !== file.id)
+                        )
+                      }
                       uploadEndpoint="/api/upload/temp-file"
                       existingFiles={submissionFiles}
                       maxFiles={5}
                       maxSize={10}
-                      acceptedTypes={['pdf', 'doc', 'docx', 'txt', 'jpg', 'jpeg', 'png']}
+                      acceptedTypes={[
+                        'pdf',
+                        'doc',
+                        'docx',
+                        'txt',
+                        'jpg',
+                        'jpeg',
+                        'png',
+                      ]}
                       label="Upload Your Work"
                       description="Upload your assignment files here"
                       additionalData={{
-                        uploadType: 'submission'
+                        uploadType: 'submission',
                       }}
                     />
                   </div>
@@ -719,7 +894,10 @@ export default function StudentAssignments() {
                 </div>
 
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setIsSubmissionModalOpen(false)}>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsSubmissionModalOpen(false)}
+                  >
                     Cancel
                   </Button>
                   <Button onClick={() => handleSubmit(selectedAssignment.id)}>
@@ -733,5 +911,5 @@ export default function StudentAssignments() {
         </Dialog>
       </div>
     </StudentDashboardLayout>
-  )
+  );
 }

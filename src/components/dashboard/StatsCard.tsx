@@ -1,19 +1,19 @@
-'use client'
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
-import { cn } from '../../lib/utils'
-import { LucideIcon } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { cn } from '../../lib/utils';
+import { LucideIcon } from 'lucide-react';
 
 interface StatsCardProps {
-  title: string
-  value: string | number
-  icon: LucideIcon
+  title: string;
+  value: string | number;
+  icon: LucideIcon;
   change?: {
-    value: number
-    type: 'increase' | 'decrease'
-  }
-  description?: string
-  className?: string
+    value: number;
+    type: 'increase' | 'decrease';
+  };
+  description?: string;
+  className?: string;
 }
 
 export function StatsCard({
@@ -25,7 +25,12 @@ export function StatsCard({
   className,
 }: StatsCardProps) {
   return (
-    <Card className={cn('hover:shadow-md transition-shadow duration-200', className)}>
+    <Card
+      className={cn(
+        'hover:shadow-md transition-shadow duration-200',
+        className
+      )}
+    >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-gray-600">
           {title}
@@ -53,5 +58,5 @@ export function StatsCard({
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

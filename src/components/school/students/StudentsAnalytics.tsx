@@ -1,50 +1,74 @@
-'use client'
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card'
-import { Badge } from '../../ui/badge'
-import { Users, UserCheck, UserX, GraduationCap, TrendingUp, AlertTriangle } from 'lucide-react'
-import { Student } from '../../app/school/students/page'
-import { useMemo } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
+import { Badge } from '../../ui/badge';
+import {
+  Users,
+  UserCheck,
+  UserX,
+  GraduationCap,
+  TrendingUp,
+  AlertTriangle,
+} from 'lucide-react';
+import { Student } from '../../app/school/students/page';
+import { useMemo } from 'react';
 
 interface StudentsAnalyticsProps {
-  students: Student[]
+  students: Student[];
 }
 
 export function StudentsAnalytics({ students }: StudentsAnalyticsProps) {
   const analytics = useMemo(() => {
-    const total = students.length
-    const active = students.filter(s => s.status === 'ACTIVE').length
-    const suspended = students.filter(s => s.status === 'SUSPENDED').length
-    const graduated = students.filter(s => s.status === 'GRADUATED').length
-    const pending = students.filter(s => s.status === 'PENDING').length
-    const alumni = students.filter(s => s.status === 'ALUMNI').length
-    
+    const total = students.length;
+    const active = students.filter(s => s.status === 'ACTIVE').length;
+    const suspended = students.filter(s => s.status === 'SUSPENDED').length;
+    const graduated = students.filter(s => s.status === 'GRADUATED').length;
+    const pending = students.filter(s => s.status === 'PENDING').length;
+    const alumni = students.filter(s => s.status === 'ALUMNI').length;
+
     // Gender distribution
-    const male = students.filter(s => s.gender === 'MALE').length
-    const female = students.filter(s => s.gender === 'FEMALE').length
-    const genderNotSpecified = total - male - female
-    
+    const male = students.filter(s => s.gender === 'MALE').length;
+    const female = students.filter(s => s.gender === 'FEMALE').length;
+    const genderNotSpecified = total - male - female;
+
     // Class distribution
-    const classDistribution = students.reduce((acc, student) => {
-      const className = student.class || 'Unassigned'
-      acc[className] = (acc[className] || 0) + 1
-      return acc
-    }, {} as Record<string, number>)
-    
+    const classDistribution = students.reduce(
+      (acc, student) => {
+        const className = student.class || 'Unassigned';
+        acc[className] = (acc[className] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+
     // Performance insights
-    const studentsWithScores = students.filter(s => s.performanceScore !== null && s.performanceScore !== undefined)
-    const averagePerformance = studentsWithScores.length > 0 
-      ? Math.round(studentsWithScores.reduce((sum, s) => sum + (s.performanceScore || 0), 0) / studentsWithScores.length)
-      : 0
-    
-    const lowPerformers = studentsWithScores.filter(s => (s.performanceScore || 0) < 60).length
-    const highPerformers = studentsWithScores.filter(s => (s.performanceScore || 0) >= 80).length
-    
+    const studentsWithScores = students.filter(
+      s => s.performanceScore !== null && s.performanceScore !== undefined
+    );
+    const averagePerformance =
+      studentsWithScores.length > 0
+        ? Math.round(
+            studentsWithScores.reduce(
+              (sum, s) => sum + (s.performanceScore || 0),
+              0
+            ) / studentsWithScores.length
+          )
+        : 0;
+
+    const lowPerformers = studentsWithScores.filter(
+      s => (s.performanceScore || 0) < 60
+    ).length;
+    const highPerformers = studentsWithScores.filter(
+      s => (s.performanceScore || 0) >= 80
+    ).length;
+
     // Recent registrations (last 30 days)
-    const thirtyDaysAgo = new Date()
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-    const recentRegistrations = students.filter(s => new Date(s.createdAt) > thirtyDaysAgo).length
-    
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const recentRegistrations = students.filter(
+      s => new Date(s.createdAt) > thirtyDaysAgo
+    ).length;
+
     return {
       total,
       active,
@@ -60,24 +84,30 @@ export function StudentsAnalytics({ students }: StudentsAnalyticsProps) {
       lowPerformers,
       highPerformers,
       recentRegistrations,
-      studentsWithScores: studentsWithScores.length
-    }
-  }, [students])
+      studentsWithScores: studentsWithScores.length,
+    };
+  }, [students]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'ACTIVE': return 'bg-green-100 text-green-800'
-      case 'SUSPENDED': return 'bg-red-100 text-red-800'
-      case 'GRADUATED': return 'bg-blue-100 text-blue-800'
-      case 'PENDING': return 'bg-yellow-100 text-yellow-800'
-      case 'ALUMNI': return 'bg-purple-100 text-purple-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'ACTIVE':
+        return 'bg-green-100 text-green-800';
+      case 'SUSPENDED':
+        return 'bg-red-100 text-red-800';
+      case 'GRADUATED':
+        return 'bg-blue-100 text-blue-800';
+      case 'PENDING':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'ALUMNI':
+        return 'bg-purple-100 text-purple-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
-  }
+  };
 
   const topClasses = Object.entries(analytics.classDistribution)
-    .sort(([,a], [,b]) => b - a)
-    .slice(0, 5)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 5);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
@@ -102,9 +132,14 @@ export function StudentsAnalytics({ students }: StudentsAnalyticsProps) {
           <UserCheck className="h-4 w-4 text-green-600" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-green-600">{analytics.active}</div>
+          <div className="text-2xl font-bold text-green-600">
+            {analytics.active}
+          </div>
           <p className="text-xs text-muted-foreground">
-            {analytics.total > 0 ? Math.round((analytics.active / analytics.total) * 100) : 0}% of total
+            {analytics.total > 0
+              ? Math.round((analytics.active / analytics.total) * 100)
+              : 0}
+            % of total
           </p>
         </CardContent>
       </Card>
@@ -116,7 +151,9 @@ export function StudentsAnalytics({ students }: StudentsAnalyticsProps) {
           <TrendingUp className="h-4 w-4 text-blue-600" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{analytics.averagePerformance}%</div>
+          <div className="text-2xl font-bold">
+            {analytics.averagePerformance}%
+          </div>
           <p className="text-xs text-muted-foreground">
             {analytics.studentsWithScores} students assessed
           </p>
@@ -142,7 +179,9 @@ export function StudentsAnalytics({ students }: StudentsAnalyticsProps) {
       {/* Status Distribution */}
       <Card className="md:col-span-2">
         <CardHeader>
-          <CardTitle className="text-sm font-medium">Status Distribution</CardTitle>
+          <CardTitle className="text-sm font-medium">
+            Status Distribution
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
@@ -181,13 +220,18 @@ export function StudentsAnalytics({ students }: StudentsAnalyticsProps) {
         <CardContent>
           <div className="space-y-2">
             {topClasses.map(([className, count]) => (
-              <div key={className} className="flex items-center justify-between">
+              <div
+                key={className}
+                className="flex items-center justify-between"
+              >
                 <span className="text-sm font-medium">{className}</span>
                 <Badge variant="outline">{count} students</Badge>
               </div>
             ))}
             {topClasses.length === 0 && (
-              <p className="text-sm text-muted-foreground">No class data available</p>
+              <p className="text-sm text-muted-foreground">
+                No class data available
+              </p>
             )}
           </div>
         </CardContent>
@@ -196,7 +240,9 @@ export function StudentsAnalytics({ students }: StudentsAnalyticsProps) {
       {/* Gender Distribution */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm font-medium">Gender Distribution</CardTitle>
+          <CardTitle className="text-sm font-medium">
+            Gender Distribution
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
@@ -221,25 +267,33 @@ export function StudentsAnalytics({ students }: StudentsAnalyticsProps) {
       {/* Performance Insights */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm font-medium">Performance Insights</CardTitle>
+          <CardTitle className="text-sm font-medium">
+            Performance Insights
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-sm">High Performers (≥80%)</span>
-              <Badge className="bg-green-100 text-green-800">{analytics.highPerformers}</Badge>
+              <Badge className="bg-green-100 text-green-800">
+                {analytics.highPerformers}
+              </Badge>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm">Need Support (&lt;60%)</span>
-              <Badge className="bg-red-100 text-red-800">{analytics.lowPerformers}</Badge>
+              <Badge className="bg-red-100 text-red-800">
+                {analytics.lowPerformers}
+              </Badge>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm">Not Assessed</span>
-              <Badge variant="outline">{analytics.total - analytics.studentsWithScores}</Badge>
+              <Badge variant="outline">
+                {analytics.total - analytics.studentsWithScores}
+              </Badge>
             </div>
           </div>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

@@ -1,29 +1,37 @@
-'use client'
+'use client';
 
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { useEffect, useState, useCallback } from 'react'
-import { DashboardLayout } from '../../../components/dashboard/DashboardLayout'
-import { StatsCard } from '../../../components/dashboard/StatsCard'
-import { ReportsFilters, type ReportsFilters as ReportsFiltersType } from '../../../components/admin/ReportsFilters'
-import { 
-  UserGrowthChart, 
-  ExamsPerSchoolChart, 
-  UserRoleDistributionChart, 
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState, useCallback } from 'react';
+import { DashboardLayout } from '../../../components/dashboard/DashboardLayout';
+import { StatsCard } from '../../../components/dashboard/StatsCard';
+import {
+  ReportsFilters,
+  type ReportsFilters as ReportsFiltersType,
+} from '../../../components/admin/ReportsFilters';
+import {
+  UserGrowthChart,
+  ExamsPerSchoolChart,
+  UserRoleDistributionChart,
   SchoolPerformanceChart,
-  RevenueAnalyticsChart 
-} from '../../../components/admin/ReportsCharts'
-import { ReportsActivityTable } from '../../../components/admin/ReportsActivityTable'
-import { Button } from '../../../components/ui/button'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../components/ui/tabs'
-import { Alert, AlertDescription } from '../../../components/ui/alert'
-import { useToast } from '../../../hooks/use-toast'
-import { 
-  School, 
-  Users, 
-  BookOpen, 
-  CreditCard, 
-  TrendingUp, 
+  RevenueAnalyticsChart,
+} from '../../../components/admin/ReportsCharts';
+import { ReportsActivityTable } from '../../../components/admin/ReportsActivityTable';
+import { Button } from '../../../components/ui/button';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '../../../components/ui/tabs';
+import { Alert, AlertDescription } from '../../../components/ui/alert';
+import { useToast } from '../../../hooks/use-toast';
+import {
+  School,
+  Users,
+  BookOpen,
+  CreditCard,
+  TrendingUp,
   Activity,
   Download,
   RefreshCw,
@@ -31,115 +39,126 @@ import {
   BarChart3,
   PieChart,
   LineChart,
-  Calendar
-} from 'lucide-react'
+  Calendar,
+} from 'lucide-react';
 
 interface ReportsData {
   summary: {
-    totalSchools: number
-    totalUsers: number
-    totalExams: number
-    totalStudents: number
-    activeSchools: number
-    activeExams: number
-    monthlyRevenue: number
-    monthlyPayments: number
-  }
+    totalSchools: number;
+    totalUsers: number;
+    totalExams: number;
+    totalStudents: number;
+    activeSchools: number;
+    activeExams: number;
+    monthlyRevenue: number;
+    monthlyPayments: number;
+  };
   charts: {
-    userGrowth: Array<{ month: string; users: number }>
-    examsPerSchool: Array<{ name: string; exams: number }>
-    userRoleDistribution: Array<{ name: string; value: number; color: string }>
-    schoolsByStatus: Array<{ name: string; value: number }>
-  }
+    userGrowth: Array<{ month: string; users: number }>;
+    examsPerSchool: Array<{ name: string; exams: number }>;
+    userRoleDistribution: Array<{ name: string; value: number; color: string }>;
+    schoolsByStatus: Array<{ name: string; value: number }>;
+  };
   activities: {
-    recentRegistrations: Array<any>
-    recentSchools: Array<any>
-    recentExams: Array<any>
-  }
+    recentRegistrations: Array<any>;
+    recentSchools: Array<any>;
+    recentExams: Array<any>;
+  };
   analytics: {
     exam: {
-      totalExams: number
-      activeExams: number
-      completedExams: number
-      scheduledExams: number
-    }
+      totalExams: number;
+      activeExams: number;
+      completedExams: number;
+      scheduledExams: number;
+    };
     performance: {
-      averageScore: number
-    }
-  }
+      averageScore: number;
+    };
+  };
   insights: {
-    topPerformingSchools: Array<any>
-    growthTrend: number
-    alerts: Array<any>
-  }
+    topPerformingSchools: Array<any>;
+    growthTrend: number;
+    alerts: Array<any>;
+  };
 }
 
 export default function ReportsPage() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
-  const { toast } = useToast()
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const { toast } = useToast();
 
-  const [reportsData, setReportsData] = useState<ReportsData | null>(null)
-  const [schools, setSchools] = useState<Array<{ id: string; name: string }>>([])
-  const [loading, setLoading] = useState(true)
+  const [reportsData, setReportsData] = useState<ReportsData | null>(null);
+  const [schools, setSchools] = useState<Array<{ id: string; name: string }>>(
+    []
+  );
+  const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<ReportsFiltersType>({
-    dateRange: 'last30days'
-  })
+    dateRange: 'last30days',
+  });
 
   useEffect(() => {
-    if (status === 'loading') return
-    
+    if (status === 'loading') return;
+
     if (!session || session.user.role !== 'SUPER_ADMIN') {
-      router.push('/auth/signin')
-      return
+      router.push('/auth/signin');
+      return;
     }
-  }, [session, status, router])
+  }, [session, status, router]);
 
   const fetchReportsData = useCallback(async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const params = new URLSearchParams({
         dateRange: filters.dateRange,
         ...(filters.schoolId && { schoolId: filters.schoolId }),
         ...(filters.role && { role: filters.role }),
         ...(filters.examType && { examType: filters.examType }),
-        ...(filters.customDateFrom && { customDateFrom: filters.customDateFrom.toISOString() }),
-        ...(filters.customDateTo && { customDateTo: filters.customDateTo.toISOString() })
-      })
+        ...(filters.customDateFrom && {
+          customDateFrom: filters.customDateFrom.toISOString(),
+        }),
+        ...(filters.customDateTo && {
+          customDateTo: filters.customDateTo.toISOString(),
+        }),
+      });
 
       const [reportsResponse, schoolsResponse] = await Promise.all([
         fetch(`/api/admin/reports?${params}`),
-        fetch('/api/admin/schools')
-      ])
+        fetch('/api/admin/schools'),
+      ]);
 
       if (reportsResponse.ok) {
-        const data = await reportsResponse.json()
-        setReportsData(data)
+        const data = await reportsResponse.json();
+        setReportsData(data);
       } else {
-        throw new Error(`Failed to fetch reports data: ${reportsResponse.status}`)
+        throw new Error(
+          `Failed to fetch reports data: ${reportsResponse.status}`
+        );
       }
 
       if (schoolsResponse.ok) {
-        const schoolsData = await schoolsResponse.json()
-        setSchools(schoolsData.schools || [])
+        const schoolsData = await schoolsResponse.json();
+        setSchools(schoolsData.schools || []);
       }
     } catch (error) {
-      console.error('Error fetching reports:', error)
+      console.error('Error fetching reports:', error);
       toast({
-        title: "Error",
+        title: 'Error',
         description: `Failed to load reports data. Please try again.`,
-        variant: "destructive"
-      })
+        variant: 'destructive',
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [filters, toast])
+  }, [filters, toast]);
 
   useEffect(() => {
-    fetchReportsData()
-  }, [fetchReportsData])
+    fetchReportsData();
+  }, [fetchReportsData]);
 
-  const handleExport = async (format: 'csv' | 'json' | 'pdf', reportType = 'summary') => {
+  const handleExport = async (
+    format: 'csv' | 'json' | 'pdf',
+    reportType = 'summary'
+  ) => {
     try {
       const params = new URLSearchParams({
         format,
@@ -147,39 +166,39 @@ export default function ReportsPage() {
         dateRange: filters.dateRange,
         ...(filters.schoolId && { schoolId: filters.schoolId }),
         ...(filters.role && { role: filters.role }),
-        ...(filters.examType && { examType: filters.examType })
-      })
+        ...(filters.examType && { examType: filters.examType }),
+      });
 
-      const response = await fetch(`/api/admin/reports/export?${params}`)
-      
+      const response = await fetch(`/api/admin/reports/export?${params}`);
+
       if (response.ok) {
-        const blob = await response.blob()
-        const url = window.URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.style.display = 'none'
-        a.href = url
-        a.download = `${reportType}-report-${filters.dateRange}.${format}`
-        document.body.appendChild(a)
-        a.click()
-        window.URL.revokeObjectURL(url)
-        document.body.removeChild(a)
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `${reportType}-report-${filters.dateRange}.${format}`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
 
         toast({
-          title: "Export Successful",
-          description: `Report exported as ${format.toUpperCase()} successfully.`
-        })
+          title: 'Export Successful',
+          description: `Report exported as ${format.toUpperCase()} successfully.`,
+        });
       } else {
-        throw new Error('Export failed')
+        throw new Error('Export failed');
       }
     } catch (error) {
-      console.error('Error exporting report:', error)
+      console.error('Error exporting report:', error);
       toast({
-        title: "Export Failed",
-        description: "Failed to export report. Please try again.",
-        variant: "destructive"
-      })
+        title: 'Export Failed',
+        description: 'Failed to export report. Please try again.',
+        variant: 'destructive',
+      });
     }
-  }
+  };
 
   if (status === 'loading') {
     return (
@@ -189,53 +208,61 @@ export default function ReportsPage() {
           <p className="mt-4 text-gray-600">Loading...</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (!session || session.user.role !== 'SUPER_ADMIN') {
-    return null
+    return null;
   }
 
   const formatCurrency = (amount: number) => {
     if (amount >= 1000000) {
-      return `₦${(amount / 1000000).toFixed(1)}M`
+      return `₦${(amount / 1000000).toFixed(1)}M`;
     } else if (amount >= 1000) {
-      return `₦${(amount / 1000).toFixed(0)}K`
+      return `₦${(amount / 1000).toFixed(0)}K`;
     }
-    return `₦${amount.toLocaleString()}`
-  }
+    return `₦${amount.toLocaleString()}`;
+  };
 
   // Transform activities data for the activity table
-  const allActivities = reportsData ? [
-    ...reportsData.activities.recentRegistrations.map(user => ({
-      id: `user-${user.id}`,
-      type: 'user_registration' as const,
-      title: `New user registered: ${user.name}`,
-      description: `${user.role} joined ${user.school?.name || 'the platform'}`,
-      user: { name: user.name, email: user.email, role: user.role },
-      school: user.school,
-      createdAt: user.createdAt,
-      status: 'success' as const
-    })),
-    ...reportsData.activities.recentSchools.map(school => ({
-      id: `school-${school.id}`,
-      type: 'school_approval' as const,
-      title: `School registered: ${school.name}`,
-      description: `New school application ${school.status.toLowerCase()}`,
-      school: { name: school.name },
-      createdAt: school.createdAt,
-      status: school.status === 'APPROVED' ? 'success' as const : 'pending' as const
-    })),
-    ...reportsData.activities.recentExams.map(exam => ({
-      id: `exam-${exam.id}`,
-      type: 'exam_created' as const,
-      title: `Exam created: ${exam.title}`,
-      description: `New exam created by ${exam.school.name}`,
-      school: exam.school,
-      createdAt: exam.createdAt,
-      status: 'success' as const
-    }))
-  ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) : []
+  const allActivities = reportsData
+    ? [
+        ...reportsData.activities.recentRegistrations.map(user => ({
+          id: `user-${user.id}`,
+          type: 'user_registration' as const,
+          title: `New user registered: ${user.name}`,
+          description: `${user.role} joined ${user.school?.name || 'the platform'}`,
+          user: { name: user.name, email: user.email, role: user.role },
+          school: user.school,
+          createdAt: user.createdAt,
+          status: 'success' as const,
+        })),
+        ...reportsData.activities.recentSchools.map(school => ({
+          id: `school-${school.id}`,
+          type: 'school_approval' as const,
+          title: `School registered: ${school.name}`,
+          description: `New school application ${school.status.toLowerCase()}`,
+          school: { name: school.name },
+          createdAt: school.createdAt,
+          status:
+            school.status === 'APPROVED'
+              ? ('success' as const)
+              : ('pending' as const),
+        })),
+        ...reportsData.activities.recentExams.map(exam => ({
+          id: `exam-${exam.id}`,
+          type: 'exam_created' as const,
+          title: `Exam created: ${exam.title}`,
+          description: `New exam created by ${exam.school.name}`,
+          school: exam.school,
+          createdAt: exam.createdAt,
+          status: 'success' as const,
+        })),
+      ].sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      )
+    : [];
 
   return (
     <DashboardLayout>
@@ -243,18 +270,22 @@ export default function ReportsPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Reports & Analytics</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Reports & Analytics
+            </h1>
             <p className="text-gray-600 mt-1">
               Comprehensive insights and analytics for your platform
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={fetchReportsData}
               disabled={loading}
             >
-              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw
+                className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`}
+              />
               Refresh
             </Button>
             <Button onClick={() => handleExport('csv')}>
@@ -275,14 +306,16 @@ export default function ReportsPage() {
         />
 
         {/* Insights & Alerts */}
-        {reportsData?.insights?.alerts && reportsData.insights.alerts.length > 0 && (
-          <Alert>
-            <AlertTriangle className="h-4 w-4" />
-            <AlertDescription>
-              {reportsData.insights.alerts.length} alert(s) detected. Review platform activity for unusual patterns.
-            </AlertDescription>
-          </Alert>
-        )}
+        {reportsData?.insights?.alerts &&
+          reportsData.insights.alerts.length > 0 && (
+            <Alert>
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                {reportsData.insights.alerts.length} alert(s) detected. Review
+                platform activity for unusual patterns.
+              </AlertDescription>
+            </Alert>
+          )}
 
         {/* Summary Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -297,9 +330,12 @@ export default function ReportsPage() {
             title="Total Users"
             value={reportsData?.summary.totalUsers?.toString() || '0'}
             icon={Users}
-            change={{ 
-              value: Math.round(reportsData?.insights.growthTrend || 0), 
-              type: (reportsData?.insights.growthTrend || 0) >= 0 ? 'increase' : 'decrease' 
+            change={{
+              value: Math.round(reportsData?.insights.growthTrend || 0),
+              type:
+                (reportsData?.insights.growthTrend || 0) >= 0
+                  ? 'increase'
+                  : 'decrease',
             }}
             description={`${reportsData?.summary.totalStudents || 0} students`}
           />
@@ -357,7 +393,7 @@ export default function ReportsPage() {
                 onExport={() => handleExport('csv', 'exams')}
               />
             </div>
-            
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <UserRoleDistributionChart
                 data={reportsData?.charts.userRoleDistribution || []}
@@ -405,11 +441,13 @@ export default function ReportsPage() {
                 onExport={() => handleExport('csv', 'schools')}
               />
               <SchoolPerformanceChart
-                data={reportsData?.insights.topPerformingSchools?.map(school => ({
-                  name: school.name,
-                  exams: school._count?.exams || 0,
-                  performance: 85 + Math.random() * 15 // Mock performance score
-                })) || []}
+                data={
+                  reportsData?.insights.topPerformingSchools?.map(school => ({
+                    name: school.name,
+                    exams: school._count?.exams || 0,
+                    performance: 85 + Math.random() * 15, // Mock performance score
+                  })) || []
+                }
                 loading={loading}
                 title="School Performance Analysis"
                 description="Exam creation and performance metrics"
@@ -429,5 +467,5 @@ export default function ReportsPage() {
         </Tabs>
       </div>
     </DashboardLayout>
-  )
+  );
 }

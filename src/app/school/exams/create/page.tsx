@@ -1,34 +1,40 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { SchoolDashboardLayout } from '../../../../components/school/SchoolDashboardLayout'
-import { Button } from '../../../../components/ui/button'
-import { Input } from '../../../../components/ui/input'
-import { Label } from '../../../../components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../../components/ui/card'
-import { Textarea } from '../../../../components/ui/textarea'
-import { Switch } from '../../../../components/ui/switch'
-import { useToast } from '../../../../hooks/use-toast'
-import { examSchema } from '../../../../lib/validations'
-import { ArrowLeft, Plus, Trash2 } from 'lucide-react'
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { SchoolDashboardLayout } from '../../../../components/school/SchoolDashboardLayout';
+import { Button } from '../../../../components/ui/button';
+import { Input } from '../../../../components/ui/input';
+import { Label } from '../../../../components/ui/label';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../../../../components/ui/card';
+import { Textarea } from '../../../../components/ui/textarea';
+import { Switch } from '../../../../components/ui/switch';
+import { useToast } from '../../../../hooks/use-toast';
+import { examSchema } from '../../../../lib/validations';
+import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 
 interface Question {
-  id: string
-  text: string
-  type: 'MCQ' | 'TRUE_FALSE' | 'ESSAY'
-  options?: string[]
-  correctAnswer?: any
-  points: number
+  id: string;
+  text: string;
+  type: 'MCQ' | 'TRUE_FALSE' | 'ESSAY';
+  options?: string[];
+  correctAnswer?: any;
+  points: number;
 }
 
 export default function CreateExamPage() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
-  const [loading, setLoading] = useState(false)
-  const [questions, setQuestions] = useState<Question[]>([])
-  const { toast } = useToast()
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const { toast } = useToast();
 
   const [examData, setExamData] = useState({
     title: '',
@@ -38,31 +44,33 @@ export default function CreateExamPage() {
     duration: 60,
     shuffle: false,
     negativeMarking: false,
-  })
+  });
 
   useEffect(() => {
-    if (status === 'loading') return
-    
-    if (!session || session.user.role !== 'SCHOOL_ADMIN') {
-      router.push('/auth/signin')
-      return
-    }
-  }, [session, status, router])
+    if (status === 'loading') return;
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target
+    if (!session || session.user.role !== 'SCHOOL_ADMIN') {
+      router.push('/auth/signin');
+      return;
+    }
+  }, [session, status, router]);
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value, type } = e.target;
     setExamData(prev => ({
       ...prev,
-      [name]: type === 'number' ? parseInt(value) : value
-    }))
-  }
+      [name]: type === 'number' ? parseInt(value) : value,
+    }));
+  };
 
   const handleSwitchChange = (name: string, checked: boolean) => {
     setExamData(prev => ({
       ...prev,
-      [name]: checked
-    }))
-  }
+      [name]: checked,
+    }));
+  };
 
   const addQuestion = () => {
     const newQuestion: Question = {
@@ -71,60 +79,68 @@ export default function CreateExamPage() {
       type: 'MCQ',
       options: ['', '', '', ''],
       correctAnswer: '',
-      points: 1
-    }
-    setQuestions([...questions, newQuestion])
-  }
+      points: 1,
+    };
+    setQuestions([...questions, newQuestion]);
+  };
 
   const updateQuestion = (id: string, field: keyof Question, value: any) => {
-    setQuestions(questions.map(q => 
-      q.id === id ? { ...q, [field]: value } : q
-    ))
-  }
+    setQuestions(
+      questions.map(q => (q.id === id ? { ...q, [field]: value } : q))
+    );
+  };
 
   const removeQuestion = (id: string) => {
-    setQuestions(questions.filter(q => q.id !== id))
-  }
+    setQuestions(questions.filter(q => q.id !== id));
+  };
 
   const addOption = (questionId: string) => {
-    setQuestions(questions.map(q => 
-      q.id === questionId 
-        ? { ...q, options: [...(q.options || []), ''] }
-        : q
-    ))
-  }
+    setQuestions(
+      questions.map(q =>
+        q.id === questionId ? { ...q, options: [...(q.options || []), ''] } : q
+      )
+    );
+  };
 
-  const updateOption = (questionId: string, optionIndex: number, value: string) => {
-    setQuestions(questions.map(q => 
-      q.id === questionId 
-        ? { 
-            ...q, 
-            options: q.options?.map((opt, idx) => 
-              idx === optionIndex ? value : opt
-            )
-          }
-        : q
-    ))
-  }
+  const updateOption = (
+    questionId: string,
+    optionIndex: number,
+    value: string
+  ) => {
+    setQuestions(
+      questions.map(q =>
+        q.id === questionId
+          ? {
+              ...q,
+              options: q.options?.map((opt, idx) =>
+                idx === optionIndex ? value : opt
+              ),
+            }
+          : q
+      )
+    );
+  };
 
   const removeOption = (questionId: string, optionIndex: number) => {
-    setQuestions(questions.map(q => 
-      q.id === questionId 
-        ? { 
-            ...q, 
-            options: q.options?.filter((_, idx) => idx !== optionIndex)
-          }
-        : q
-    ))
-  }
+    setQuestions(
+      questions.map(q =>
+        q.id === questionId
+          ? {
+              ...q,
+              options: q.options?.filter((_, idx) => idx !== optionIndex),
+            }
+          : q
+      )
+    );
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
 
     try {
-      const validatedData = examSchema.parse(examData)
-      
+      const validatedData = examSchema.parse(examData);
+
       const response = await fetch('/api/exams', {
         method: 'POST',
         headers: {
@@ -132,34 +148,34 @@ export default function CreateExamPage() {
         },
         body: JSON.stringify({
           exam: validatedData,
-          questions: questions
+          questions: questions,
         }),
-      })
+      });
 
       if (response.ok) {
         toast({
           title: 'Success',
           description: 'Exam created successfully!',
-        })
-        router.push('/school')
+        });
+        router.push('/school');
       } else {
-        const error = await response.json()
+        const error = await response.json();
         toast({
           title: 'Error',
           description: error.message || 'Failed to create exam',
           variant: 'destructive',
-        })
+        });
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Please check your input and try again.',
         variant: 'destructive',
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   if (status === 'loading') {
     return (
@@ -169,7 +185,7 @@ export default function CreateExamPage() {
           <p className="mt-4 text-gray-600">Loading...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -177,8 +193,8 @@ export default function CreateExamPage() {
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={() => router.push('/school')}
             className="mr-4"
           >
@@ -186,8 +202,12 @@ export default function CreateExamPage() {
             Back to Dashboard
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Create New Exam</h1>
-            <p className="text-gray-600">Set up a new examination for your students</p>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Create New Exam
+            </h1>
+            <p className="text-gray-600">
+              Set up a new examination for your students
+            </p>
           </div>
         </div>
         <form onSubmit={handleSubmit} className="space-y-8">
@@ -268,7 +288,9 @@ export default function CreateExamPage() {
                   <Switch
                     id="shuffle"
                     checked={examData.shuffle}
-                    onCheckedChange={(checked) => handleSwitchChange('shuffle', checked)}
+                    onCheckedChange={checked =>
+                      handleSwitchChange('shuffle', checked)
+                    }
                   />
                   <Label htmlFor="shuffle">Shuffle Questions</Label>
                 </div>
@@ -276,7 +298,9 @@ export default function CreateExamPage() {
                   <Switch
                     id="negativeMarking"
                     checked={examData.negativeMarking}
-                    onCheckedChange={(checked) => handleSwitchChange('negativeMarking', checked)}
+                    onCheckedChange={checked =>
+                      handleSwitchChange('negativeMarking', checked)
+                    }
                   />
                   <Label htmlFor="negativeMarking">Negative Marking</Label>
                 </div>
@@ -294,7 +318,11 @@ export default function CreateExamPage() {
                     Add questions for your examination
                   </CardDescription>
                 </div>
-                <Button type="button" onClick={addQuestion} className="bg-blue-600 hover:bg-blue-700">
+                <Button
+                  type="button"
+                  onClick={addQuestion}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Add Question
                 </Button>
@@ -303,14 +331,18 @@ export default function CreateExamPage() {
             <CardContent className="space-y-6">
               {questions.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
-                  <p>No questions added yet. Click "Add Question" to get started.</p>
+                  <p>
+                    No questions added yet. Click "Add Question" to get started.
+                  </p>
                 </div>
               ) : (
                 questions.map((question, index) => (
                   <Card key={question.id} className="border-2">
                     <CardHeader>
                       <div className="flex items-center justify-between">
-                        <CardTitle className="text-lg">Question {index + 1}</CardTitle>
+                        <CardTitle className="text-lg">
+                          Question {index + 1}
+                        </CardTitle>
                         <Button
                           type="button"
                           variant="destructive"
@@ -326,7 +358,9 @@ export default function CreateExamPage() {
                         <Label>Question Text *</Label>
                         <Textarea
                           value={question.text}
-                          onChange={(e) => updateQuestion(question.id, 'text', e.target.value)}
+                          onChange={e =>
+                            updateQuestion(question.id, 'text', e.target.value)
+                          }
                           placeholder="Enter your question here..."
                           rows={3}
                         />
@@ -337,7 +371,13 @@ export default function CreateExamPage() {
                           <Label>Question Type *</Label>
                           <select
                             value={question.type}
-                            onChange={(e) => updateQuestion(question.id, 'type', e.target.value)}
+                            onChange={e =>
+                              updateQuestion(
+                                question.id,
+                                'type',
+                                e.target.value
+                              )
+                            }
                             className="w-full p-2 border border-gray-300 rounded-md"
                           >
                             <option value="MCQ">Multiple Choice</option>
@@ -350,7 +390,13 @@ export default function CreateExamPage() {
                           <Input
                             type="number"
                             value={question.points}
-                            onChange={(e) => updateQuestion(question.id, 'points', parseFloat(e.target.value))}
+                            onChange={e =>
+                              updateQuestion(
+                                question.id,
+                                'points',
+                                parseFloat(e.target.value)
+                              )
+                            }
                             min="0.5"
                             step="0.5"
                           />
@@ -358,7 +404,8 @@ export default function CreateExamPage() {
                       </div>
 
                       {/* Options for MCQ and True/False */}
-                      {(question.type === 'MCQ' || question.type === 'TRUE_FALSE') && (
+                      {(question.type === 'MCQ' ||
+                        question.type === 'TRUE_FALSE') && (
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
                             <Label>Options *</Label>
@@ -373,17 +420,28 @@ export default function CreateExamPage() {
                             </Button>
                           </div>
                           {question.options?.map((option, optionIndex) => (
-                            <div key={optionIndex} className="flex items-center space-x-2">
+                            <div
+                              key={optionIndex}
+                              className="flex items-center space-x-2"
+                            >
                               <Input
                                 value={option}
-                                onChange={(e) => updateOption(question.id, optionIndex, e.target.value)}
+                                onChange={e =>
+                                  updateOption(
+                                    question.id,
+                                    optionIndex,
+                                    e.target.value
+                                  )
+                                }
                                 placeholder={`Option ${optionIndex + 1}`}
                               />
                               <Button
                                 type="button"
                                 variant="destructive"
                                 size="sm"
-                                onClick={() => removeOption(question.id, optionIndex)}
+                                onClick={() =>
+                                  removeOption(question.id, optionIndex)
+                                }
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
@@ -398,7 +456,13 @@ export default function CreateExamPage() {
                         {question.type === 'MCQ' ? (
                           <select
                             value={question.correctAnswer}
-                            onChange={(e) => updateQuestion(question.id, 'correctAnswer', e.target.value)}
+                            onChange={e =>
+                              updateQuestion(
+                                question.id,
+                                'correctAnswer',
+                                e.target.value
+                              )
+                            }
                             className="w-full p-2 border border-gray-300 rounded-md"
                           >
                             <option value="">Select correct option</option>
@@ -411,7 +475,13 @@ export default function CreateExamPage() {
                         ) : question.type === 'TRUE_FALSE' ? (
                           <select
                             value={question.correctAnswer}
-                            onChange={(e) => updateQuestion(question.id, 'correctAnswer', e.target.value)}
+                            onChange={e =>
+                              updateQuestion(
+                                question.id,
+                                'correctAnswer',
+                                e.target.value
+                              )
+                            }
                             className="w-full p-2 border border-gray-300 rounded-md"
                           >
                             <option value="">Select correct answer</option>
@@ -421,7 +491,13 @@ export default function CreateExamPage() {
                         ) : (
                           <Textarea
                             value={question.correctAnswer || ''}
-                            onChange={(e) => updateQuestion(question.id, 'correctAnswer', e.target.value)}
+                            onChange={e =>
+                              updateQuestion(
+                                question.id,
+                                'correctAnswer',
+                                e.target.value
+                              )
+                            }
                             placeholder="Expected answer or grading criteria..."
                             rows={3}
                           />
@@ -454,5 +530,5 @@ export default function CreateExamPage() {
         </form>
       </div>
     </SchoolDashboardLayout>
-  )
+  );
 }

@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
+import { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -8,49 +8,55 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../ui/table'
-import { Button } from '../ui/button'
-import { Checkbox } from '../ui/checkbox'
-import { ExamStatusBadge } from './ExamStatusBadge'
-import { ExamTypeBadge } from './ExamTypeBadge'
-import { ExamActionsDropdown } from './ExamActionsDropdown'
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
-import { ChevronLeft, ChevronRight, Calendar, Users, Clock } from 'lucide-react'
-import { format } from 'date-fns'
-import { cn } from '../../lib/utils'
+} from '../ui/table';
+import { Button } from '../ui/button';
+import { Checkbox } from '../ui/checkbox';
+import { ExamStatusBadge } from './ExamStatusBadge';
+import { ExamTypeBadge } from './ExamTypeBadge';
+import { ExamActionsDropdown } from './ExamActionsDropdown';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Calendar,
+  Users,
+  Clock,
+} from 'lucide-react';
+import { format } from 'date-fns';
+import { cn } from '../../lib/utils';
 
 interface ExamTableProps {
   exams: Array<{
-    id: string
-    title: string
-    description?: string
+    id: string;
+    title: string;
+    description?: string;
     school: {
-      id: string
-      name: string
-      status: string
-    }
-    startTime: string
-    endTime: string
-    duration: number
-    examStatus: string
-    examType: string
-    registeredStudents: number
-    totalQuestions: number
-    totalPoints: number
-    createdAt: string
-  }>
+      id: string;
+      name: string;
+      status: string;
+    };
+    startTime: string;
+    endTime: string;
+    duration: number;
+    examStatus: string;
+    examType: string;
+    registeredStudents: number;
+    totalQuestions: number;
+    totalPoints: number;
+    createdAt: string;
+  }>;
   pagination: {
-    currentPage: number
-    totalPages: number
-    totalCount: number
-    hasNext: boolean
-    hasPrev: boolean
-  }
-  onPageChange: (page: number) => void
-  onExamUpdated: () => void
-  onBulkAction: (examIds: string[], action: string, reason?: string) => void
-  loading?: boolean
-  className?: string
+    currentPage: number;
+    totalPages: number;
+    totalCount: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+  onPageChange: (page: number) => void;
+  onExamUpdated: () => void;
+  onBulkAction: (examIds: string[], action: string, reason?: string) => void;
+  loading?: boolean;
+  className?: string;
 }
 
 export function ExamTable({
@@ -60,55 +66,55 @@ export function ExamTable({
   onExamUpdated,
   onBulkAction,
   loading = false,
-  className
+  className,
 }: ExamTableProps) {
-  const [selectedExams, setSelectedExams] = useState<string[]>([])
+  const [selectedExams, setSelectedExams] = useState<string[]>([]);
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedExams(exams.map(exam => exam.id))
+      setSelectedExams(exams.map(exam => exam.id));
     } else {
-      setSelectedExams([])
+      setSelectedExams([]);
     }
-  }
+  };
 
   const handleSelectExam = (examId: string, checked: boolean) => {
     if (checked) {
-      setSelectedExams(prev => [...prev, examId])
+      setSelectedExams(prev => [...prev, examId]);
     } else {
-      setSelectedExams(prev => prev.filter(id => id !== examId))
+      setSelectedExams(prev => prev.filter(id => id !== examId));
     }
-  }
+  };
 
   const handleBulkApprove = () => {
     if (selectedExams.length > 0) {
-      onBulkAction(selectedExams, 'approve')
-      setSelectedExams([])
+      onBulkAction(selectedExams, 'approve');
+      setSelectedExams([]);
     }
-  }
+  };
 
   const handleBulkReject = () => {
     if (selectedExams.length > 0) {
-      const reason = prompt('Please provide a reason for rejection:')
+      const reason = prompt('Please provide a reason for rejection:');
       if (reason) {
-        onBulkAction(selectedExams, 'reject', reason)
-        setSelectedExams([])
+        onBulkAction(selectedExams, 'reject', reason);
+        setSelectedExams([]);
       }
     }
-  }
+  };
 
   const formatDateTime = (dateString: string) => {
-    return format(new Date(dateString), 'MMM dd, yyyy HH:mm')
-  }
+    return format(new Date(dateString), 'MMM dd, yyyy HH:mm');
+  };
 
   const formatDuration = (minutes: number) => {
-    const hours = Math.floor(minutes / 60)
-    const mins = minutes % 60
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
     if (hours > 0) {
-      return `${hours}h ${mins}m`
+      return `${hours}h ${mins}m`;
     }
-    return `${mins}m`
-  }
+    return `${mins}m`;
+  };
 
   if (loading) {
     return (
@@ -120,7 +126,7 @@ export function ExamTable({
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -160,7 +166,9 @@ export function ExamTable({
               <TableRow>
                 <TableHead className="w-12">
                   <Checkbox
-                    checked={selectedExams.length === exams.length && exams.length > 0}
+                    checked={
+                      selectedExams.length === exams.length && exams.length > 0
+                    }
                     onCheckedChange={handleSelectAll}
                   />
                 </TableHead>
@@ -185,12 +193,14 @@ export function ExamTable({
                   </TableCell>
                 </TableRow>
               ) : (
-                exams.map((exam) => (
+                exams.map(exam => (
                   <TableRow key={exam.id} className="hover:bg-gray-50">
                     <TableCell>
                       <Checkbox
                         checked={selectedExams.includes(exam.id)}
-                        onCheckedChange={(checked) => handleSelectExam(exam.id, !!checked)}
+                        onCheckedChange={checked =>
+                          handleSelectExam(exam.id, !!checked)
+                        }
                       />
                     </TableCell>
                     <TableCell>
@@ -204,7 +214,8 @@ export function ExamTable({
                           </div>
                         )}
                         <div className="text-xs text-gray-400">
-                          Created {format(new Date(exam.createdAt), 'MMM dd, yyyy')}
+                          Created{' '}
+                          {format(new Date(exam.createdAt), 'MMM dd, yyyy')}
                         </div>
                       </div>
                     </TableCell>
@@ -213,12 +224,14 @@ export function ExamTable({
                         <div className="font-medium text-gray-900">
                           {exam.school.name}
                         </div>
-                        <div className={cn(
-                          'text-xs px-2 py-1 rounded-full inline-block',
-                          exam.school.status === 'APPROVED' 
-                            ? 'bg-green-100 text-green-700' 
-                            : 'bg-yellow-100 text-yellow-700'
-                        )}>
+                        <div
+                          className={cn(
+                            'text-xs px-2 py-1 rounded-full inline-block',
+                            exam.school.status === 'APPROVED'
+                              ? 'bg-green-100 text-green-700'
+                              : 'bg-yellow-100 text-yellow-700'
+                          )}
+                        >
                           {exam.school.status}
                         </div>
                       </div>
@@ -247,14 +260,20 @@ export function ExamTable({
                     <TableCell>
                       <div className="flex items-center text-sm">
                         <Users className="h-4 w-4 mr-1 text-gray-400" />
-                        <span className="font-medium">{exam.registeredStudents}</span>
+                        <span className="font-medium">
+                          {exam.registeredStudents}
+                        </span>
                         <span className="text-gray-500 ml-1">registered</span>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="text-sm">
-                        <div className="font-medium">{exam.totalQuestions} questions</div>
-                        <div className="text-gray-500">{exam.totalPoints} points</div>
+                        <div className="font-medium">
+                          {exam.totalQuestions} questions
+                        </div>
+                        <div className="text-gray-500">
+                          {exam.totalPoints} points
+                        </div>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -274,8 +293,8 @@ export function ExamTable({
         {pagination.totalPages > 1 && (
           <div className="flex items-center justify-between mt-4">
             <div className="text-sm text-gray-500">
-              Showing page {pagination.currentPage} of {pagination.totalPages} 
-              ({pagination.totalCount} total exams)
+              Showing page {pagination.currentPage} of {pagination.totalPages}(
+              {pagination.totalCount} total exams)
             </div>
             <div className="flex items-center gap-2">
               <Button
@@ -288,20 +307,27 @@ export function ExamTable({
                 Previous
               </Button>
               <div className="flex items-center gap-1">
-                {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
-                  const pageNum = i + 1
-                  return (
-                    <Button
-                      key={pageNum}
-                      variant={pageNum === pagination.currentPage ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => onPageChange(pageNum)}
-                      className="w-8 h-8 p-0"
-                    >
-                      {pageNum}
-                    </Button>
-                  )
-                })}
+                {Array.from(
+                  { length: Math.min(5, pagination.totalPages) },
+                  (_, i) => {
+                    const pageNum = i + 1;
+                    return (
+                      <Button
+                        key={pageNum}
+                        variant={
+                          pageNum === pagination.currentPage
+                            ? 'default'
+                            : 'outline'
+                        }
+                        size="sm"
+                        onClick={() => onPageChange(pageNum)}
+                        className="w-8 h-8 p-0"
+                      >
+                        {pageNum}
+                      </Button>
+                    );
+                  }
+                )}
               </div>
               <Button
                 variant="outline"
@@ -317,5 +343,5 @@ export function ExamTable({
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

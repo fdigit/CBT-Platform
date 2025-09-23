@@ -1,67 +1,64 @@
-'use client'
+'use client';
 
-import { Input } from '../../ui/input'
-import { Button } from '../../ui/button'
-import { Badge } from '../../ui/badge'
+import { Input } from '../../ui/input';
+import { Button } from '../../ui/button';
+import { Badge } from '../../ui/badge';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../ui/select'
-import { Card, CardContent } from '../../ui/card'
-import { 
-  Search, 
-  Filter, 
-  X, 
-  ChevronDown
-} from 'lucide-react'
-import { useState } from 'react'
+} from '../../ui/select';
+import { Card, CardContent } from '../../ui/card';
+import { Search, Filter, X, ChevronDown } from 'lucide-react';
+import { useState } from 'react';
 // Define types locally instead of importing from page
 interface ClassesFilters {
-  search: string
-  academicYear: string
-  status: string
+  search: string;
+  academicYear: string;
+  status: string;
 }
 
 interface ClassesFiltersProps {
-  filters: ClassesFilters
-  onChange: (filters: Partial<ClassesFilters>) => void
+  filters: ClassesFilters;
+  onChange: (filters: Partial<ClassesFilters>) => void;
 }
 
 const STATUSES = [
   { value: 'ACTIVE', label: 'Active', color: 'bg-green-100 text-green-800' },
-  { value: 'INACTIVE', label: 'Inactive', color: 'bg-yellow-100 text-yellow-800' },
-  { value: 'ARCHIVED', label: 'Archived', color: 'bg-gray-100 text-gray-800' }
-]
+  {
+    value: 'INACTIVE',
+    label: 'Inactive',
+    color: 'bg-yellow-100 text-yellow-800',
+  },
+  { value: 'ARCHIVED', label: 'Archived', color: 'bg-gray-100 text-gray-800' },
+];
 
-const ACADEMIC_YEARS = [
-  '2024/2025', '2023/2024', '2022/2023', '2021/2022'
-]
+const ACADEMIC_YEARS = ['2024/2025', '2023/2024', '2022/2023', '2021/2022'];
 
 export function ClassesFilters({ filters, onChange }: ClassesFiltersProps) {
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const handleSearchChange = (value: string) => {
-    onChange({ search: value })
-  }
+    onChange({ search: value });
+  };
 
   const handleFilterChange = (key: keyof ClassesFilters, value: any) => {
-    onChange({ [key]: value })
-  }
+    onChange({ [key]: value });
+  };
 
   const clearAllFilters = () => {
     onChange({
       search: '',
       academicYear: '',
-      status: ''
-    })
-  }
+      status: '',
+    });
+  };
 
-  const activeFiltersCount = Object.values(filters).filter(value => 
-    value !== '' && value !== null && value !== undefined
-  ).length
+  const activeFiltersCount = Object.values(filters).filter(
+    value => value !== '' && value !== null && value !== undefined
+  ).length;
 
   return (
     <Card>
@@ -72,7 +69,7 @@ export function ClassesFilters({ filters, onChange }: ClassesFiltersProps) {
           <Input
             placeholder="Search by class name, section, or room..."
             value={filters.search}
-            onChange={(e) => handleSearchChange(e.target.value)}
+            onChange={e => handleSearchChange(e.target.value)}
             className="pl-10 pr-4"
           />
         </div>
@@ -92,7 +89,9 @@ export function ClassesFilters({ filters, onChange }: ClassesFiltersProps) {
                 {activeFiltersCount}
               </Badge>
             )}
-            <ChevronDown className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+            <ChevronDown
+              className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+            />
           </Button>
 
           {activeFiltersCount > 0 && (
@@ -111,8 +110,8 @@ export function ClassesFilters({ filters, onChange }: ClassesFiltersProps) {
           {filters.status && (
             <Badge variant="outline" className="flex items-center gap-1">
               Status: {STATUSES.find(s => s.value === filters.status)?.label}
-              <X 
-                className="h-3 w-3 cursor-pointer" 
+              <X
+                className="h-3 w-3 cursor-pointer"
                 onClick={() => handleFilterChange('status', '')}
               />
             </Badge>
@@ -121,8 +120,8 @@ export function ClassesFilters({ filters, onChange }: ClassesFiltersProps) {
           {filters.academicYear && (
             <Badge variant="outline" className="flex items-center gap-1">
               Year: {filters.academicYear}
-              <X 
-                className="h-3 w-3 cursor-pointer" 
+              <X
+                className="h-3 w-3 cursor-pointer"
                 onClick={() => handleFilterChange('academicYear', '')}
               />
             </Badge>
@@ -135,9 +134,11 @@ export function ClassesFilters({ filters, onChange }: ClassesFiltersProps) {
             {/* Academic Year */}
             <div className="space-y-2">
               <label className="text-sm font-medium">Academic Year</label>
-              <Select 
-                value={filters.academicYear} 
-                onValueChange={(value) => handleFilterChange('academicYear', value)}
+              <Select
+                value={filters.academicYear}
+                onValueChange={value =>
+                  handleFilterChange('academicYear', value)
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select year" />
@@ -145,7 +146,9 @@ export function ClassesFilters({ filters, onChange }: ClassesFiltersProps) {
                 <SelectContent>
                   <SelectItem value="">All Years</SelectItem>
                   {ACADEMIC_YEARS.map(year => (
-                    <SelectItem key={year} value={year}>{year}</SelectItem>
+                    <SelectItem key={year} value={year}>
+                      {year}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -154,9 +157,9 @@ export function ClassesFilters({ filters, onChange }: ClassesFiltersProps) {
             {/* Status */}
             <div className="space-y-2">
               <label className="text-sm font-medium">Status</label>
-              <Select 
-                value={filters.status} 
-                onValueChange={(value) => handleFilterChange('status', value)}
+              <Select
+                value={filters.status}
+                onValueChange={value => handleFilterChange('status', value)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select status" />
@@ -165,7 +168,9 @@ export function ClassesFilters({ filters, onChange }: ClassesFiltersProps) {
                   <SelectItem value="">All Statuses</SelectItem>
                   {STATUSES.map(status => (
                     <SelectItem key={status.value} value={status.value}>
-                      <span className={`inline-block w-2 h-2 rounded-full mr-2 ${status.color}`}></span>
+                      <span
+                        className={`inline-block w-2 h-2 rounded-full mr-2 ${status.color}`}
+                      ></span>
                       {status.label}
                     </SelectItem>
                   ))}
@@ -176,5 +181,5 @@ export function ClassesFilters({ filters, onChange }: ClassesFiltersProps) {
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

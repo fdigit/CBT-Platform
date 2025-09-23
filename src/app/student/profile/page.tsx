@@ -1,109 +1,124 @@
-'use client'
+'use client';
 
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../components/ui/card'
-import { Button } from '../../../components/ui/button'
-import { Input } from '../../../components/ui/input'
-import { Label } from '../../../components/ui/label'
-import { Textarea } from '../../../components/ui/textarea'
-import { Avatar, AvatarFallback, AvatarImage } from '../../../components/ui/avatar'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../components/ui/tabs'
-import { Separator } from '../../../components/ui/separator'
-import { Badge } from '../../../components/ui/badge'
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  MapPin, 
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../../../components/ui/card';
+import { Button } from '../../../components/ui/button';
+import { Input } from '../../../components/ui/input';
+import { Label } from '../../../components/ui/label';
+import { Textarea } from '../../../components/ui/textarea';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '../../../components/ui/avatar';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '../../../components/ui/tabs';
+import { Separator } from '../../../components/ui/separator';
+import { Badge } from '../../../components/ui/badge';
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
   Calendar,
   Edit2,
   Save,
   X,
   Shield,
   School,
-  BookOpen
-} from 'lucide-react'
-import { useToast } from '../../../hooks/use-toast'
-import { StudentDashboardLayout } from '../../../components/student'
+  BookOpen,
+} from 'lucide-react';
+import { useToast } from '../../../hooks/use-toast';
+import { StudentDashboardLayout } from '../../../components/student';
 
 interface StudentProfile {
-  id: string
-  regNo: string
-  firstName: string
-  lastName: string
-  email: string
-  phone?: string
-  address?: string
-  dateOfBirth?: string
-  gender?: string
+  id: string;
+  regNo: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  address?: string;
+  dateOfBirth?: string;
+  gender?: string;
   school?: {
-    name: string
-    code: string
-  }
-  createdAt: string
+    name: string;
+    code: string;
+  };
+  createdAt: string;
 }
 
 interface SecurityForm {
-  currentPassword: string
-  newPassword: string
-  confirmPassword: string
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
 }
 
 export default function ProfilePage() {
-  const { data: session, status, update } = useSession()
-  const router = useRouter()
-  const [profile, setProfile] = useState<StudentProfile | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [editing, setEditing] = useState(false)
-  const [saving, setSaving] = useState(false)
+  const { data: session, status, update } = useSession();
+  const router = useRouter();
+  const [profile, setProfile] = useState<StudentProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [securityForm, setSecurityForm] = useState<SecurityForm>({
     currentPassword: '',
     newPassword: '',
-    confirmPassword: ''
-  })
-  const { toast } = useToast()
+    confirmPassword: '',
+  });
+  const { toast } = useToast();
 
   useEffect(() => {
-    if (status === 'loading') return
-    
+    if (status === 'loading') return;
+
     if (!session || session.user.role !== 'STUDENT') {
-      router.push('/auth/signin')
-      return
+      router.push('/auth/signin');
+      return;
     }
 
-    fetchProfile()
-  }, [session, status, router])
+    fetchProfile();
+  }, [session, status, router]);
 
   const fetchProfile = async () => {
     try {
-      const response = await fetch('/api/student/profile')
+      const response = await fetch('/api/student/profile');
       if (response.ok) {
-        const profileData = await response.json()
-        setProfile(profileData)
+        const profileData = await response.json();
+        setProfile(profileData);
       } else {
         toast({
           title: 'Error',
           description: 'Failed to fetch profile',
           variant: 'destructive',
-        })
+        });
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'An error occurred while fetching profile',
         variant: 'destructive',
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleSaveProfile = async () => {
-    if (!profile) return
+    if (!profile) return;
 
-    setSaving(true)
+    setSaving(true);
     try {
       const response = await fetch('/api/student/profile', {
         method: 'PUT',
@@ -118,43 +133,43 @@ export default function ProfilePage() {
           dateOfBirth: profile.dateOfBirth,
           gender: profile.gender,
         }),
-      })
+      });
 
       if (response.ok) {
-        const updatedProfile = await response.json()
-        setProfile(updatedProfile)
-        setEditing(false)
-        
+        const updatedProfile = await response.json();
+        setProfile(updatedProfile);
+        setEditing(false);
+
         // Update session
         await update({
           ...session,
           user: {
             ...session?.user,
             name: `${updatedProfile.firstName} ${updatedProfile.lastName}`,
-          }
-        })
+          },
+        });
 
         toast({
           title: 'Success',
           description: 'Profile updated successfully',
-        })
+        });
       } else {
         toast({
           title: 'Error',
           description: 'Failed to update profile',
           variant: 'destructive',
-        })
+        });
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'An error occurred while updating profile',
         variant: 'destructive',
-      })
+      });
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   const handleChangePassword = async () => {
     if (securityForm.newPassword !== securityForm.confirmPassword) {
@@ -162,8 +177,8 @@ export default function ProfilePage() {
         title: 'Error',
         description: 'New passwords do not match',
         variant: 'destructive',
-      })
-      return
+      });
+      return;
     }
 
     if (securityForm.newPassword.length < 8) {
@@ -171,8 +186,8 @@ export default function ProfilePage() {
         title: 'Error',
         description: 'Password must be at least 8 characters long',
         variant: 'destructive',
-      })
-      return
+      });
+      return;
     }
 
     try {
@@ -185,34 +200,34 @@ export default function ProfilePage() {
           currentPassword: securityForm.currentPassword,
           newPassword: securityForm.newPassword,
         }),
-      })
+      });
 
       if (response.ok) {
         setSecurityForm({
           currentPassword: '',
           newPassword: '',
-          confirmPassword: ''
-        })
+          confirmPassword: '',
+        });
         toast({
           title: 'Success',
           description: 'Password changed successfully',
-        })
+        });
       } else {
-        const error = await response.json()
+        const error = await response.json();
         toast({
           title: 'Error',
           description: error.message || 'Failed to change password',
           variant: 'destructive',
-        })
+        });
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'An error occurred while changing password',
         variant: 'destructive',
-      })
+      });
     }
-  }
+  };
 
   if (status === 'loading' || loading) {
     return (
@@ -224,7 +239,7 @@ export default function ProfilePage() {
           </div>
         </div>
       </StudentDashboardLayout>
-    )
+    );
   }
 
   if (!profile) {
@@ -232,11 +247,15 @@ export default function ProfilePage() {
       <StudentDashboardLayout>
         <div className="text-center py-12">
           <User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Profile not found</h3>
-          <p className="text-gray-600">Unable to load your profile information</p>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            Profile not found
+          </h3>
+          <p className="text-gray-600">
+            Unable to load your profile information
+          </p>
         </div>
       </StudentDashboardLayout>
-    )
+    );
   }
 
   return (
@@ -259,7 +278,8 @@ export default function ProfilePage() {
               <Avatar className="h-20 w-20">
                 <AvatarImage src={session?.user?.image || ''} />
                 <AvatarFallback className="text-lg">
-                  {profile.firstName.charAt(0)}{profile.lastName.charAt(0)}
+                  {profile.firstName.charAt(0)}
+                  {profile.lastName.charAt(0)}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
@@ -268,18 +288,26 @@ export default function ProfilePage() {
                 </h2>
                 <p className="text-gray-600">Student ID: {profile.regNo}</p>
                 <div className="flex items-center space-x-4 mt-2">
-                  <Badge variant="secondary" className="flex items-center space-x-1">
+                  <Badge
+                    variant="secondary"
+                    className="flex items-center space-x-1"
+                  >
                     <School className="h-3 w-3" />
                     <span>{profile.school?.name || 'School Name'}</span>
                   </Badge>
-                  <Badge variant="outline" className="flex items-center space-x-1">
+                  <Badge
+                    variant="outline"
+                    className="flex items-center space-x-1"
+                  >
                     <Calendar className="h-3 w-3" />
-                    <span>Joined {new Date(profile.createdAt).getFullYear()}</span>
+                    <span>
+                      Joined {new Date(profile.createdAt).getFullYear()}
+                    </span>
                   </Badge>
                 </div>
               </div>
               <Button
-                variant={editing ? "outline" : "default"}
+                variant={editing ? 'outline' : 'default'}
                 onClick={() => setEditing(!editing)}
                 className="flex items-center space-x-2"
               >
@@ -322,7 +350,9 @@ export default function ProfilePage() {
                     <Input
                       id="firstName"
                       value={profile.firstName}
-                      onChange={(e) => setProfile({ ...profile, firstName: e.target.value })}
+                      onChange={e =>
+                        setProfile({ ...profile, firstName: e.target.value })
+                      }
                       disabled={!editing}
                     />
                   </div>
@@ -331,7 +361,9 @@ export default function ProfilePage() {
                     <Input
                       id="lastName"
                       value={profile.lastName}
-                      onChange={(e) => setProfile({ ...profile, lastName: e.target.value })}
+                      onChange={e =>
+                        setProfile({ ...profile, lastName: e.target.value })
+                      }
                       disabled={!editing}
                     />
                   </div>
@@ -368,7 +400,9 @@ export default function ProfilePage() {
                       id="phone"
                       type="tel"
                       value={profile.phone || ''}
-                      onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+                      onChange={e =>
+                        setProfile({ ...profile, phone: e.target.value })
+                      }
                       disabled={!editing}
                       placeholder="Enter phone number"
                     />
@@ -379,7 +413,9 @@ export default function ProfilePage() {
                       id="dateOfBirth"
                       type="date"
                       value={profile.dateOfBirth || ''}
-                      onChange={(e) => setProfile({ ...profile, dateOfBirth: e.target.value })}
+                      onChange={e =>
+                        setProfile({ ...profile, dateOfBirth: e.target.value })
+                      }
                       disabled={!editing}
                     />
                   </div>
@@ -390,7 +426,9 @@ export default function ProfilePage() {
                   <Textarea
                     id="address"
                     value={profile.address || ''}
-                    onChange={(e) => setProfile({ ...profile, address: e.target.value })}
+                    onChange={e =>
+                      setProfile({ ...profile, address: e.target.value })
+                    }
                     disabled={!editing}
                     placeholder="Enter your address"
                     rows={3}
@@ -402,8 +440,8 @@ export default function ProfilePage() {
                     <Button
                       variant="outline"
                       onClick={() => {
-                        setEditing(false)
-                        fetchProfile() // Reset changes
+                        setEditing(false);
+                        fetchProfile(); // Reset changes
                       }}
                     >
                       Cancel
@@ -441,10 +479,12 @@ export default function ProfilePage() {
                     id="currentPassword"
                     type="password"
                     value={securityForm.currentPassword}
-                    onChange={(e) => setSecurityForm({
-                      ...securityForm,
-                      currentPassword: e.target.value
-                    })}
+                    onChange={e =>
+                      setSecurityForm({
+                        ...securityForm,
+                        currentPassword: e.target.value,
+                      })
+                    }
                     placeholder="Enter current password"
                   />
                 </div>
@@ -455,10 +495,12 @@ export default function ProfilePage() {
                     id="newPassword"
                     type="password"
                     value={securityForm.newPassword}
-                    onChange={(e) => setSecurityForm({
-                      ...securityForm,
-                      newPassword: e.target.value
-                    })}
+                    onChange={e =>
+                      setSecurityForm({
+                        ...securityForm,
+                        newPassword: e.target.value,
+                      })
+                    }
                     placeholder="Enter new password"
                   />
                 </div>
@@ -469,10 +511,12 @@ export default function ProfilePage() {
                     id="confirmPassword"
                     type="password"
                     value={securityForm.confirmPassword}
-                    onChange={(e) => setSecurityForm({
-                      ...securityForm,
-                      confirmPassword: e.target.value
-                    })}
+                    onChange={e =>
+                      setSecurityForm({
+                        ...securityForm,
+                        confirmPassword: e.target.value,
+                      })
+                    }
                     placeholder="Confirm new password"
                   />
                 </div>
@@ -480,7 +524,11 @@ export default function ProfilePage() {
                 <Button
                   onClick={handleChangePassword}
                   className="w-full"
-                  disabled={!securityForm.currentPassword || !securityForm.newPassword || !securityForm.confirmPassword}
+                  disabled={
+                    !securityForm.currentPassword ||
+                    !securityForm.newPassword ||
+                    !securityForm.confirmPassword
+                  }
                 >
                   Change Password
                 </Button>
@@ -490,26 +538,36 @@ export default function ProfilePage() {
             <Card>
               <CardHeader>
                 <CardTitle>Account Information</CardTitle>
-                <CardDescription>
-                  Read-only account details
-                </CardDescription>
+                <CardDescription>Read-only account details</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-sm font-medium text-gray-500">Account Created</Label>
-                    <p className="text-sm">{new Date(profile.createdAt).toLocaleDateString()}</p>
+                    <Label className="text-sm font-medium text-gray-500">
+                      Account Created
+                    </Label>
+                    <p className="text-sm">
+                      {new Date(profile.createdAt).toLocaleDateString()}
+                    </p>
                   </div>
                   <div>
-                    <Label className="text-sm font-medium text-gray-500">Account Type</Label>
+                    <Label className="text-sm font-medium text-gray-500">
+                      Account Type
+                    </Label>
                     <p className="text-sm">Student Account</p>
                   </div>
                   <div>
-                    <Label className="text-sm font-medium text-gray-500">School</Label>
-                    <p className="text-sm">{profile.school?.name || 'Not assigned'}</p>
+                    <Label className="text-sm font-medium text-gray-500">
+                      School
+                    </Label>
+                    <p className="text-sm">
+                      {profile.school?.name || 'Not assigned'}
+                    </p>
                   </div>
                   <div>
-                    <Label className="text-sm font-medium text-gray-500">School Code</Label>
+                    <Label className="text-sm font-medium text-gray-500">
+                      School Code
+                    </Label>
                     <p className="text-sm">{profile.school?.code || 'N/A'}</p>
                   </div>
                 </div>
@@ -519,6 +577,5 @@ export default function ProfilePage() {
         </Tabs>
       </div>
     </StudentDashboardLayout>
-  )
+  );
 }
-

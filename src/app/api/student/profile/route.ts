@@ -1,19 +1,22 @@
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '../../../lib/auth'
-import { prisma } from '../../../lib/prisma'
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions)
-    
+    const session = await getServerSession(authOptions);
+
     if (!session || session.user.role !== 'STUDENT') {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const studentId = session.user.studentProfile?.id
+    const studentId = session.user.studentProfile?.id;
     if (!studentId) {
-      return NextResponse.json({ message: 'Student profile not found' }, { status: 404 })
+      return NextResponse.json(
+        { message: 'Student profile not found' },
+        { status: 404 }
+      );
     }
 
     const student = await prisma.student.findUnique({
@@ -23,20 +26,23 @@ export async function GET() {
           select: {
             name: true,
             email: true,
-            createdAt: true
-          }
+            createdAt: true,
+          },
         },
         school: {
           select: {
             name: true,
-            slug: true
-          }
-        }
-      }
-    })
+            slug: true,
+          },
+        },
+      },
+    });
 
     if (!student) {
-      return NextResponse.json({ message: 'Student not found' }, { status: 404 })
+      return NextResponse.json(
+        { message: 'Student not found' },
+        { status: 404 }
+      );
     }
 
     const profile = {
@@ -45,34 +51,37 @@ export async function GET() {
       name: student.user.name,
       email: student.user.email,
       school: student.school,
-      createdAt: student.user.createdAt.toISOString()
-    }
+      createdAt: student.user.createdAt.toISOString(),
+    };
 
-    return NextResponse.json(profile)
+    return NextResponse.json(profile);
   } catch (error) {
-    console.error('Error fetching student profile:', error)
+    console.error('Error fetching student profile:', error);
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 }
-    )
+    );
   }
 }
 
 export async function PUT(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
-    
+    const session = await getServerSession(authOptions);
+
     if (!session || session.user.role !== 'STUDENT') {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const studentId = session.user.studentProfile?.id
+    const studentId = session.user.studentProfile?.id;
     if (!studentId) {
-      return NextResponse.json({ message: 'Student profile not found' }, { status: 404 })
+      return NextResponse.json(
+        { message: 'Student profile not found' },
+        { status: 404 }
+      );
     }
 
-    const body = await request.json()
-    const { name, email } = body
+    const body = await request.json();
+    const { name, email } = body;
 
     const updatedStudent = await prisma.student.update({
       where: { id: studentId },
@@ -80,26 +89,26 @@ export async function PUT(request: Request) {
         user: {
           update: {
             name,
-            ...(email && { email })
-          }
-        }
+            ...(email && { email }),
+          },
+        },
       },
       include: {
         user: {
           select: {
             name: true,
             email: true,
-            createdAt: true
-          }
+            createdAt: true,
+          },
         },
         school: {
           select: {
             name: true,
-            slug: true
-          }
-        }
-      }
-    })
+            slug: true,
+          },
+        },
+      },
+    });
 
     const profile = {
       id: updatedStudent.id,
@@ -107,16 +116,15 @@ export async function PUT(request: Request) {
       name: updatedStudent.user.name,
       email: updatedStudent.user.email,
       school: updatedStudent.school,
-      createdAt: updatedStudent.user.createdAt.toISOString()
-    }
+      createdAt: updatedStudent.user.createdAt.toISOString(),
+    };
 
-    return NextResponse.json(profile)
+    return NextResponse.json(profile);
   } catch (error) {
-    console.error('Error updating student profile:', error)
+    console.error('Error updating student profile:', error);
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 }
-    )
+    );
   }
 }
-

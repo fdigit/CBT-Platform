@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import {
   PieChart,
   Pie,
@@ -15,33 +15,33 @@ import {
   ResponsiveContainer,
   LineChart,
   Line,
-} from 'recharts'
+} from 'recharts';
 
 export interface UserAnalyticsData {
   roleDistribution: Array<{
-    name: string
-    value: number
-    color: string
-  }>
+    name: string;
+    value: number;
+    color: string;
+  }>;
   monthlyGrowth: Array<{
-    month: string
-    users: number
-    newUsers: number
-  }>
+    month: string;
+    users: number;
+    newUsers: number;
+  }>;
   schoolDistribution: Array<{
-    schoolName: string
-    userCount: number
-    studentCount: number
-    adminCount: number
-  }>
+    schoolName: string;
+    userCount: number;
+    studentCount: number;
+    adminCount: number;
+  }>;
 }
 
 interface UserAnalyticsProps {
-  data: UserAnalyticsData
-  loading?: boolean
+  data: UserAnalyticsData;
+  loading?: boolean;
 }
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8']
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
 export function UserAnalytics({ data, loading = false }: UserAnalyticsProps) {
   if (loading) {
@@ -58,7 +58,7 @@ export function UserAnalytics({ data, loading = false }: UserAnalyticsProps) {
           </Card>
         ))}
       </div>
-    )
+    );
   }
 
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -72,10 +72,10 @@ export function UserAnalytics({ data, loading = false }: UserAnalyticsProps) {
             </p>
           ))}
         </div>
-      )
+      );
     }
-    return null
-  }
+    return null;
+  };
 
   const PieTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
@@ -89,10 +89,10 @@ export function UserAnalytics({ data, loading = false }: UserAnalyticsProps) {
             {`${((payload[0].value / payload[0].payload.total) * 100).toFixed(1)}%`}
           </p>
         </div>
-      )
+      );
     }
-    return null
-  }
+    return null;
+  };
 
   return (
     <div className="space-y-6">
@@ -108,12 +108,17 @@ export function UserAnalytics({ data, loading = false }: UserAnalyticsProps) {
                 <Pie
                   data={data.roleDistribution.map((item, index) => ({
                     ...item,
-                    total: data.roleDistribution.reduce((sum, d) => sum + d.value, 0)
+                    total: data.roleDistribution.reduce(
+                      (sum, d) => sum + d.value,
+                      0
+                    ),
                   }))}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  label={({ name, percent }) =>
+                    `${name} ${(percent * 100).toFixed(0)}%`
+                  }
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"
@@ -141,17 +146,17 @@ export function UserAnalytics({ data, loading = false }: UserAnalyticsProps) {
                 <YAxis />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend />
-                <Line 
-                  type="monotone" 
-                  dataKey="users" 
-                  stroke="#8884d8" 
+                <Line
+                  type="monotone"
+                  dataKey="users"
+                  stroke="#8884d8"
                   strokeWidth={2}
                   name="Total Users"
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="newUsers" 
-                  stroke="#82ca9d" 
+                <Line
+                  type="monotone"
+                  dataKey="newUsers"
+                  stroke="#82ca9d"
                   strokeWidth={2}
                   name="New Users"
                 />
@@ -168,23 +173,33 @@ export function UserAnalytics({ data, loading = false }: UserAnalyticsProps) {
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={400}>
-            <BarChart 
-              data={data.schoolDistribution.slice(0, 10)} 
+            <BarChart
+              data={data.schoolDistribution.slice(0, 10)}
               layout="horizontal"
               margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis type="number" />
-              <YAxis 
-                dataKey="schoolName" 
-                type="category" 
+              <YAxis
+                dataKey="schoolName"
+                type="category"
                 width={120}
                 tick={{ fontSize: 12 }}
               />
               <Tooltip content={<CustomTooltip />} />
               <Legend />
-              <Bar dataKey="studentCount" stackId="a" fill="#8884d8" name="Students" />
-              <Bar dataKey="adminCount" stackId="a" fill="#82ca9d" name="Admins" />
+              <Bar
+                dataKey="studentCount"
+                stackId="a"
+                fill="#8884d8"
+                name="Students"
+              />
+              <Bar
+                dataKey="adminCount"
+                stackId="a"
+                fill="#82ca9d"
+                name="Admins"
+              />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
@@ -200,9 +215,7 @@ export function UserAnalytics({ data, loading = false }: UserAnalyticsProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">+12.5%</div>
-            <p className="text-xs text-gray-500">
-              Compared to last month
-            </p>
+            <p className="text-xs text-gray-500">Compared to last month</p>
           </CardContent>
         </Card>
 
@@ -214,16 +227,13 @@ export function UserAnalytics({ data, loading = false }: UserAnalyticsProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {data.monthlyGrowth.length > 0 
-                ? data.monthlyGrowth.reduce((max, month) => 
+              {data.monthlyGrowth.length > 0
+                ? data.monthlyGrowth.reduce((max, month) =>
                     month.newUsers > max.newUsers ? month : max
                   ).month
-                : 'N/A'
-              }
+                : 'N/A'}
             </div>
-            <p className="text-xs text-gray-500">
-              Highest new user count
-            </p>
+            <p className="text-xs text-gray-500">Highest new user count</p>
           </CardContent>
         </Card>
 
@@ -235,20 +245,21 @@ export function UserAnalytics({ data, loading = false }: UserAnalyticsProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {data.schoolDistribution.length > 0 
-                ? data.schoolDistribution[0].schoolName.split(' ').slice(0, 2).join(' ')
-                : 'N/A'
-              }
+              {data.schoolDistribution.length > 0
+                ? data.schoolDistribution[0].schoolName
+                    .split(' ')
+                    .slice(0, 2)
+                    .join(' ')
+                : 'N/A'}
             </div>
             <p className="text-xs text-gray-500">
-              {data.schoolDistribution.length > 0 
+              {data.schoolDistribution.length > 0
                 ? `${data.schoolDistribution[0].userCount} total users`
-                : 'No data available'
-              }
+                : 'No data available'}
             </p>
           </CardContent>
         </Card>
       </div>
     </div>
-  )
+  );
 }

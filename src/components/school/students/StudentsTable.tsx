@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar'
-import { Badge } from '../../ui/badge'
-import { Button } from '../../ui/button'
-import { Checkbox } from '../../ui/checkbox'
-import { Card, CardContent } from '../../ui/card'
+import { useState } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
+import { Badge } from '../../ui/badge';
+import { Button } from '../../ui/button';
+import { Checkbox } from '../../ui/checkbox';
+import { Card, CardContent } from '../../ui/card';
 import {
   Table,
   TableBody,
@@ -13,14 +13,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../../ui/table'
+} from '../../ui/table';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '../../ui/dropdown-menu'
+} from '../../ui/dropdown-menu';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,45 +30,45 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '../../ui/alert-dialog'
-import { 
-  MoreHorizontal, 
-  ArrowUpDown, 
-  Eye, 
-  Edit, 
-  UserX, 
-  UserCheck, 
-  GraduationCap, 
+} from '../../ui/alert-dialog';
+import {
+  MoreHorizontal,
+  ArrowUpDown,
+  Eye,
+  Edit,
+  UserX,
+  UserCheck,
+  GraduationCap,
   Trash2,
   ChevronLeft,
   ChevronRight,
   Phone,
   Mail,
   Calendar,
-  User
-} from 'lucide-react'
-import { Student } from '../../app/school/students/page'
-import { format } from 'date-fns'
+  User,
+} from 'lucide-react';
+import { Student } from '../../app/school/students/page';
+import { format } from 'date-fns';
 
 interface StudentsTableProps {
-  students: Student[]
-  loading: boolean
-  selectedStudents: string[]
-  onSelectionChange: (studentIds: string[]) => void
-  onStudentClick: (student: Student) => void
+  students: Student[];
+  loading: boolean;
+  selectedStudents: string[];
+  onSelectionChange: (studentIds: string[]) => void;
+  onStudentClick: (student: Student) => void;
   pagination: {
-    page: number
-    limit: number
-    total: number
-    totalPages: number
-  }
-  onPageChange: (page: number) => void
-  onStudentUpdate: (student: Student) => void
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  onPageChange: (page: number) => void;
+  onStudentUpdate: (student: Student) => void;
 }
 
 interface SortConfig {
-  key: keyof Student | null
-  direction: 'asc' | 'desc'
+  key: keyof Student | null;
+  direction: 'asc' | 'desc';
 }
 
 export function StudentsTable({
@@ -79,75 +79,80 @@ export function StudentsTable({
   onStudentClick,
   pagination,
   onPageChange,
-  onStudentUpdate
+  onStudentUpdate,
 }: StudentsTableProps) {
-  const [sortConfig, setSortConfig] = useState<SortConfig>({ key: null, direction: 'asc' })
-  const [deleteStudent, setDeleteStudent] = useState<Student | null>(null)
-  const [isDeleting, setIsDeleting] = useState(false)
+  const [sortConfig, setSortConfig] = useState<SortConfig>({
+    key: null,
+    direction: 'asc',
+  });
+  const [deleteStudent, setDeleteStudent] = useState<Student | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleSort = (key: keyof Student) => {
-    let direction: 'asc' | 'desc' = 'asc'
+    let direction: 'asc' | 'desc' = 'asc';
     if (sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc'
+      direction = 'desc';
     }
-    setSortConfig({ key, direction })
-  }
+    setSortConfig({ key, direction });
+  };
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      onSelectionChange(students.map(s => s.id))
+      onSelectionChange(students.map(s => s.id));
     } else {
-      onSelectionChange([])
+      onSelectionChange([]);
     }
-  }
+  };
 
   const handleSelectStudent = (studentId: string, checked: boolean) => {
     if (checked) {
-      onSelectionChange([...selectedStudents, studentId])
+      onSelectionChange([...selectedStudents, studentId]);
     } else {
-      onSelectionChange(selectedStudents.filter(id => id !== studentId))
+      onSelectionChange(selectedStudents.filter(id => id !== studentId));
     }
-  }
+  };
 
   const handleStudentAction = async (action: string, student: Student) => {
     try {
       const response = await fetch(`/api/school/students/${student.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: action.toUpperCase() })
-      })
+        body: JSON.stringify({ status: action.toUpperCase() }),
+      });
 
       if (response.ok) {
-        const updatedStudent = await response.json()
-        onStudentUpdate(updatedStudent)
+        const updatedStudent = await response.json();
+        onStudentUpdate(updatedStudent);
       }
     } catch (error) {
-      console.error('Error updating student:', error)
+      console.error('Error updating student:', error);
     }
-  }
+  };
 
   const handleDeleteStudent = async () => {
-    if (!deleteStudent) return
-    
-    setIsDeleting(true)
+    if (!deleteStudent) return;
+
+    setIsDeleting(true);
     try {
       const response = await fetch(`/api/school/students/${deleteStudent.id}`, {
-        method: 'DELETE'
-      })
+        method: 'DELETE',
+      });
 
       if (response.ok) {
         // Remove from local state
-        onSelectionChange(selectedStudents.filter(id => id !== deleteStudent.id))
+        onSelectionChange(
+          selectedStudents.filter(id => id !== deleteStudent.id)
+        );
         // The parent component should refetch the data
-        window.location.reload() // Simple refresh for now
+        window.location.reload(); // Simple refresh for now
       }
     } catch (error) {
-      console.error('Error deleting student:', error)
+      console.error('Error deleting student:', error);
     } finally {
-      setIsDeleting(false)
-      setDeleteStudent(null)
+      setIsDeleting(false);
+      setDeleteStudent(null);
     }
-  }
+  };
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
@@ -155,12 +160,13 @@ export function StudentsTable({
       SUSPENDED: { label: 'Suspended', className: 'bg-red-100 text-red-800' },
       GRADUATED: { label: 'Graduated', className: 'bg-blue-100 text-blue-800' },
       PENDING: { label: 'Pending', className: 'bg-yellow-100 text-yellow-800' },
-      ALUMNI: { label: 'Alumni', className: 'bg-purple-100 text-purple-800' }
-    }
-    
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.ACTIVE
-    return <Badge className={config.className}>{config.label}</Badge>
-  }
+      ALUMNI: { label: 'Alumni', className: 'bg-purple-100 text-purple-800' },
+    };
+
+    const config =
+      statusConfig[status as keyof typeof statusConfig] || statusConfig.ACTIVE;
+    return <Badge className={config.className}>{config.label}</Badge>;
+  };
 
   const getInitials = (name: string) => {
     return name
@@ -168,18 +174,20 @@ export function StudentsTable({
       .map(n => n[0])
       .join('')
       .toUpperCase()
-      .slice(0, 2)
-  }
+      .slice(0, 2);
+  };
 
   const getPerformanceColor = (score?: number) => {
-    if (!score && score !== 0) return 'text-gray-400'
-    if (score >= 80) return 'text-green-600'
-    if (score >= 60) return 'text-yellow-600'
-    return 'text-red-600'
-  }
+    if (!score && score !== 0) return 'text-gray-400';
+    if (score >= 80) return 'text-green-600';
+    if (score >= 60) return 'text-yellow-600';
+    return 'text-red-600';
+  };
 
-  const isAllSelected = students.length > 0 && selectedStudents.length === students.length
-  const isPartiallySelected = selectedStudents.length > 0 && selectedStudents.length < students.length
+  const isAllSelected =
+    students.length > 0 && selectedStudents.length === students.length;
+  const isPartiallySelected =
+    selectedStudents.length > 0 && selectedStudents.length < students.length;
 
   if (loading) {
     return (
@@ -193,7 +201,7 @@ export function StudentsTable({
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -214,8 +222,8 @@ export function StudentsTable({
                   </TableHead>
                   <TableHead className="w-16"></TableHead>
                   <TableHead>
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       onClick={() => handleSort('name')}
                       className="h-auto p-0 font-semibold"
                     >
@@ -224,8 +232,8 @@ export function StudentsTable({
                     </Button>
                   </TableHead>
                   <TableHead>
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       onClick={() => handleSort('regNumber')}
                       className="h-auto p-0 font-semibold"
                     >
@@ -250,26 +258,29 @@ export function StudentsTable({
                           <User className="h-8 w-8 text-gray-400" />
                         </div>
                         <div className="text-center">
-                          <h3 className="text-lg font-medium text-gray-900 mb-2">No Students Found</h3>
+                          <h3 className="text-lg font-medium text-gray-900 mb-2">
+                            No Students Found
+                          </h3>
                           <p className="text-gray-500 max-w-md">
                             {/* Check if any filters are applied */}
-                            Get started by adding your first student or try adjusting your search filters.
+                            Get started by adding your first student or try
+                            adjusting your search filters.
                           </p>
                         </div>
                       </div>
                     </TableCell>
                   </TableRow>
                 ) : (
-                  students.map((student) => (
-                    <TableRow 
+                  students.map(student => (
+                    <TableRow
                       key={student.id}
                       className="cursor-pointer hover:bg-gray-50"
                       onClick={() => onStudentClick(student)}
                     >
-                      <TableCell onClick={(e) => e.stopPropagation()}>
+                      <TableCell onClick={e => e.stopPropagation()}>
                         <Checkbox
                           checked={selectedStudents.includes(student.id)}
-                          onCheckedChange={(checked) => 
+                          onCheckedChange={checked =>
                             handleSelectStudent(student.id, checked as boolean)
                           }
                         />
@@ -277,17 +288,23 @@ export function StudentsTable({
                       <TableCell>
                         <Avatar className="h-10 w-10">
                           <AvatarImage src={student.avatar} />
-                          <AvatarFallback>{getInitials(student.name)}</AvatarFallback>
+                          <AvatarFallback>
+                            {getInitials(student.name)}
+                          </AvatarFallback>
                         </Avatar>
                       </TableCell>
                       <TableCell>
                         <div>
                           <div className="font-medium">{student.name}</div>
-                          <div className="text-sm text-gray-500">{student.email}</div>
+                          <div className="text-sm text-gray-500">
+                            {student.email}
+                          </div>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="font-mono text-sm">{student.regNumber}</div>
+                        <div className="font-mono text-sm">
+                          {student.regNumber}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <div>
@@ -295,7 +312,9 @@ export function StudentsTable({
                             <div className="font-medium">{student.class}</div>
                           )}
                           {student.section && (
-                            <div className="text-sm text-gray-500">Section {student.section}</div>
+                            <div className="text-sm text-gray-500">
+                              Section {student.section}
+                            </div>
                           )}
                         </div>
                       </TableCell>
@@ -322,19 +341,20 @@ export function StudentsTable({
                           )}
                         </div>
                       </TableCell>
+                      <TableCell>{getStatusBadge(student.status)}</TableCell>
                       <TableCell>
-                        {getStatusBadge(student.status)}
-                      </TableCell>
-                      <TableCell>
-                        {student.performanceScore !== null && student.performanceScore !== undefined ? (
-                          <span className={`font-medium ${getPerformanceColor(student.performanceScore)}`}>
+                        {student.performanceScore !== null &&
+                        student.performanceScore !== undefined ? (
+                          <span
+                            className={`font-medium ${getPerformanceColor(student.performanceScore)}`}
+                          >
                             {student.performanceScore}%
                           </span>
                         ) : (
                           <span className="text-gray-400">N/A</span>
                         )}
                       </TableCell>
-                      <TableCell onClick={(e) => e.stopPropagation()}>
+                      <TableCell onClick={e => e.stopPropagation()}>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="sm">
@@ -342,41 +362,51 @@ export function StudentsTable({
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => onStudentClick(student)}>
+                            <DropdownMenuItem
+                              onClick={() => onStudentClick(student)}
+                            >
                               <Eye className="h-4 w-4 mr-2" />
                               View Profile
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => onStudentClick(student)}>
+                            <DropdownMenuItem
+                              onClick={() => onStudentClick(student)}
+                            >
                               <Edit className="h-4 w-4 mr-2" />
                               Edit Student
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             {student.status !== 'ACTIVE' && (
-                              <DropdownMenuItem 
-                                onClick={() => handleStudentAction('active', student)}
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleStudentAction('active', student)
+                                }
                               >
                                 <UserCheck className="h-4 w-4 mr-2" />
                                 Activate
                               </DropdownMenuItem>
                             )}
                             {student.status !== 'SUSPENDED' && (
-                              <DropdownMenuItem 
-                                onClick={() => handleStudentAction('suspended', student)}
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleStudentAction('suspended', student)
+                                }
                               >
                                 <UserX className="h-4 w-4 mr-2" />
                                 Suspend
                               </DropdownMenuItem>
                             )}
                             {student.status !== 'GRADUATED' && (
-                              <DropdownMenuItem 
-                                onClick={() => handleStudentAction('graduated', student)}
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleStudentAction('graduated', student)
+                                }
                               >
                                 <GraduationCap className="h-4 w-4 mr-2" />
                                 Graduate
                               </DropdownMenuItem>
                             )}
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem 
+                            <DropdownMenuItem
                               onClick={() => setDeleteStudent(student)}
                               className="text-red-600 focus:text-red-600"
                             >
@@ -402,38 +432,51 @@ export function StudentsTable({
                     <User className="h-8 w-8 text-gray-400" />
                   </div>
                   <div className="text-center">
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No Students Found</h3>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      No Students Found
+                    </h3>
                     <p className="text-gray-500 max-w-md">
-                      Get started by adding your first student or try adjusting your search filters.
+                      Get started by adding your first student or try adjusting
+                      your search filters.
                     </p>
                   </div>
                 </div>
               </div>
             ) : (
-              students.map((student) => (
-                <Card key={student.id} className="p-4 cursor-pointer hover:shadow-md transition-shadow" onClick={() => onStudentClick(student)}>
+              students.map(student => (
+                <Card
+                  key={student.id}
+                  className="p-4 cursor-pointer hover:shadow-md transition-shadow"
+                  onClick={() => onStudentClick(student)}
+                >
                   <div className="flex items-start space-x-3">
-                    <div onClick={(e) => e.stopPropagation()}>
+                    <div onClick={e => e.stopPropagation()}>
                       <Checkbox
                         checked={selectedStudents.includes(student.id)}
-                        onCheckedChange={(checked) => 
+                        onCheckedChange={checked =>
                           handleSelectStudent(student.id, checked as boolean)
                         }
                       />
                     </div>
                     <Avatar className="h-12 w-12">
                       <AvatarImage src={student.avatar} />
-                      <AvatarFallback>{getInitials(student.name)}</AvatarFallback>
+                      <AvatarFallback>
+                        {getInitials(student.name)}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between">
                         <div>
-                          <h3 className="font-medium text-gray-900 truncate">{student.name}</h3>
-                          <p className="text-sm text-gray-500">{student.regNumber}</p>
+                          <h3 className="font-medium text-gray-900 truncate">
+                            {student.name}
+                          </h3>
+                          <p className="text-sm text-gray-500">
+                            {student.regNumber}
+                          </p>
                         </div>
                         <div className="flex items-center space-x-2">
                           {getStatusBadge(student.status)}
-                          <div onClick={(e) => e.stopPropagation()}>
+                          <div onClick={e => e.stopPropagation()}>
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" size="sm">
@@ -441,11 +484,15 @@ export function StudentsTable({
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => onStudentClick(student)}>
+                                <DropdownMenuItem
+                                  onClick={() => onStudentClick(student)}
+                                >
                                   <Eye className="h-4 w-4 mr-2" />
                                   View Profile
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => setDeleteStudent(student)}>
+                                <DropdownMenuItem
+                                  onClick={() => setDeleteStudent(student)}
+                                >
                                   <Trash2 className="h-4 w-4 mr-2" />
                                   Delete
                                 </DropdownMenuItem>
@@ -456,16 +503,25 @@ export function StudentsTable({
                       </div>
                       <div className="mt-2 flex items-center space-x-4 text-sm text-gray-500">
                         {student.class && <span>{student.class}</span>}
-                        {student.section && <span>Section {student.section}</span>}
-                        {student.gender && <span>{student.gender === 'MALE' ? 'Male' : 'Female'}</span>}
-                      </div>
-                      {student.performanceScore !== null && student.performanceScore !== undefined && (
-                        <div className="mt-2">
-                          <span className={`text-sm font-medium ${getPerformanceColor(student.performanceScore)}`}>
-                            Performance: {student.performanceScore}%
+                        {student.section && (
+                          <span>Section {student.section}</span>
+                        )}
+                        {student.gender && (
+                          <span>
+                            {student.gender === 'MALE' ? 'Male' : 'Female'}
                           </span>
-                        </div>
-                      )}
+                        )}
+                      </div>
+                      {student.performanceScore !== null &&
+                        student.performanceScore !== undefined && (
+                          <div className="mt-2">
+                            <span
+                              className={`text-sm font-medium ${getPerformanceColor(student.performanceScore)}`}
+                            >
+                              Performance: {student.performanceScore}%
+                            </span>
+                          </div>
+                        )}
                     </div>
                   </div>
                 </Card>
@@ -477,7 +533,9 @@ export function StudentsTable({
           {pagination.totalPages > 1 && (
             <div className="flex items-center justify-between px-4 py-4 border-t">
               <div className="text-sm text-gray-500">
-                Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} students
+                Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
+                {Math.min(pagination.page * pagination.limit, pagination.total)}{' '}
+                of {pagination.total} students
               </div>
               <div className="flex items-center space-x-2">
                 <Button
@@ -490,19 +548,24 @@ export function StudentsTable({
                   Previous
                 </Button>
                 <div className="flex items-center space-x-1">
-                  {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
-                    const page = i + 1
-                    return (
-                      <Button
-                        key={page}
-                        variant={page === pagination.page ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => onPageChange(page)}
-                      >
-                        {page}
-                      </Button>
-                    )
-                  })}
+                  {Array.from(
+                    { length: Math.min(5, pagination.totalPages) },
+                    (_, i) => {
+                      const page = i + 1;
+                      return (
+                        <Button
+                          key={page}
+                          variant={
+                            page === pagination.page ? 'default' : 'outline'
+                          }
+                          size="sm"
+                          onClick={() => onPageChange(page)}
+                        >
+                          {page}
+                        </Button>
+                      );
+                    }
+                  )}
                 </div>
                 <Button
                   variant="outline"
@@ -520,17 +583,22 @@ export function StudentsTable({
       </Card>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={!!deleteStudent} onOpenChange={() => setDeleteStudent(null)}>
+      <AlertDialog
+        open={!!deleteStudent}
+        onOpenChange={() => setDeleteStudent(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Student</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete {deleteStudent?.name}? This action cannot be undone and will also delete all their exam records and results.
+              Are you sure you want to delete {deleteStudent?.name}? This action
+              cannot be undone and will also delete all their exam records and
+              results.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={handleDeleteStudent}
               disabled={isDeleting}
               className="bg-red-600 hover:bg-red-700"
@@ -541,6 +609,5 @@ export function StudentsTable({
         </AlertDialogContent>
       </AlertDialog>
     </>
-  )
+  );
 }
-

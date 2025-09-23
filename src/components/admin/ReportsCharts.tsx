@@ -1,7 +1,13 @@
-'use client'
+'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
-import { Button } from '../ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../ui/card';
+import { Button } from '../ui/button';
 import {
   LineChart,
   Line,
@@ -18,23 +24,36 @@ import {
   ResponsiveContainer,
   Area,
   AreaChart,
-  ComposedChart
-} from 'recharts'
-import { TrendingUp, TrendingDown, MoreHorizontal, Download, Maximize2 } from 'lucide-react'
-import { useState } from 'react'
+  ComposedChart,
+} from 'recharts';
+import {
+  TrendingUp,
+  TrendingDown,
+  MoreHorizontal,
+  Download,
+  Maximize2,
+} from 'lucide-react';
+import { useState } from 'react';
 
 interface ChartProps {
-  data: any[]
-  loading?: boolean
-  title: string
-  description?: string
-  onExport?: () => void
-  onExpand?: () => void
+  data: any[];
+  loading?: boolean;
+  title: string;
+  description?: string;
+  onExport?: () => void;
+  onExpand?: () => void;
 }
 
 // User Growth Chart
-export function UserGrowthChart({ data, loading, title, description, onExport, onExpand }: ChartProps) {
-  const [chartType, setChartType] = useState<'line' | 'area' | 'bar'>('line')
+export function UserGrowthChart({
+  data,
+  loading,
+  title,
+  description,
+  onExport,
+  onExpand,
+}: ChartProps) {
+  const [chartType, setChartType] = useState<'line' | 'area' | 'bar'>('line');
 
   if (loading) {
     return (
@@ -45,14 +64,21 @@ export function UserGrowthChart({ data, loading, title, description, onExport, o
         </CardHeader>
         <CardContent>
           <div className="h-[300px] flex items-center justify-center">
-            <div className="animate-pulse text-gray-500">Loading chart data...</div>
+            <div className="animate-pulse text-gray-500">
+              Loading chart data...
+            </div>
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
-  const ChartComponent = chartType === 'line' ? LineChart : chartType === 'area' ? AreaChart : BarChart
+  const ChartComponent =
+    chartType === 'line'
+      ? LineChart
+      : chartType === 'area'
+        ? AreaChart
+        : BarChart;
 
   return (
     <Card>
@@ -74,7 +100,15 @@ export function UserGrowthChart({ data, loading, title, description, onExport, o
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setChartType(chartType === 'line' ? 'area' : chartType === 'area' ? 'bar' : 'line')}
+              onClick={() =>
+                setChartType(
+                  chartType === 'line'
+                    ? 'area'
+                    : chartType === 'area'
+                      ? 'bar'
+                      : 'line'
+                )
+              }
             >
               <MoreHorizontal className="h-4 w-4" />
             </Button>
@@ -95,21 +129,18 @@ export function UserGrowthChart({ data, loading, title, description, onExport, o
         <ResponsiveContainer width="100%" height={300}>
           <ChartComponent data={data}>
             <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-            <XAxis 
-              dataKey="month" 
+            <XAxis
+              dataKey="month"
               tick={{ fontSize: 12 }}
               tickLine={{ stroke: '#e5e7eb' }}
             />
-            <YAxis 
-              tick={{ fontSize: 12 }}
-              tickLine={{ stroke: '#e5e7eb' }}
-            />
-            <Tooltip 
+            <YAxis tick={{ fontSize: 12 }} tickLine={{ stroke: '#e5e7eb' }} />
+            <Tooltip
               contentStyle={{
                 backgroundColor: 'white',
                 border: '1px solid #e5e7eb',
                 borderRadius: '8px',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
               }}
             />
             <Legend />
@@ -132,17 +163,29 @@ export function UserGrowthChart({ data, loading, title, description, onExport, o
                 name="New Users"
               />
             ) : (
-              <Bar dataKey="users" fill="#3b82f6" name="New Users" radius={[4, 4, 0, 0]} />
+              <Bar
+                dataKey="users"
+                fill="#3b82f6"
+                name="New Users"
+                radius={[4, 4, 0, 0]}
+              />
             )}
           </ChartComponent>
         </ResponsiveContainer>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // Exams per School Chart
-export function ExamsPerSchoolChart({ data, loading, title, description, onExport, onExpand }: ChartProps) {
+export function ExamsPerSchoolChart({
+  data,
+  loading,
+  title,
+  description,
+  onExport,
+  onExpand,
+}: ChartProps) {
   if (loading) {
     return (
       <Card>
@@ -152,11 +195,13 @@ export function ExamsPerSchoolChart({ data, loading, title, description, onExpor
         </CardHeader>
         <CardContent>
           <div className="h-[300px] flex items-center justify-center">
-            <div className="animate-pulse text-gray-500">Loading chart data...</div>
+            <div className="animate-pulse text-gray-500">
+              Loading chart data...
+            </div>
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -186,23 +231,23 @@ export function ExamsPerSchoolChart({ data, loading, title, description, onExpor
           <BarChart data={data} layout="horizontal">
             <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
             <XAxis type="number" tick={{ fontSize: 12 }} />
-            <YAxis 
-              type="category" 
-              dataKey="name" 
+            <YAxis
+              type="category"
+              dataKey="name"
               tick={{ fontSize: 12 }}
               width={100}
             />
-            <Tooltip 
+            <Tooltip
               contentStyle={{
                 backgroundColor: 'white',
                 border: '1px solid #e5e7eb',
                 borderRadius: '8px',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
               }}
             />
-            <Bar 
-              dataKey="exams" 
-              fill="#f59e0b" 
+            <Bar
+              dataKey="exams"
+              fill="#f59e0b"
               name="Exams Created"
               radius={[0, 4, 4, 0]}
             />
@@ -210,11 +255,18 @@ export function ExamsPerSchoolChart({ data, loading, title, description, onExpor
         </ResponsiveContainer>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // User Role Distribution Chart
-export function UserRoleDistributionChart({ data, loading, title, description, onExport, onExpand }: ChartProps) {
+export function UserRoleDistributionChart({
+  data,
+  loading,
+  title,
+  description,
+  onExport,
+  onExpand,
+}: ChartProps) {
   if (loading) {
     return (
       <Card>
@@ -224,11 +276,13 @@ export function UserRoleDistributionChart({ data, loading, title, description, o
         </CardHeader>
         <CardContent>
           <div className="h-[300px] flex items-center justify-center">
-            <div className="animate-pulse text-gray-500">Loading chart data...</div>
+            <div className="animate-pulse text-gray-500">
+              Loading chart data...
+            </div>
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -262,7 +316,9 @@ export function UserRoleDistributionChart({ data, loading, title, description, o
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                label={({ name, percent }) =>
+                  `${name} ${(percent * 100).toFixed(0)}%`
+                }
                 outerRadius={80}
                 fill="#8884d8"
                 dataKey="value"
@@ -277,23 +333,32 @@ export function UserRoleDistributionChart({ data, loading, title, description, o
           <div className="w-40% space-y-2">
             {data.map((entry: any, index: number) => (
               <div key={index} className="flex items-center gap-2">
-                <div 
-                  className="w-3 h-3 rounded-full" 
+                <div
+                  className="w-3 h-3 rounded-full"
                   style={{ backgroundColor: entry.color }}
                 />
                 <span className="text-sm font-medium">{entry.name}</span>
-                <span className="text-sm text-gray-500 ml-auto">{entry.value}</span>
+                <span className="text-sm text-gray-500 ml-auto">
+                  {entry.value}
+                </span>
               </div>
             ))}
           </div>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // School Performance Heatmap
-export function SchoolPerformanceChart({ data, loading, title, description, onExport, onExpand }: ChartProps) {
+export function SchoolPerformanceChart({
+  data,
+  loading,
+  title,
+  description,
+  onExport,
+  onExpand,
+}: ChartProps) {
   if (loading) {
     return (
       <Card>
@@ -303,11 +368,13 @@ export function SchoolPerformanceChart({ data, loading, title, description, onEx
         </CardHeader>
         <CardContent>
           <div className="h-[300px] flex items-center justify-center">
-            <div className="animate-pulse text-gray-500">Loading chart data...</div>
+            <div className="animate-pulse text-gray-500">
+              Loading chart data...
+            </div>
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -338,20 +405,25 @@ export function SchoolPerformanceChart({ data, loading, title, description, onEx
             <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
             <XAxis dataKey="name" tick={{ fontSize: 12 }} />
             <YAxis tick={{ fontSize: 12 }} />
-            <Tooltip 
+            <Tooltip
               contentStyle={{
                 backgroundColor: 'white',
                 border: '1px solid #e5e7eb',
                 borderRadius: '8px',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
               }}
             />
             <Legend />
-            <Bar dataKey="exams" fill="#3b82f6" name="Exams" radius={[4, 4, 0, 0]} />
-            <Line 
-              type="monotone" 
-              dataKey="performance" 
-              stroke="#10b981" 
+            <Bar
+              dataKey="exams"
+              fill="#3b82f6"
+              name="Exams"
+              radius={[4, 4, 0, 0]}
+            />
+            <Line
+              type="monotone"
+              dataKey="performance"
+              stroke="#10b981"
               strokeWidth={2}
               name="Performance Score"
             />
@@ -359,11 +431,18 @@ export function SchoolPerformanceChart({ data, loading, title, description, onEx
         </ResponsiveContainer>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // Revenue Analytics Chart
-export function RevenueAnalyticsChart({ data, loading, title, description, onExport, onExpand }: ChartProps) {
+export function RevenueAnalyticsChart({
+  data,
+  loading,
+  title,
+  description,
+  onExport,
+  onExpand,
+}: ChartProps) {
   if (loading) {
     return (
       <Card>
@@ -373,11 +452,13 @@ export function RevenueAnalyticsChart({ data, loading, title, description, onExp
         </CardHeader>
         <CardContent>
           <div className="h-[300px] flex items-center justify-center">
-            <div className="animate-pulse text-gray-500">Loading chart data...</div>
+            <div className="animate-pulse text-gray-500">
+              Loading chart data...
+            </div>
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -413,21 +494,24 @@ export function RevenueAnalyticsChart({ data, loading, title, description, onExp
           <AreaChart data={data}>
             <defs>
               <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
             <XAxis dataKey="month" tick={{ fontSize: 12 }} />
             <YAxis tick={{ fontSize: 12 }} />
-            <Tooltip 
+            <Tooltip
               contentStyle={{
                 backgroundColor: 'white',
                 border: '1px solid #e5e7eb',
                 borderRadius: '8px',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
               }}
-              formatter={(value: number) => [`₦${value.toLocaleString()}`, 'Revenue']}
+              formatter={(value: number) => [
+                `₦${value.toLocaleString()}`,
+                'Revenue',
+              ]}
             />
             <Area
               type="monotone"
@@ -441,5 +525,5 @@ export function RevenueAnalyticsChart({ data, loading, title, description, onExp
         </ResponsiveContainer>
       </CardContent>
     </Card>
-  )
+  );
 }

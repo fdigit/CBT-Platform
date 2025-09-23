@@ -1,12 +1,12 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useSession } from 'next-auth/react'
-import { cn } from '../../lib/utils'
-import { Button } from '../ui/button'
-import { Separator } from '../ui/separator'
+import { useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { cn } from '../../lib/utils';
+import { Button } from '../ui/button';
+import { Separator } from '../ui/separator';
 import {
   LayoutDashboard,
   BookOpen,
@@ -19,10 +19,10 @@ import {
   ChevronRight,
   GraduationCap,
   ClipboardList,
-} from 'lucide-react'
+} from 'lucide-react';
 
 interface StudentSidebarProps {
-  className?: string
+  className?: string;
 }
 
 const navigationItems = [
@@ -56,21 +56,21 @@ const navigationItems = [
     href: '/student/support',
     icon: HelpCircle,
   },
-]
+];
 
 export function StudentSidebar({ className }: StudentSidebarProps) {
-  const pathname = usePathname()
-  const { data: session } = useSession()
-  const [isCollapsed, setIsCollapsed] = useState(false)
-  const [isMobileOpen, setIsMobileOpen] = useState(false)
+  const pathname = usePathname();
+  const { data: session } = useSession();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const toggleCollapse = () => {
-    setIsCollapsed(!isCollapsed)
-  }
+    setIsCollapsed(!isCollapsed);
+  };
 
   const toggleMobile = () => {
-    setIsMobileOpen(!isMobileOpen)
-  }
+    setIsMobileOpen(!isMobileOpen);
+  };
 
   return (
     <>
@@ -81,7 +81,11 @@ export function StudentSidebar({ className }: StudentSidebarProps) {
         className="fixed top-4 left-4 z-50 lg:hidden"
         onClick={toggleMobile}
       >
-        {isMobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+        {isMobileOpen ? (
+          <X className="h-4 w-4" />
+        ) : (
+          <Menu className="h-4 w-4" />
+        )}
       </Button>
 
       {/* Mobile overlay */}
@@ -128,8 +132,10 @@ export function StudentSidebar({ className }: StudentSidebarProps) {
 
           {/* Navigation */}
           <nav className="flex-1 space-y-1 p-4">
-            {navigationItems.map((item) => {
-              const isActive = pathname === item.href || (item.href !== '/student' && pathname.startsWith(item.href))
+            {navigationItems.map(item => {
+              const isActive =
+                pathname === item.href ||
+                (item.href !== '/student' && pathname.startsWith(item.href));
               return (
                 <Link
                   key={item.name}
@@ -143,10 +149,12 @@ export function StudentSidebar({ className }: StudentSidebarProps) {
                   )}
                   onClick={() => setIsMobileOpen(false)}
                 >
-                  <item.icon className={cn('h-5 w-5', !isCollapsed && 'mr-3')} />
+                  <item.icon
+                    className={cn('h-5 w-5', !isCollapsed && 'mr-3')}
+                  />
                   {!isCollapsed && item.name}
                 </Link>
-              )
+              );
             })}
           </nav>
 
@@ -154,7 +162,12 @@ export function StudentSidebar({ className }: StudentSidebarProps) {
 
           {/* User info */}
           <div className="p-4">
-            <div className={cn('flex items-center', isCollapsed && 'justify-center')}>
+            <div
+              className={cn(
+                'flex items-center',
+                isCollapsed && 'justify-center'
+              )}
+            >
               <div className="flex-shrink-0">
                 <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center">
                   <span className="text-sm font-medium text-white">
@@ -177,5 +190,5 @@ export function StudentSidebar({ className }: StudentSidebarProps) {
         </div>
       </div>
     </>
-  )
+  );
 }

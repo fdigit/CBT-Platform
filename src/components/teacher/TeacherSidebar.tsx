@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { cn } from '../../lib/utils'
-import { Button } from '../ui/button'
-import { Separator } from '../ui/separator'
+import { useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { cn } from '../../lib/utils';
+import { Button } from '../ui/button';
+import { Separator } from '../ui/separator';
 import {
   LayoutDashboard,
   BookOpen,
@@ -26,10 +26,10 @@ import {
   Calendar,
   ChevronDown,
   ChevronRight as ChevronRightSmall,
-} from 'lucide-react'
+} from 'lucide-react';
 
 interface TeacherSidebarProps {
-  className?: string
+  className?: string;
 }
 
 const navigationItems = [
@@ -85,29 +85,29 @@ const navigationItems = [
     href: '/teacher/settings',
     icon: Settings,
   },
-]
+];
 
 export function TeacherSidebar({ className }: TeacherSidebarProps) {
-  const pathname = usePathname()
-  const [isCollapsed, setIsCollapsed] = useState(false)
-  const [isMobileOpen, setIsMobileOpen] = useState(false)
-  const [expandedItems, setExpandedItems] = useState<string[]>([])
+  const pathname = usePathname();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
   const toggleCollapse = () => {
-    setIsCollapsed(!isCollapsed)
-  }
+    setIsCollapsed(!isCollapsed);
+  };
 
   const toggleMobile = () => {
-    setIsMobileOpen(!isMobileOpen)
-  }
+    setIsMobileOpen(!isMobileOpen);
+  };
 
   const toggleExpanded = (itemName: string) => {
-    setExpandedItems(prev => 
-      prev.includes(itemName) 
+    setExpandedItems(prev =>
+      prev.includes(itemName)
         ? prev.filter(name => name !== itemName)
         : [...prev, itemName]
-    )
-  }
+    );
+  };
 
   return (
     <>
@@ -118,7 +118,11 @@ export function TeacherSidebar({ className }: TeacherSidebarProps) {
         className="fixed top-4 left-4 z-50 lg:hidden"
         onClick={toggleMobile}
       >
-        {isMobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+        {isMobileOpen ? (
+          <X className="h-4 w-4" />
+        ) : (
+          <Menu className="h-4 w-4" />
+        )}
       </Button>
 
       {/* Mobile overlay */}
@@ -165,10 +169,11 @@ export function TeacherSidebar({ className }: TeacherSidebarProps) {
 
           {/* Navigation */}
           <nav className="flex-1 space-y-1 p-4">
-            {navigationItems.map((item) => {
-              const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
-              const isExpanded = expandedItems.includes(item.name)
-              
+            {navigationItems.map(item => {
+              const isActive =
+                pathname === item.href || pathname.startsWith(item.href + '/');
+              const isExpanded = expandedItems.includes(item.name);
+
               return (
                 <div key={item.name}>
                   <div className="flex items-center">
@@ -183,7 +188,9 @@ export function TeacherSidebar({ className }: TeacherSidebarProps) {
                       )}
                       onClick={() => setIsMobileOpen(false)}
                     >
-                      <item.icon className={cn('h-5 w-5', !isCollapsed && 'mr-3')} />
+                      <item.icon
+                        className={cn('h-5 w-5', !isCollapsed && 'mr-3')}
+                      />
                       {!isCollapsed && item.name}
                     </Link>
                     {item.expandable && !isCollapsed && (
@@ -201,7 +208,7 @@ export function TeacherSidebar({ className }: TeacherSidebarProps) {
                       </Button>
                     )}
                   </div>
-                  
+
                   {/* Sub-items for expandable items */}
                   {item.expandable && isExpanded && !isCollapsed && (
                     <div className="ml-8 mt-1 space-y-1">
@@ -221,7 +228,7 @@ export function TeacherSidebar({ className }: TeacherSidebarProps) {
                     </div>
                   )}
                 </div>
-              )
+              );
             })}
           </nav>
 
@@ -229,7 +236,12 @@ export function TeacherSidebar({ className }: TeacherSidebarProps) {
 
           {/* Footer */}
           <div className="p-4">
-            <div className={cn('flex items-center', isCollapsed && 'justify-center')}>
+            <div
+              className={cn(
+                'flex items-center',
+                isCollapsed && 'justify-center'
+              )}
+            >
               <div className="flex-shrink-0">
                 <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center">
                   <span className="text-sm font-medium text-white">TE</span>
@@ -246,5 +258,5 @@ export function TeacherSidebar({ className }: TeacherSidebarProps) {
         </div>
       </div>
     </>
-  )
+  );
 }

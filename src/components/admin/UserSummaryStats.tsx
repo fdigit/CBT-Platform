@@ -1,25 +1,35 @@
-'use client'
+'use client';
 
-import { Users, UserCheck, UserX, UserPlus, TrendingUp, TrendingDown } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
-import { Badge } from '../ui/badge'
+import {
+  Users,
+  UserCheck,
+  UserX,
+  UserPlus,
+  TrendingUp,
+  TrendingDown,
+} from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Badge } from '../ui/badge';
 
 export interface UserStats {
-  totalUsers: number
-  newUsersThisMonth: number
+  totalUsers: number;
+  newUsersThisMonth: number;
   roleDistribution: {
-    SUPER_ADMIN: number
-    SCHOOL_ADMIN: number
-    STUDENT: number
-  }
+    SUPER_ADMIN: number;
+    SCHOOL_ADMIN: number;
+    STUDENT: number;
+  };
 }
 
 interface UserSummaryStatsProps {
-  stats: UserStats
-  loading?: boolean
+  stats: UserStats;
+  loading?: boolean;
 }
 
-export function UserSummaryStats({ stats, loading = false }: UserSummaryStatsProps) {
+export function UserSummaryStats({
+  stats,
+  loading = false,
+}: UserSummaryStatsProps) {
   if (loading) {
     return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -36,11 +46,12 @@ export function UserSummaryStats({ stats, loading = false }: UserSummaryStatsPro
           </Card>
         ))}
       </div>
-    )
+    );
   }
 
-  const activeUsers = stats.totalUsers - (stats.roleDistribution.SUPER_ADMIN || 0)
-  const suspendedUsers = 0 // This would need to be calculated from actual suspended users
+  const activeUsers =
+    stats.totalUsers - (stats.roleDistribution.SUPER_ADMIN || 0);
+  const suspendedUsers = 0; // This would need to be calculated from actual suspended users
 
   const statsData = [
     {
@@ -79,16 +90,28 @@ export function UserSummaryStats({ stats, loading = false }: UserSummaryStatsPro
       color: 'text-red-600',
       bgColor: 'bg-red-100',
     },
-  ]
+  ];
 
   const getRoleStats = () => {
     const roles = [
-      { name: 'Students', count: stats.roleDistribution.STUDENT || 0, color: 'bg-blue-500' },
-      { name: 'School Admins', count: stats.roleDistribution.SCHOOL_ADMIN || 0, color: 'bg-green-500' },
-      { name: 'Super Admins', count: stats.roleDistribution.SUPER_ADMIN || 0, color: 'bg-red-500' },
-    ]
-    return roles.filter(role => role.count > 0)
-  }
+      {
+        name: 'Students',
+        count: stats.roleDistribution.STUDENT || 0,
+        color: 'bg-blue-500',
+      },
+      {
+        name: 'School Admins',
+        count: stats.roleDistribution.SCHOOL_ADMIN || 0,
+        color: 'bg-green-500',
+      },
+      {
+        name: 'Super Admins',
+        count: stats.roleDistribution.SUPER_ADMIN || 0,
+        color: 'bg-red-500',
+      },
+    ];
+    return roles.filter(role => role.count > 0);
+  };
 
   return (
     <div className="space-y-6">
@@ -108,9 +131,11 @@ export function UserSummaryStats({ stats, loading = false }: UserSummaryStatsPro
               <div className="flex items-center space-x-2">
                 <div className="text-2xl font-bold">{stat.value}</div>
                 {stat.trend && (
-                  <div className={`flex items-center text-xs ${
-                    stat.trend === 'up' ? 'text-green-600' : 'text-red-600'
-                  }`}>
+                  <div
+                    className={`flex items-center text-xs ${
+                      stat.trend === 'up' ? 'text-green-600' : 'text-red-600'
+                    }`}
+                  >
                     {stat.trend === 'up' ? (
                       <TrendingUp className="h-3 w-3 mr-1" />
                     ) : (
@@ -134,10 +159,11 @@ export function UserSummaryStats({ stats, loading = false }: UserSummaryStatsPro
         <CardContent>
           <div className="space-y-4">
             {getRoleStats().map((role, index) => {
-              const percentage = stats.totalUsers > 0 
-                ? ((role.count / stats.totalUsers) * 100).toFixed(1)
-                : '0'
-              
+              const percentage =
+                stats.totalUsers > 0
+                  ? ((role.count / stats.totalUsers) * 100).toFixed(1)
+                  : '0';
+
               return (
                 <div key={index} className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -146,7 +172,9 @@ export function UserSummaryStats({ stats, loading = false }: UserSummaryStatsPro
                       <span className="text-sm font-medium">{role.name}</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <span className="text-sm text-gray-600">{role.count.toString()}</span>
+                      <span className="text-sm text-gray-600">
+                        {role.count.toString()}
+                      </span>
                       <Badge variant="secondary" className="text-xs">
                         {percentage}%
                       </Badge>
@@ -159,7 +187,7 @@ export function UserSummaryStats({ stats, loading = false }: UserSummaryStatsPro
                     />
                   </div>
                 </div>
-              )
+              );
             })}
           </div>
         </CardContent>
@@ -177,10 +205,9 @@ export function UserSummaryStats({ stats, loading = false }: UserSummaryStatsPro
               <div className="flex items-center space-x-2">
                 <TrendingUp className="h-4 w-4 text-green-600" />
                 <span className="text-sm text-gray-600">
-                  {stats.newUsersThisMonth > 0 
+                  {stats.newUsersThisMonth > 0
                     ? `+${stats.newUsersThisMonth} new users this month`
-                    : 'No new users this month'
-                  }
+                    : 'No new users this month'}
                 </span>
               </div>
             </div>
@@ -189,10 +216,9 @@ export function UserSummaryStats({ stats, loading = false }: UserSummaryStatsPro
               <div className="flex items-center space-x-2">
                 <Users className="h-4 w-4 text-blue-600" />
                 <span className="text-sm text-gray-600">
-                  {getRoleStats().length > 0 
+                  {getRoleStats().length > 0
                     ? `${getRoleStats()[0].name} (${getRoleStats()[0].count})`
-                    : 'No users found'
-                  }
+                    : 'No users found'}
                 </span>
               </div>
             </div>
@@ -200,5 +226,5 @@ export function UserSummaryStats({ stats, loading = false }: UserSummaryStatsPro
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

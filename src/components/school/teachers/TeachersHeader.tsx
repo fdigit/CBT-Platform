@@ -1,47 +1,47 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Button } from '../../ui/button'
-import { 
-  Plus, 
-  Upload, 
-  Download, 
+import { useState } from 'react';
+import { Button } from '../../ui/button';
+import {
+  Plus,
+  Upload,
+  Download,
   Search,
   FileSpreadsheet,
   FileText,
-  Users
-} from 'lucide-react'
+  Users,
+} from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
-} from '../../ui/dropdown-menu'
+} from '../../ui/dropdown-menu';
 
 interface TeachersHeaderProps {
-  onAddTeacher: () => void
-  onBulkUpload: () => void
-  onExport: (format: 'excel' | 'pdf') => void
-  teachersCount: number
+  onAddTeacher: () => void;
+  onBulkUpload: () => void;
+  onExport: (format: 'excel' | 'pdf') => void;
+  teachersCount: number;
 }
 
-export function TeachersHeader({ 
-  onAddTeacher, 
-  onBulkUpload, 
+export function TeachersHeader({
+  onAddTeacher,
+  onBulkUpload,
   onExport,
-  teachersCount 
+  teachersCount,
 }: TeachersHeaderProps) {
-  const [isExporting, setIsExporting] = useState(false)
+  const [isExporting, setIsExporting] = useState(false);
 
   const handleExport = async (format: 'excel' | 'pdf') => {
-    setIsExporting(true)
+    setIsExporting(true);
     try {
-      await onExport(format)
+      await onExport(format);
     } finally {
-      setIsExporting(false)
+      setIsExporting(false);
     }
-  }
+  };
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -62,12 +62,12 @@ export function TeachersHeader({
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-3">
           {/* Advanced Search */}
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="flex items-center space-x-2"
             onClick={() => {
               // TODO: Implement advanced search modal
-              console.log('Advanced search clicked')
+              console.log('Advanced search clicked');
             }}
           >
             <Search className="h-4 w-4" />
@@ -78,8 +78,8 @@ export function TeachersHeader({
           {/* Export Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="flex items-center space-x-2"
                 disabled={isExporting || teachersCount === 0}
               >
@@ -89,14 +89,14 @@ export function TeachersHeader({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 onClick={() => handleExport('excel')}
                 className="flex items-center space-x-2"
               >
                 <FileSpreadsheet className="h-4 w-4 text-green-600" />
                 <span>Export to Excel</span>
               </DropdownMenuItem>
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 onClick={() => handleExport('pdf')}
                 className="flex items-center space-x-2"
               >
@@ -107,7 +107,7 @@ export function TeachersHeader({
           </DropdownMenu>
 
           {/* Bulk Upload */}
-          <Button 
+          <Button
             variant="outline"
             onClick={onBulkUpload}
             className="flex items-center space-x-2"
@@ -118,7 +118,7 @@ export function TeachersHeader({
           </Button>
 
           {/* Add New Teacher */}
-          <Button 
+          <Button
             onClick={onAddTeacher}
             className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white"
           >
@@ -151,5 +151,5 @@ export function TeachersHeader({
         </div>
       </div>
     </div>
-  )
+  );
 }

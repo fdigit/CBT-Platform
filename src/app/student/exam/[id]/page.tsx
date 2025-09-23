@@ -1,140 +1,150 @@
-'use client'
+'use client';
 
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '../../../../components/ui/card'
-import { Button } from '../../../../components/ui/button'
-import { Badge } from '../../../../components/ui/badge'
-import { Clock, Save, CheckCircle } from 'lucide-react'
-import { useToast } from '../../../../hooks/use-toast'
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '../../../../components/ui/card';
+import { Button } from '../../../../components/ui/button';
+import { Badge } from '../../../../components/ui/badge';
+import { Clock, Save, CheckCircle } from 'lucide-react';
+import { useToast } from '../../../../hooks/use-toast';
 
 interface Question {
-  id: string
-  text: string
-  type: 'MCQ' | 'TRUE_FALSE' | 'ESSAY'
-  options?: string[]
-  points: number
+  id: string;
+  text: string;
+  type: 'MCQ' | 'TRUE_FALSE' | 'ESSAY';
+  options?: string[];
+  points: number;
 }
 
 interface Exam {
-  id: string
-  title: string
-  description?: string
-  startTime: string
-  endTime: string
-  duration: number
-  is_live: boolean
-  questions: Question[]
+  id: string;
+  title: string;
+  description?: string;
+  startTime: string;
+  endTime: string;
+  duration: number;
+  is_live: boolean;
+  questions: Question[];
 }
 
-export default function ExamPage({ params }: { params: Promise<{ id: string }> }) {
-  const { data: session, status } = useSession()
-  const router = useRouter()
-  const [exam, setExam] = useState<Exam | null>(null)
-  const [currentQuestion, setCurrentQuestion] = useState(0)
-  const [answers, setAnswers] = useState<Record<string, any>>({})
-  const [timeLeft, setTimeLeft] = useState(0)
-  const [loading, setLoading] = useState(true)
-  const [examId, setExamId] = useState<string>('')
-  const { toast } = useToast()
+export default function ExamPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [exam, setExam] = useState<Exam | null>(null);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [examId, setExamId] = useState<string>('');
+  const { toast } = useToast();
 
   useEffect(() => {
-    if (status === 'loading') return
-    
+    if (status === 'loading') return;
+
     if (!session || session.user.role !== 'STUDENT') {
-      router.push('/auth/signin')
-      return
+      router.push('/auth/signin');
+      return;
     }
 
     const loadExam = async () => {
-      const resolvedParams = await params
-      setExamId(resolvedParams.id)
-      fetchExam(resolvedParams.id)
-    }
-    loadExam()
-  }, [session, status, router, params])
+      const resolvedParams = await params;
+      setExamId(resolvedParams.id);
+      fetchExam(resolvedParams.id);
+    };
+    loadExam();
+  }, [session, status, router, params]);
 
   useEffect(() => {
     if (exam && timeLeft > 0) {
       const timer = setInterval(() => {
         setTimeLeft(prev => {
           if (prev <= 1) {
-            handleSubmitExam()
-            return 0
+            handleSubmitExam();
+            return 0;
           }
-          return prev - 1
-        })
-      }, 1000)
+          return prev - 1;
+        });
+      }, 1000);
 
-      return () => clearInterval(timer)
+      return () => clearInterval(timer);
     }
-  }, [exam, timeLeft])
+  }, [exam, timeLeft]);
 
   const fetchExam = async (id: string) => {
     try {
-      const response = await fetch(`/api/exams/${id}`)
+      const response = await fetch(`/api/exams/${id}`);
       if (response.ok) {
-        const examData = await response.json()
-        
+        const examData = await response.json();
+
         // Check if exam is available for students
-        const now = new Date()
-        const startTime = new Date(examData.startTime)
-        const endTime = new Date(examData.endTime)
-        
-        const isExamAvailable = examData.is_live || (now >= startTime && now <= endTime)
-        
+        const now = new Date();
+        const startTime = new Date(examData.startTime);
+        const endTime = new Date(examData.endTime);
+
+        const isExamAvailable =
+          examData.is_live || (now >= startTime && now <= endTime);
+
         if (!isExamAvailable) {
           toast({
             title: 'Exam Not Available',
-            description: examData.is_live 
-              ? 'This exam is currently offline.' 
+            description: examData.is_live
+              ? 'This exam is currently offline.'
               : `This exam is scheduled from ${startTime.toLocaleString()} to ${endTime.toLocaleString()}.`,
             variant: 'destructive',
-          })
-          router.push('/student')
-          return
+          });
+          router.push('/student');
+          return;
         }
-        
-        setExam(examData)
-        setTimeLeft(examData.duration * 60) // Convert minutes to seconds
+
+        setExam(examData);
+        setTimeLeft(examData.duration * 60); // Convert minutes to seconds
       } else {
         toast({
           title: 'Error',
           description: 'Failed to load exam',
           variant: 'destructive',
-        })
-        router.push('/student')
+        });
+        router.push('/student');
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'An error occurred while loading the exam',
         variant: 'destructive',
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleAnswerChange = (questionId: string, answer: any) => {
     setAnswers(prev => ({
       ...prev,
-      [questionId]: answer
-    }))
-  }
+      [questionId]: answer,
+    }));
+  };
 
   const handleNextQuestion = () => {
     if (currentQuestion < exam!.questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1)
+      setCurrentQuestion(currentQuestion + 1);
     }
-  }
+  };
 
   const handlePrevQuestion = () => {
     if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion - 1)
+      setCurrentQuestion(currentQuestion - 1);
     }
-  }
+  };
 
   const handleSubmitExam = async () => {
     try {
@@ -144,36 +154,36 @@ export default function ExamPage({ params }: { params: Promise<{ id: string }> }
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ answers }),
-      })
+      });
 
       if (response.ok) {
         toast({
           title: 'Success',
           description: 'Exam submitted successfully!',
-        })
-        router.push('/student')
+        });
+        router.push('/student');
       } else {
         toast({
           title: 'Error',
           description: 'Failed to submit exam',
           variant: 'destructive',
-        })
+        });
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'An error occurred while submitting the exam',
         variant: 'destructive',
-      })
+      });
     }
-  }
+  };
 
   const formatTime = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600)
-    const minutes = Math.floor((seconds % 3600) / 60)
-    const secs = seconds % 60
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
-  }
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   if (status === 'loading' || loading) {
     return (
@@ -183,7 +193,7 @@ export default function ExamPage({ params }: { params: Promise<{ id: string }> }
           <p className="mt-4 text-gray-600">Loading exam...</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (!exam) {
@@ -196,12 +206,12 @@ export default function ExamPage({ params }: { params: Promise<{ id: string }> }
           </Button>
         </div>
       </div>
-    )
+    );
   }
 
-  const question = exam.questions[currentQuestion]
-  const isLastQuestion = currentQuestion === exam.questions.length - 1
-  const isFirstQuestion = currentQuestion === 0
+  const question = exam.questions[currentQuestion];
+  const isLastQuestion = currentQuestion === exam.questions.length - 1;
+  const isFirstQuestion = currentQuestion === 0;
 
   return (
     <div className="min-h-screen bg-gray-50 exam-container no-select">
@@ -211,20 +221,24 @@ export default function ExamPage({ params }: { params: Promise<{ id: string }> }
           <div className="flex justify-between items-center py-4">
             <div>
               <div className="flex items-center space-x-2">
-                <h1 className="text-xl font-bold text-gray-900">{exam.title}</h1>
+                <h1 className="text-xl font-bold text-gray-900">
+                  {exam.title}
+                </h1>
                 {exam.is_live && (
                   <Badge className="bg-red-600 text-white">🔴 LIVE</Badge>
                 )}
               </div>
-              <p className="text-sm text-gray-600">Question {currentQuestion + 1} of {exam.questions.length}</p>
+              <p className="text-sm text-gray-600">
+                Question {currentQuestion + 1} of {exam.questions.length}
+              </p>
             </div>
             <div className="flex items-center space-x-4">
               <div className="exam-timer">
                 <Clock className="h-4 w-4 inline mr-1" />
                 {formatTime(timeLeft)}
               </div>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="sm"
                 onClick={() => router.push('/student')}
               >
@@ -240,7 +254,8 @@ export default function ExamPage({ params }: { params: Promise<{ id: string }> }
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg">
-                Question {currentQuestion + 1} ({question.points} point{question.points !== 1 ? 's' : ''})
+                Question {currentQuestion + 1} ({question.points} point
+                {question.points !== 1 ? 's' : ''})
               </CardTitle>
               <Badge variant="outline">{question.type}</Badge>
             </div>
@@ -255,13 +270,18 @@ export default function ExamPage({ params }: { params: Promise<{ id: string }> }
               {question.type === 'MCQ' && question.options && (
                 <div className="space-y-2">
                   {question.options.map((option, index) => (
-                    <label key={index} className="flex items-center space-x-3 cursor-pointer">
+                    <label
+                      key={index}
+                      className="flex items-center space-x-3 cursor-pointer"
+                    >
                       <input
                         type="radio"
                         name={`question-${question.id}`}
                         value={option}
                         checked={answers[question.id] === option}
-                        onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+                        onChange={e =>
+                          handleAnswerChange(question.id, e.target.value)
+                        }
                         className="h-4 w-4 text-blue-600"
                       />
                       <span className="text-sm">{option}</span>
@@ -273,13 +293,18 @@ export default function ExamPage({ params }: { params: Promise<{ id: string }> }
               {question.type === 'TRUE_FALSE' && question.options && (
                 <div className="space-y-2">
                   {question.options.map((option, index) => (
-                    <label key={index} className="flex items-center space-x-3 cursor-pointer">
+                    <label
+                      key={index}
+                      className="flex items-center space-x-3 cursor-pointer"
+                    >
                       <input
                         type="radio"
                         name={`question-${question.id}`}
                         value={option}
                         checked={answers[question.id] === option}
-                        onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+                        onChange={e =>
+                          handleAnswerChange(question.id, e.target.value)
+                        }
                         className="h-4 w-4 text-blue-600"
                       />
                       <span className="text-sm">{option}</span>
@@ -291,7 +316,9 @@ export default function ExamPage({ params }: { params: Promise<{ id: string }> }
               {question.type === 'ESSAY' && (
                 <textarea
                   value={answers[question.id] || ''}
-                  onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+                  onChange={e =>
+                    handleAnswerChange(question.id, e.target.value)
+                  }
                   placeholder="Enter your answer here..."
                   className="w-full h-32 p-3 border border-gray-300 rounded-md resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
@@ -307,7 +334,7 @@ export default function ExamPage({ params }: { params: Promise<{ id: string }> }
               >
                 Previous
               </Button>
-              
+
               <div className="flex space-x-2">
                 <Button
                   variant="outline"
@@ -317,13 +344,13 @@ export default function ExamPage({ params }: { params: Promise<{ id: string }> }
                     toast({
                       title: 'Saved',
                       description: 'Your answer has been saved',
-                    })
+                    });
                   }}
                 >
                   <Save className="h-4 w-4 mr-1" />
                   Save
                 </Button>
-                
+
                 {isLastQuestion ? (
                   <Button
                     onClick={handleSubmitExam}
@@ -333,9 +360,7 @@ export default function ExamPage({ params }: { params: Promise<{ id: string }> }
                     Submit Exam
                   </Button>
                 ) : (
-                  <Button onClick={handleNextQuestion}>
-                    Next
-                  </Button>
+                  <Button onClick={handleNextQuestion}>Next</Button>
                 )}
               </div>
             </div>
@@ -353,8 +378,8 @@ export default function ExamPage({ params }: { params: Promise<{ id: string }> }
                   index === currentQuestion
                     ? 'bg-blue-600 text-white'
                     : answers[exam.questions[index].id]
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-gray-200 text-gray-700'
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-gray-200 text-gray-700'
                 }`}
               >
                 {index + 1}
@@ -364,5 +389,5 @@ export default function ExamPage({ params }: { params: Promise<{ id: string }> }
         </div>
       </main>
     </div>
-  )
+  );
 }

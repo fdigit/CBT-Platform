@@ -1,21 +1,31 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Button } from '../ui/button'
-import { Input } from '../ui/input'
-import { Label } from '../ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
-import { useToast } from '../../hooks/use-toast'
-import { schoolRegistrationSchema } from '../../lib/validations'
-import { X } from 'lucide-react'
+import { useState } from 'react';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../ui/card';
+import { useToast } from '../../hooks/use-toast';
+import { schoolRegistrationSchema } from '../../lib/validations';
+import { X } from 'lucide-react';
 
 interface AddSchoolModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onSchoolAdded: () => void
+  isOpen: boolean;
+  onClose: () => void;
+  onSchoolAdded: () => void;
 }
 
-export function AddSchoolModal({ isOpen, onClose, onSchoolAdded }: AddSchoolModalProps) {
+export function AddSchoolModal({
+  isOpen,
+  onClose,
+  onSchoolAdded,
+}: AddSchoolModalProps) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -23,32 +33,32 @@ export function AddSchoolModal({ isOpen, onClose, onSchoolAdded }: AddSchoolModa
     adminName: '',
     adminEmail: '',
     adminPassword: '',
-  })
-  const [isLoading, setIsLoading] = useState(false)
-  const { toast } = useToast()
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
     try {
-      const validatedData = schoolRegistrationSchema.parse(formData)
-      
+      const validatedData = schoolRegistrationSchema.parse(formData);
+
       const response = await fetch('/api/admin/schools', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(validatedData),
-      })
+      });
 
       if (response.ok) {
-        const data = await response.json()
+        const data = await response.json();
         toast({
           title: 'Success',
           description: `School "${data.school.name}" created successfully!`,
-        })
-        
+        });
+
         // Reset form
         setFormData({
           name: '',
@@ -57,37 +67,38 @@ export function AddSchoolModal({ isOpen, onClose, onSchoolAdded }: AddSchoolModa
           adminName: '',
           adminEmail: '',
           adminPassword: '',
-        })
-        
-        onSchoolAdded()
-        onClose()
+        });
+
+        onSchoolAdded();
+        onClose();
       } else {
-        const error = await response.json()
+        const error = await response.json();
         toast({
           title: 'Error',
-          description: error.message || 'Failed to create school. Please try again.',
+          description:
+            error.message || 'Failed to create school. Please try again.',
           variant: 'destructive',
-        })
+        });
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Please check your input and try again.',
         variant: 'destructive',
-      })
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
-    })
-  }
+    });
+  };
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -122,7 +133,7 @@ export function AddSchoolModal({ isOpen, onClose, onSchoolAdded }: AddSchoolModa
                 required
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="email">School Email *</Label>
               <Input
@@ -135,7 +146,7 @@ export function AddSchoolModal({ isOpen, onClose, onSchoolAdded }: AddSchoolModa
                 required
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="phone">School Phone</Label>
               <Input
@@ -149,8 +160,10 @@ export function AddSchoolModal({ isOpen, onClose, onSchoolAdded }: AddSchoolModa
             </div>
 
             <div className="border-t pt-4">
-              <h3 className="text-sm font-medium text-gray-900 mb-3">Admin Account Details</h3>
-              
+              <h3 className="text-sm font-medium text-gray-900 mb-3">
+                Admin Account Details
+              </h3>
+
               <div className="space-y-2">
                 <Label htmlFor="adminName">Admin Name *</Label>
                 <Input
@@ -163,7 +176,7 @@ export function AddSchoolModal({ isOpen, onClose, onSchoolAdded }: AddSchoolModa
                   required
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="adminEmail">Admin Email *</Label>
                 <Input
@@ -176,7 +189,7 @@ export function AddSchoolModal({ isOpen, onClose, onSchoolAdded }: AddSchoolModa
                   required
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="adminPassword">Admin Password *</Label>
                 <Input
@@ -214,5 +227,5 @@ export function AddSchoolModal({ isOpen, onClose, onSchoolAdded }: AddSchoolModa
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

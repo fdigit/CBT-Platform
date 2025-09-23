@@ -1,147 +1,149 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react'
-import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar'
-import { Badge } from '../../ui/badge'
-import { Button } from '../../ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card'
-import { Input } from '../../ui/input'
-import { Label } from '../../ui/label'
-import { Textarea } from '../../ui/textarea'
+import React, { useState } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
+import { Badge } from '../../ui/badge';
+import { Button } from '../../ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
+import { Input } from '../../ui/input';
+import { Label } from '../../ui/label';
+import { Textarea } from '../../ui/textarea';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../ui/select'
+} from '../../ui/select';
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from '../../ui/sheet'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs'
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Calendar, 
-  Edit3, 
-  Save, 
+} from '../../ui/sheet';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
+  Edit3,
+  Save,
   X,
   BookOpen,
   Trophy,
   Clock,
   TrendingUp,
-  AlertCircle
-} from 'lucide-react'
-import { Student } from '../../app/school/students/page'
-import { format } from 'date-fns'
-import { useToast } from '../../../hooks/use-toast'
+  AlertCircle,
+} from 'lucide-react';
+import { Student } from '../../app/school/students/page';
+import { format } from 'date-fns';
+import { useToast } from '../../../hooks/use-toast';
 
 interface StudentProfileDrawerProps {
-  student: Student | null
-  isOpen: boolean
-  onClose: () => void
-  onStudentUpdate: (student: Student) => void
+  student: Student | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onStudentUpdate: (student: Student) => void;
 }
 
 interface StudentDetails extends Student {
   recentExams?: Array<{
-    examTitle: string
-    score: number
-    date: string
-    examDate: string
-  }>
-  totalExams?: number
-  totalAnswers?: number
+    examTitle: string;
+    score: number;
+    date: string;
+    examDate: string;
+  }>;
+  totalExams?: number;
+  totalAnswers?: number;
 }
 
-export function StudentProfileDrawer({ 
-  student, 
-  isOpen, 
-  onClose, 
-  onStudentUpdate 
+export function StudentProfileDrawer({
+  student,
+  isOpen,
+  onClose,
+  onStudentUpdate,
 }: StudentProfileDrawerProps) {
-  const [isEditing, setIsEditing] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [studentDetails, setStudentDetails] = useState<StudentDetails | null>(null)
-  const [formData, setFormData] = useState<Partial<Student>>({})
-  const { toast } = useToast()
+  const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [studentDetails, setStudentDetails] = useState<StudentDetails | null>(
+    null
+  );
+  const [formData, setFormData] = useState<Partial<Student>>({});
+  const { toast } = useToast();
 
   // Fetch detailed student data when drawer opens
   const fetchStudentDetails = async (studentId: string) => {
     try {
-      setLoading(true)
-      const response = await fetch(`/api/school/students/${studentId}`)
+      setLoading(true);
+      const response = await fetch(`/api/school/students/${studentId}`);
       if (response.ok) {
-        const details = await response.json()
-        setStudentDetails(details)
-        setFormData(details)
+        const details = await response.json();
+        setStudentDetails(details);
+        setFormData(details);
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to fetch student details',
         variant: 'destructive',
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   // Load student details when student changes
   React.useEffect(() => {
     if (student && isOpen) {
-      fetchStudentDetails(student.id)
+      fetchStudentDetails(student.id);
     } else {
-      setStudentDetails(null)
-      setFormData({})
-      setIsEditing(false)
+      setStudentDetails(null);
+      setFormData({});
+      setIsEditing(false);
     }
-  }, [student, isOpen])
+  }, [student, isOpen]);
 
   const handleSave = async () => {
-    if (!student) return
+    if (!student) return;
 
     try {
-      setLoading(true)
+      setLoading(true);
       const response = await fetch(`/api/school/students/${student.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      })
+        body: JSON.stringify(formData),
+      });
 
       if (response.ok) {
-        const updatedStudent = await response.json()
-        onStudentUpdate(updatedStudent)
-        setStudentDetails({ ...studentDetails, ...updatedStudent })
-        setIsEditing(false)
+        const updatedStudent = await response.json();
+        onStudentUpdate(updatedStudent);
+        setStudentDetails({ ...studentDetails, ...updatedStudent });
+        setIsEditing(false);
         toast({
           title: 'Success',
           description: 'Student updated successfully',
-        })
+        });
       } else {
-        throw new Error('Failed to update student')
+        throw new Error('Failed to update student');
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to update student',
         variant: 'destructive',
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleCancel = () => {
-    setFormData(studentDetails || {})
-    setIsEditing(false)
-  }
+    setFormData(studentDetails || {});
+    setIsEditing(false);
+  };
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
@@ -149,12 +151,13 @@ export function StudentProfileDrawer({
       SUSPENDED: { label: 'Suspended', className: 'bg-red-100 text-red-800' },
       GRADUATED: { label: 'Graduated', className: 'bg-blue-100 text-blue-800' },
       PENDING: { label: 'Pending', className: 'bg-yellow-100 text-yellow-800' },
-      ALUMNI: { label: 'Alumni', className: 'bg-purple-100 text-purple-800' }
-    }
-    
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.ACTIVE
-    return <Badge className={config.className}>{config.label}</Badge>
-  }
+      ALUMNI: { label: 'Alumni', className: 'bg-purple-100 text-purple-800' },
+    };
+
+    const config =
+      statusConfig[status as keyof typeof statusConfig] || statusConfig.ACTIVE;
+    return <Badge className={config.className}>{config.label}</Badge>;
+  };
 
   const getInitials = (name: string) => {
     return name
@@ -162,19 +165,19 @@ export function StudentProfileDrawer({
       .map(n => n[0])
       .join('')
       .toUpperCase()
-      .slice(0, 2)
-  }
+      .slice(0, 2);
+  };
 
   const getPerformanceColor = (score?: number) => {
-    if (!score && score !== 0) return 'text-gray-400'
-    if (score >= 80) return 'text-green-600'
-    if (score >= 60) return 'text-yellow-600'
-    return 'text-red-600'
-  }
+    if (!score && score !== 0) return 'text-gray-400';
+    if (score >= 80) return 'text-green-600';
+    if (score >= 60) return 'text-yellow-600';
+    return 'text-red-600';
+  };
 
-  if (!student) return null
+  if (!student) return null;
 
-  const displayStudent = studentDetails || student
+  const displayStudent = studentDetails || student;
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
@@ -184,7 +187,9 @@ export function StudentProfileDrawer({
             <div className="flex items-center space-x-3">
               <Avatar className="h-12 w-12">
                 <AvatarImage src={displayStudent.avatar} />
-                <AvatarFallback>{getInitials(displayStudent.name)}</AvatarFallback>
+                <AvatarFallback>
+                  {getInitials(displayStudent.name)}
+                </AvatarFallback>
               </Avatar>
               <div>
                 <SheetTitle>{displayStudent.name}</SheetTitle>
@@ -202,7 +207,12 @@ export function StudentProfileDrawer({
                 </Button>
               ) : (
                 <div className="flex space-x-2">
-                  <Button size="sm" variant="outline" onClick={handleCancel} disabled={loading}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={handleCancel}
+                    disabled={loading}
+                  >
                     <X className="h-4 w-4 mr-2" />
                     Cancel
                   </Button>
@@ -227,7 +237,9 @@ export function StudentProfileDrawer({
             <TabsContent value="profile" className="space-y-4">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Personal Information</CardTitle>
+                  <CardTitle className="text-lg">
+                    Personal Information
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -237,7 +249,9 @@ export function StudentProfileDrawer({
                         <Input
                           id="name"
                           value={formData.name || ''}
-                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          onChange={e =>
+                            setFormData({ ...formData, name: e.target.value })
+                          }
                         />
                       ) : (
                         <div className="flex items-center space-x-2">
@@ -254,7 +268,9 @@ export function StudentProfileDrawer({
                           id="email"
                           type="email"
                           value={formData.email || ''}
-                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          onChange={e =>
+                            setFormData({ ...formData, email: e.target.value })
+                          }
                         />
                       ) : (
                         <div className="flex items-center space-x-2">
@@ -267,9 +283,14 @@ export function StudentProfileDrawer({
                     <div className="space-y-2">
                       <Label htmlFor="gender">Gender</Label>
                       {isEditing ? (
-                        <Select 
-                          value={formData.gender || ''} 
-                          onValueChange={(value) => setFormData({ ...formData, gender: value as 'MALE' | 'FEMALE' })}
+                        <Select
+                          value={formData.gender || ''}
+                          onValueChange={value =>
+                            setFormData({
+                              ...formData,
+                              gender: value as 'MALE' | 'FEMALE',
+                            })
+                          }
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Select gender" />
@@ -282,7 +303,13 @@ export function StudentProfileDrawer({
                       ) : (
                         <div className="flex items-center space-x-2">
                           <User className="h-4 w-4 text-gray-400" />
-                          <span>{displayStudent.gender === 'MALE' ? 'Male' : displayStudent.gender === 'FEMALE' ? 'Female' : 'Not specified'}</span>
+                          <span>
+                            {displayStudent.gender === 'MALE'
+                              ? 'Male'
+                              : displayStudent.gender === 'FEMALE'
+                                ? 'Female'
+                                : 'Not specified'}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -294,12 +321,19 @@ export function StudentProfileDrawer({
                           id="dateOfBirth"
                           type="date"
                           value={formData.dateOfBirth || ''}
-                          onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
+                          onChange={e =>
+                            setFormData({
+                              ...formData,
+                              dateOfBirth: e.target.value,
+                            })
+                          }
                         />
                       ) : (
                         <div className="flex items-center space-x-2">
                           <Calendar className="h-4 w-4 text-gray-400" />
-                          <span>{displayStudent.dateOfBirth || 'Not specified'}</span>
+                          <span>
+                            {displayStudent.dateOfBirth || 'Not specified'}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -310,12 +344,19 @@ export function StudentProfileDrawer({
                         <Input
                           id="parentPhone"
                           value={formData.parentPhone || ''}
-                          onChange={(e) => setFormData({ ...formData, parentPhone: e.target.value })}
+                          onChange={e =>
+                            setFormData({
+                              ...formData,
+                              parentPhone: e.target.value,
+                            })
+                          }
                         />
                       ) : (
                         <div className="flex items-center space-x-2">
                           <Phone className="h-4 w-4 text-gray-400" />
-                          <span>{displayStudent.parentPhone || 'Not specified'}</span>
+                          <span>
+                            {displayStudent.parentPhone || 'Not specified'}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -327,12 +368,19 @@ export function StudentProfileDrawer({
                           id="parentEmail"
                           type="email"
                           value={formData.parentEmail || ''}
-                          onChange={(e) => setFormData({ ...formData, parentEmail: e.target.value })}
+                          onChange={e =>
+                            setFormData({
+                              ...formData,
+                              parentEmail: e.target.value,
+                            })
+                          }
                         />
                       ) : (
                         <div className="flex items-center space-x-2">
                           <Mail className="h-4 w-4 text-gray-400" />
-                          <span>{displayStudent.parentEmail || 'Not specified'}</span>
+                          <span>
+                            {displayStudent.parentEmail || 'Not specified'}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -344,7 +392,9 @@ export function StudentProfileDrawer({
                       <Textarea
                         id="address"
                         value={formData.address || ''}
-                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                        onChange={e =>
+                          setFormData({ ...formData, address: e.target.value })
+                        }
                         rows={3}
                       />
                     ) : (
@@ -359,7 +409,9 @@ export function StudentProfileDrawer({
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Academic Information</CardTitle>
+                  <CardTitle className="text-lg">
+                    Academic Information
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -369,7 +421,9 @@ export function StudentProfileDrawer({
                         <Input
                           id="class"
                           value={formData.class || ''}
-                          onChange={(e) => setFormData({ ...formData, class: e.target.value })}
+                          onChange={e =>
+                            setFormData({ ...formData, class: e.target.value })
+                          }
                         />
                       ) : (
                         <span>{displayStudent.class || 'Not assigned'}</span>
@@ -382,7 +436,12 @@ export function StudentProfileDrawer({
                         <Input
                           id="section"
                           value={formData.section || ''}
-                          onChange={(e) => setFormData({ ...formData, section: e.target.value })}
+                          onChange={e =>
+                            setFormData({
+                              ...formData,
+                              section: e.target.value,
+                            })
+                          }
                         />
                       ) : (
                         <span>{displayStudent.section || 'Not assigned'}</span>
@@ -392,9 +451,14 @@ export function StudentProfileDrawer({
                     <div className="space-y-2">
                       <Label htmlFor="status">Status</Label>
                       {isEditing ? (
-                        <Select 
-                          value={formData.status || ''} 
-                          onValueChange={(value) => setFormData({ ...formData, status: value as Student['status'] })}
+                        <Select
+                          value={formData.status || ''}
+                          onValueChange={value =>
+                            setFormData({
+                              ...formData,
+                              status: value as Student['status'],
+                            })
+                          }
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Select status" />
@@ -424,7 +488,9 @@ export function StudentProfileDrawer({
                       <BookOpen className="h-5 w-5 text-blue-600" />
                       <div>
                         <p className="text-sm text-gray-600">Total Exams</p>
-                        <p className="text-2xl font-bold">{studentDetails?.totalExams || 0}</p>
+                        <p className="text-2xl font-bold">
+                          {studentDetails?.totalExams || 0}
+                        </p>
                       </div>
                     </div>
                   </CardContent>
@@ -436,9 +502,12 @@ export function StudentProfileDrawer({
                       <Trophy className="h-5 w-5 text-yellow-600" />
                       <div>
                         <p className="text-sm text-gray-600">Avg Performance</p>
-                        <p className={`text-2xl font-bold ${getPerformanceColor(displayStudent.performanceScore)}`}>
-                          {displayStudent.performanceScore !== null && displayStudent.performanceScore !== undefined 
-                            ? `${displayStudent.performanceScore}%` 
+                        <p
+                          className={`text-2xl font-bold ${getPerformanceColor(displayStudent.performanceScore)}`}
+                        >
+                          {displayStudent.performanceScore !== null &&
+                          displayStudent.performanceScore !== undefined
+                            ? `${displayStudent.performanceScore}%`
                             : 'N/A'}
                         </p>
                       </div>
@@ -452,14 +521,17 @@ export function StudentProfileDrawer({
                       <TrendingUp className="h-5 w-5 text-green-600" />
                       <div>
                         <p className="text-sm text-gray-600">Responses</p>
-                        <p className="text-2xl font-bold">{studentDetails?.totalAnswers || 0}</p>
+                        <p className="text-2xl font-bold">
+                          {studentDetails?.totalAnswers || 0}
+                        </p>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
               </div>
 
-              {studentDetails?.recentExams && studentDetails.recentExams.length > 0 ? (
+              {studentDetails?.recentExams &&
+              studentDetails.recentExams.length > 0 ? (
                 <Card>
                   <CardHeader>
                     <CardTitle>Recent Exam Results</CardTitle>
@@ -467,15 +539,21 @@ export function StudentProfileDrawer({
                   <CardContent>
                     <div className="space-y-3">
                       {studentDetails.recentExams.map((exam, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div
+                          key={index}
+                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                        >
                           <div>
                             <h4 className="font-medium">{exam.examTitle}</h4>
                             <p className="text-sm text-gray-600">
-                              Taken on {format(new Date(exam.examDate), 'MMM dd, yyyy')}
+                              Taken on{' '}
+                              {format(new Date(exam.examDate), 'MMM dd, yyyy')}
                             </p>
                           </div>
                           <div className="text-right">
-                            <p className={`text-lg font-bold ${getPerformanceColor(exam.score)}`}>
+                            <p
+                              className={`text-lg font-bold ${getPerformanceColor(exam.score)}`}
+                            >
                               {exam.score}%
                             </p>
                             <p className="text-xs text-gray-500">
@@ -491,7 +569,9 @@ export function StudentProfileDrawer({
                 <Card>
                   <CardContent className="p-8 text-center">
                     <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600">No exam results available yet</p>
+                    <p className="text-gray-600">
+                      No exam results available yet
+                    </p>
                   </CardContent>
                 </Card>
               )}
@@ -509,7 +589,10 @@ export function StudentProfileDrawer({
                       <div>
                         <p className="font-medium">Student registered</p>
                         <p className="text-sm text-gray-600">
-                          {format(new Date(displayStudent.createdAt), 'MMM dd, yyyy at hh:mm a')}
+                          {format(
+                            new Date(displayStudent.createdAt),
+                            'MMM dd, yyyy at hh:mm a'
+                          )}
                         </p>
                       </div>
                     </div>
@@ -520,7 +603,10 @@ export function StudentProfileDrawer({
                         <div>
                           <p className="font-medium">Last login</p>
                           <p className="text-sm text-gray-600">
-                            {format(new Date(displayStudent.lastLogin), 'MMM dd, yyyy at hh:mm a')}
+                            {format(
+                              new Date(displayStudent.lastLogin),
+                              'MMM dd, yyyy at hh:mm a'
+                            )}
                           </p>
                         </div>
                       </div>
@@ -532,7 +618,10 @@ export function StudentProfileDrawer({
                         <div>
                           <p className="font-medium">Last exam taken</p>
                           <p className="text-sm text-gray-600">
-                            {format(new Date(displayStudent.lastExamTaken), 'MMM dd, yyyy at hh:mm a')}
+                            {format(
+                              new Date(displayStudent.lastExamTaken),
+                              'MMM dd, yyyy at hh:mm a'
+                            )}
                           </p>
                         </div>
                       </div>
@@ -545,5 +634,5 @@ export function StudentProfileDrawer({
         </div>
       </SheetContent>
     </Sheet>
-  )
+  );
 }

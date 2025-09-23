@@ -3,6 +3,7 @@
 ## Quick Setup Options
 
 ### Option 1: Supabase (Recommended - Free Tier)
+
 1. **Create Supabase Account**
    - Go to [supabase.com](https://supabase.com)
    - Sign up and create new project
@@ -19,6 +20,7 @@
    ```
 
 ### Option 2: Neon (Free Tier)
+
 1. **Create Neon Account**
    - Go to [neon.tech](https://neon.tech)
    - Sign up and create new database
@@ -33,19 +35,22 @@
    ```
 
 ### Option 3: Local PostgreSQL
+
 1. **Install PostgreSQL**
+
    ```bash
    # Windows (Chocolatey)
    choco install postgresql
-   
+
    # macOS (Homebrew)
    brew install postgresql
-   
+
    # Ubuntu/Debian
    sudo apt-get install postgresql postgresql-contrib
    ```
 
 2. **Create Database**
+
    ```sql
    sudo -u postgres psql
    CREATE DATABASE cbt_platform;
@@ -61,6 +66,7 @@
 ## 🛠️ Setting Up Database Schema
 
 ### Method 1: Using pgAdmin (GUI)
+
 1. **Install pgAdmin**
    - Download from [pgadmin.org](https://www.pgadmin.org/download/)
    - Install and launch
@@ -86,6 +92,7 @@
    - Execute (F5)
 
 ### Method 2: Using Command Line
+
 ```bash
 # Connect to database
 psql "postgresql://postgres:password@localhost:5432/cbt_platform"
@@ -127,6 +134,7 @@ NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ## 🚀 Testing the Connection
 
 1. **Start the Application**
+
    ```bash
    npm run dev
    ```
@@ -183,6 +191,7 @@ DATABASE_URL="postgresql://postgres:[PASSWORD]@[HOST]:[PORT]/[DATABASE]"
 ## 📊 Database Schema Overview
 
 The CBT platform includes these main tables:
+
 - **users**: User accounts with roles
 - **schools**: School information
 - **school_admins**: School administrator profiles

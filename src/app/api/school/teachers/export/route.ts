@@ -1,32 +1,32 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '../../../lib/auth'
-import { prisma } from '../../../lib/prisma'
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    
+    const session = await getServerSession(authOptions);
+
     if (!session || session.user.role !== 'SCHOOL_ADMIN') {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { searchParams } = new URL(request.url)
-    const format = searchParams.get('format') || 'excel'
+    const { searchParams } = new URL(request.url);
+    const format = searchParams.get('format') || 'excel';
 
     if (!['excel', 'pdf'].includes(format)) {
       return NextResponse.json(
         { message: 'Invalid format. Use excel or pdf' },
         { status: 400 }
-      )
+      );
     }
 
-    const schoolId = session.user.schoolId!
+    const schoolId = session.user.schoolId!;
 
     // Fetch all teachers for export
     const teachers = await prisma.teacher.findMany({
       where: {
-        schoolId: schoolId
+        schoolId: schoolId,
       },
       include: {
         user: {
@@ -35,29 +35,29 @@ export async function GET(request: NextRequest) {
             name: true,
             email: true,
             createdAt: true,
-            updatedAt: true
-          }
+            updatedAt: true,
+          },
         },
         classes: {
           select: {
             id: true,
             name: true,
             section: true,
-            academicYear: true
-          }
-        }
+            academicYear: true,
+          },
+        },
       },
       orderBy: {
         user: {
-          name: 'asc'
-        }
-      }
-    })
+          name: 'asc',
+        },
+      },
+    });
 
     if (format === 'excel') {
       // For Excel export, we'll return CSV data
       // In a real implementation, you might use a library like 'xlsx' or 'exceljs'
-      
+
       const headers = [
         'Name',
         'Employee ID',
@@ -71,8 +71,8 @@ export async function GET(request: NextRequest) {
         'Classes Count',
         'Classes',
         'Address',
-        'Created Date'
-      ]
+        'Created Date',
+      ];
 
       const csvData = teachers.map(teacher => [
         teacher.user.name,
@@ -85,25 +85,30 @@ export async function GET(request: NextRequest) {
         teacher.status,
         teacher.hireDate ? teacher.hireDate.toISOString().split('T')[0] : '',
         teacher.classes.length.toString(),
-        teacher.classes.map(cls => `${cls.name}${cls.section ? ` - ${cls.section}` : ''} (${cls.academicYear})`).join('; '),
+        teacher.classes
+          .map(
+            cls =>
+              `${cls.name}${cls.section ? ` - ${cls.section}` : ''} (${cls.academicYear})`
+          )
+          .join('; '),
         teacher.address || '',
-        teacher.user.createdAt.toISOString().split('T')[0]
-      ])
+        teacher.user.createdAt.toISOString().split('T')[0],
+      ]);
 
       const csvContent = [headers, ...csvData]
         .map(row => row.map(cell => `"${cell}"`).join(','))
-        .join('\n')
+        .join('\n');
 
       return new NextResponse(csvContent, {
         headers: {
           'Content-Type': 'text/csv',
-          'Content-Disposition': `attachment; filename="teachers_${new Date().toISOString().split('T')[0]}.csv"`
-        }
-      })
+          'Content-Disposition': `attachment; filename="teachers_${new Date().toISOString().split('T')[0]}.csv"`,
+        },
+      });
     } else if (format === 'pdf') {
       // For PDF export, we'll return HTML that can be converted to PDF
       // In a real implementation, you might use a library like 'puppeteer' or 'jspdf'
-      
+
       const htmlContent = `
         <!DOCTYPE html>
         <html>
@@ -141,7 +146,9 @@ export async function GET(request: NextRequest) {
               </tr>
             </thead>
             <tbody>
-              ${teachers.map(teacher => `
+              ${teachers
+                .map(
+                  teacher => `
                 <tr>
                   <td>${teacher.user.name}</td>
                   <td>${teacher.employeeId}</td>
@@ -155,27 +162,29 @@ export async function GET(request: NextRequest) {
                   <td>${teacher.classes.length}</td>
                   <td>${teacher.hireDate ? teacher.hireDate.toISOString().split('T')[0] : '-'}</td>
                 </tr>
-              `).join('')}
+              `
+                )
+                .join('')}
             </tbody>
           </table>
         </body>
         </html>
-      `
+      `;
 
       return new NextResponse(htmlContent, {
         headers: {
           'Content-Type': 'text/html',
-          'Content-Disposition': `attachment; filename="teachers_report_${new Date().toISOString().split('T')[0]}.html"`
-        }
-      })
+          'Content-Disposition': `attachment; filename="teachers_report_${new Date().toISOString().split('T')[0]}.html"`,
+        },
+      });
     }
 
-    return NextResponse.json({ message: 'Invalid format' }, { status: 400 })
+    return NextResponse.json({ message: 'Invalid format' }, { status: 400 });
   } catch (error) {
-    console.error('Error exporting teachers:', error)
+    console.error('Error exporting teachers:', error);
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 }
-    )
+    );
   }
 }

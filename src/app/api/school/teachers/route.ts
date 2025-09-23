@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '../../../lib/auth'
-import { prisma } from '../../../lib/prisma'
-import { z } from 'zod'
-import bcrypt from 'bcryptjs'
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+import { z } from 'zod';
+import bcrypt from 'bcryptjs';
 
 const createTeacherSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -15,40 +15,43 @@ const createTeacherSchema = z.object({
   phone: z.string().optional(),
   address: z.string().optional(),
   hireDate: z.string().optional(),
-  password: z.string().min(6, 'Password must be at least 6 characters').optional()
-})
+  password: z
+    .string()
+    .min(6, 'Password must be at least 6 characters')
+    .optional(),
+});
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    
+    const session = await getServerSession(authOptions);
+
     if (!session || session.user.role !== 'SCHOOL_ADMIN') {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { searchParams } = new URL(request.url)
-    const search = searchParams.get('search') || ''
-    const status = searchParams.get('status') || ''
-    const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '20')
-    const offset = (page - 1) * limit
+    const { searchParams } = new URL(request.url);
+    const search = searchParams.get('search') || '';
+    const status = searchParams.get('status') || '';
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '20');
+    const offset = (page - 1) * limit;
 
     // Build where clause
     const where: any = {
-      schoolId: session.user.schoolId
-    }
+      schoolId: session.user.schoolId,
+    };
 
     if (search) {
       where.OR = [
         { user: { name: { contains: search, mode: 'insensitive' } } },
         { user: { email: { contains: search, mode: 'insensitive' } } },
         { employeeId: { contains: search, mode: 'insensitive' } },
-        { specialization: { contains: search, mode: 'insensitive' } }
-      ]
+        { specialization: { contains: search, mode: 'insensitive' } },
+      ];
     }
 
     if (status && status !== 'all') {
-      where.status = status.toUpperCase()
+      where.status = status.toUpperCase();
     }
 
     const teachers = await prisma.teacher.findMany({
@@ -60,34 +63,34 @@ export async function GET(request: NextRequest) {
             name: true,
             email: true,
             createdAt: true,
-            updatedAt: true
-          }
+            updatedAt: true,
+          },
         },
         classes: {
           select: {
             id: true,
             name: true,
             section: true,
-            academicYear: true
-          }
+            academicYear: true,
+          },
         },
         _count: {
           select: {
-            classes: true
-          }
-        }
+            classes: true,
+          },
+        },
       },
       orderBy: {
         user: {
-          name: 'asc'
-        }
+          name: 'asc',
+        },
       },
       skip: offset,
-      take: limit
-    })
+      take: limit,
+    });
 
     // Get total count for pagination
-    const totalCount = await prisma.teacher.count({ where })
+    const totalCount = await prisma.teacher.count({ where });
 
     // Transform data
     const transformedTeachers = teachers.map(teacher => ({
@@ -110,79 +113,81 @@ export async function GET(request: NextRequest) {
         name: cls.name,
         section: cls.section,
         academicYear: cls.academicYear,
-        displayName: `${cls.name}${cls.section ? ` - ${cls.section}` : ''} (${cls.academicYear})`
+        displayName: `${cls.name}${cls.section ? ` - ${cls.section}` : ''} (${cls.academicYear})`,
       })),
       createdAt: teacher.user.createdAt.toISOString(),
-      updatedAt: teacher.user.updatedAt.toISOString()
-    }))
+      updatedAt: teacher.user.updatedAt.toISOString(),
+    }));
 
     return NextResponse.json({
       teachers: transformedTeachers,
       total: totalCount,
       totalPages: Math.ceil(totalCount / limit),
-      currentPage: page
-    })
+      currentPage: page,
+    });
   } catch (error) {
-    console.error('Error fetching teachers:', error)
+    console.error('Error fetching teachers:', error);
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 }
-    )
+    );
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    
+    const session = await getServerSession(authOptions);
+
     if (!session || session.user.role !== 'SCHOOL_ADMIN') {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json()
-    const validatedData = createTeacherSchema.parse(body)
+    const body = await request.json();
+    const validatedData = createTeacherSchema.parse(body);
 
     // Check if email or employeeId already exists
     const existingUser = await prisma.user.findUnique({
-      where: { email: validatedData.email }
-    })
+      where: { email: validatedData.email },
+    });
 
     if (existingUser) {
       return NextResponse.json(
         { message: 'Email already exists' },
         { status: 400 }
-      )
+      );
     }
 
     const existingTeacher = await prisma.teacher.findFirst({
-      where: { 
+      where: {
         employeeId: validatedData.employeeId,
-        schoolId: session.user.schoolId  // Scope to current school
-      }
-    })
+        schoolId: session.user.schoolId, // Scope to current school
+      },
+    });
 
     if (existingTeacher) {
       return NextResponse.json(
         { message: 'Employee ID already exists' },
         { status: 400 }
-      )
+      );
     }
 
     // Generate password if not provided
-    const password = validatedData.password || `teacher${Math.random().toString(36).slice(-6)}`
-    const hashedPassword = await bcrypt.hash(password, 10)
+    const password =
+      validatedData.password ||
+      `teacher${Math.random().toString(36).slice(-6)}`;
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user and teacher in a transaction
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async tx => {
       const user = await tx.user.create({
         data: {
           name: validatedData.name,
           email: validatedData.email,
           password: hashedPassword,
           role: 'TEACHER',
-          schoolId: session.user.schoolId
-        }
-      })
+          schoolId: session.user.schoolId,
+        },
+      });
 
       const teacher = await tx.teacher.create({
         data: {
@@ -194,8 +199,10 @@ export async function POST(request: NextRequest) {
           experience: validatedData.experience,
           phone: validatedData.phone,
           address: validatedData.address,
-          hireDate: validatedData.hireDate ? new Date(validatedData.hireDate) : new Date(),
-          status: 'ACTIVE'
+          hireDate: validatedData.hireDate
+            ? new Date(validatedData.hireDate)
+            : new Date(),
+          status: 'ACTIVE',
         },
         include: {
           user: {
@@ -204,14 +211,14 @@ export async function POST(request: NextRequest) {
               name: true,
               email: true,
               createdAt: true,
-              updatedAt: true
-            }
-          }
-        }
-      })
+              updatedAt: true,
+            },
+          },
+        },
+      });
 
-      return { user, teacher }
-    })
+      return { user, teacher };
+    });
 
     const transformedTeacher = {
       id: result.teacher.id,
@@ -231,22 +238,22 @@ export async function POST(request: NextRequest) {
       classes: [],
       createdAt: result.teacher.user.createdAt.toISOString(),
       updatedAt: result.teacher.user.updatedAt.toISOString(),
-      tempPassword: validatedData.password ? undefined : password // Return temp password if auto-generated
-    }
+      tempPassword: validatedData.password ? undefined : password, // Return temp password if auto-generated
+    };
 
-    return NextResponse.json(transformedTeacher, { status: 201 })
+    return NextResponse.json(transformedTeacher, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { message: 'Validation error', errors: error.errors },
         { status: 400 }
-      )
+      );
     }
-    
-    console.error('Error creating teacher:', error)
+
+    console.error('Error creating teacher:', error);
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 }
-    )
+    );
   }
 }

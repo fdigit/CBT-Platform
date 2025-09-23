@@ -1,37 +1,43 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '../../../lib/auth'
-import { prisma } from '../../../lib/prisma'
-import { initializePayment, generatePaymentReference } from '../../../lib/paystack'
-import { paymentSchema } from '../../../lib/validations'
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+import { initializePayment, generatePaymentReference } from '@/lib/paystack';
+import { paymentSchema } from '@/lib/validations';
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    
+    const session = await getServerSession(authOptions);
+
     if (!session || session.user.role !== 'SCHOOL_ADMIN') {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json()
-    const validatedData = paymentSchema.parse(body)
+    const body = await request.json();
+    const validatedData = paymentSchema.parse(body);
 
-    const schoolId = session.user.schoolId
+    const schoolId = session.user.schoolId;
     if (!schoolId) {
-      return NextResponse.json({ message: 'School not found' }, { status: 404 })
+      return NextResponse.json(
+        { message: 'School not found' },
+        { status: 404 }
+      );
     }
 
     // Get school details
     const school = await prisma.school.findUnique({
       where: { id: schoolId },
-      select: { email: true, name: true }
-    })
+      select: { email: true, name: true },
+    });
 
     if (!school) {
-      return NextResponse.json({ message: 'School not found' }, { status: 404 })
+      return NextResponse.json(
+        { message: 'School not found' },
+        { status: 404 }
+      );
     }
 
-    const reference = generatePaymentReference()
+    const reference = generatePaymentReference();
 
     // Create payment record
     const payment = await prisma.payment.create({
@@ -41,8 +47,8 @@ export async function POST(request: NextRequest) {
         currency: validatedData.currency,
         status: 'PENDING',
         reference,
-      }
-    })
+      },
+    });
 
     // Initialize Paystack payment
     const paymentData = {
@@ -54,21 +60,21 @@ export async function POST(request: NextRequest) {
         schoolId,
         schoolName: school.name,
         paymentId: payment.id,
-      }
-    }
+      },
+    };
 
-    const paystackResponse = await initializePayment(paymentData)
+    const paystackResponse = await initializePayment(paymentData);
 
     return NextResponse.json({
       paymentId: payment.id,
       reference: payment.reference,
       authorizationUrl: paystackResponse.data.authorization_url,
-    })
+    });
   } catch (error) {
-    console.error('Payment initialization error:', error)
+    console.error('Payment initialization error:', error);
     return NextResponse.json(
       { message: 'Failed to initialize payment' },
       { status: 500 }
-    )
+    );
   }
 }

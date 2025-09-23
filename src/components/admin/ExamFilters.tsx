@@ -1,26 +1,32 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Button } from '../ui/button'
-import { Input } from '../ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
-import { Card, CardContent } from '../ui/card'
-import { Search, Filter, X, Calendar } from 'lucide-react'
-import { cn } from '../../lib/utils'
+import { useState, useEffect } from 'react';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
+import { Card, CardContent } from '../ui/card';
+import { Search, Filter, X, Calendar } from 'lucide-react';
+import { cn } from '../../lib/utils';
 
 interface ExamFiltersProps {
-  onFiltersChange: (filters: ExamFilters) => void
-  schools: Array<{ id: string; name: string }>
-  className?: string
+  onFiltersChange: (filters: ExamFilters) => void;
+  schools: Array<{ id: string; name: string }>;
+  className?: string;
 }
 
 export interface ExamFilters {
-  search: string
-  status: string
-  examType: string
-  schoolId: string
-  startDate: string
-  endDate: string
+  search: string;
+  status: string;
+  examType: string;
+  schoolId: string;
+  startDate: string;
+  endDate: string;
 }
 
 const initialFilters: ExamFilters = {
@@ -29,35 +35,39 @@ const initialFilters: ExamFilters = {
   examType: '',
   schoolId: '',
   startDate: '',
-  endDate: ''
-}
+  endDate: '',
+};
 
-export function ExamFilters({ onFiltersChange, schools, className }: ExamFiltersProps) {
-  const [filters, setFilters] = useState<ExamFilters>(initialFilters)
-  const [isExpanded, setIsExpanded] = useState(false)
+export function ExamFilters({
+  onFiltersChange,
+  schools,
+  className,
+}: ExamFiltersProps) {
+  const [filters, setFilters] = useState<ExamFilters>(initialFilters);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   // Debounce search input
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      onFiltersChange(filters)
-    }, 300)
+      onFiltersChange(filters);
+    }, 300);
 
-    return () => clearTimeout(timeoutId)
-  }, [filters, onFiltersChange])
+    return () => clearTimeout(timeoutId);
+  }, [filters, onFiltersChange]);
 
   const updateFilter = (key: keyof ExamFilters, value: string) => {
     setFilters(prev => ({
       ...prev,
-      [key]: value
-    }))
-  }
+      [key]: value,
+    }));
+  };
 
   const clearFilters = () => {
-    setFilters(initialFilters)
-    setIsExpanded(false)
-  }
+    setFilters(initialFilters);
+    setIsExpanded(false);
+  };
 
-  const hasActiveFilters = Object.values(filters).some(value => value !== '')
+  const hasActiveFilters = Object.values(filters).some(value => value !== '');
 
   return (
     <Card className={cn('mb-6', className)}>
@@ -70,7 +80,7 @@ export function ExamFilters({ onFiltersChange, schools, className }: ExamFilters
               <Input
                 placeholder="Search by exam title or school name..."
                 value={filters.search}
-                onChange={(e) => updateFilter('search', e.target.value)}
+                onChange={e => updateFilter('search', e.target.value)}
                 className="pl-10"
               />
             </div>
@@ -107,7 +117,10 @@ export function ExamFilters({ onFiltersChange, schools, className }: ExamFilters
                 <label className="text-sm font-medium text-gray-700 mb-1 block">
                   Status
                 </label>
-                <Select value={filters.status} onValueChange={(value) => updateFilter('status', value)}>
+                <Select
+                  value={filters.status}
+                  onValueChange={value => updateFilter('status', value)}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="All Statuses" />
                   </SelectTrigger>
@@ -127,7 +140,10 @@ export function ExamFilters({ onFiltersChange, schools, className }: ExamFilters
                 <label className="text-sm font-medium text-gray-700 mb-1 block">
                   Exam Type
                 </label>
-                <Select value={filters.examType} onValueChange={(value) => updateFilter('examType', value)}>
+                <Select
+                  value={filters.examType}
+                  onValueChange={value => updateFilter('examType', value)}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="All Types" />
                   </SelectTrigger>
@@ -146,13 +162,16 @@ export function ExamFilters({ onFiltersChange, schools, className }: ExamFilters
                 <label className="text-sm font-medium text-gray-700 mb-1 block">
                   School
                 </label>
-                <Select value={filters.schoolId} onValueChange={(value) => updateFilter('schoolId', value)}>
+                <Select
+                  value={filters.schoolId}
+                  onValueChange={value => updateFilter('schoolId', value)}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="All Schools" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="">All Schools</SelectItem>
-                    {schools.map((school) => (
+                    {schools.map(school => (
                       <SelectItem key={school.id} value={school.id}>
                         {school.name}
                       </SelectItem>
@@ -173,7 +192,7 @@ export function ExamFilters({ onFiltersChange, schools, className }: ExamFilters
                       type="date"
                       placeholder="Start Date"
                       value={filters.startDate}
-                      onChange={(e) => updateFilter('startDate', e.target.value)}
+                      onChange={e => updateFilter('startDate', e.target.value)}
                       className="pl-10 text-sm"
                     />
                   </div>
@@ -183,7 +202,7 @@ export function ExamFilters({ onFiltersChange, schools, className }: ExamFilters
                       type="date"
                       placeholder="End Date"
                       value={filters.endDate}
-                      onChange={(e) => updateFilter('endDate', e.target.value)}
+                      onChange={e => updateFilter('endDate', e.target.value)}
                       className="pl-10 text-sm"
                     />
                   </div>
@@ -194,5 +213,5 @@ export function ExamFilters({ onFiltersChange, schools, className }: ExamFilters
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

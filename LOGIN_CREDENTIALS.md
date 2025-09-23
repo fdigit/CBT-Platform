@@ -1,12 +1,14 @@
 # 🔐 CBT Platform Login Credentials
 
 ## 🌐 Application Access
+
 - **URL**: http://localhost:3000
 - **Sign In Page**: http://localhost:3000/auth/signin
 
 ## 👤 User Accounts
 
 ### 🏛️ Super Admin (Global Platform Administrator)
+
 - **Email**: `admin@cbtplatform.com`
 - **Password**: `admin123`
 - **Role**: SUPER_ADMIN
@@ -14,6 +16,7 @@
 - **Dashboard**: http://localhost:3000/admin
 
 ### 🏫 School Admin (School Administrator)
+
 - **Email**: `admin@littleteddies.com`
 - **Password**: `admin123`
 - **Role**: SCHOOL_ADMIN
@@ -22,6 +25,7 @@
 - **Dashboard**: http://localhost:3000/school
 
 ### 👨‍🏫 Teachers (Little Teddies)
+
 - **Email**: `teacher1@littleteddies.com`
 - **Password**: `admin123`
 - **Role**: TEACHER
@@ -53,6 +57,7 @@
 - **Dashboard**: http://localhost:3000/teacher
 
 ### 👨‍🎓 Students (Little Teddies)
+
 - **Email**: `student1@littleteddies.com` to `student10@littleteddies.com`
 - **Password**: `admin123`
 - **Registration Numbers**: LT001 to LT010
@@ -61,6 +66,7 @@
 - **Dashboard**: http://localhost:3000/student
 
 **Sample Student Accounts:**
+
 - `student1@littleteddies.com` - Alice Cooper (Nursery 1 A)
 - `student2@littleteddies.com` - Bob Smith (Nursery 1 A)
 - `student3@littleteddies.com` - Charlie Brown (Nursery 2 A)
@@ -71,24 +77,28 @@
 ## 🎯 Quick Start Guide
 
 ### For Super Admin:
+
 1. Go to http://localhost:3000/auth/signin
 2. Login with `admin@cbtplatform.com` / `admin123`
 3. Access Super Admin Dashboard at http://localhost:3000/admin
 4. Approve schools, manage platform settings
 
 ### For School Admin (Little Teddies):
+
 1. Go to http://localhost:3000/auth/signin
 2. Login with `admin@littleteddies.com` / `admin123`
 3. Access School Dashboard at http://localhost:3000/school
 4. Approve teacher exams, manage students
 
 ### For Teachers (Little Teddies):
+
 1. Go to http://localhost:3000/auth/signin
 2. Login with any teacher email / `admin123`
 3. Access Teacher Dashboard at http://localhost:3000/teacher
 4. Create exams, manage classes, grade students
 
 ### For Students (Little Teddies):
+
 1. Go to http://localhost:3000/auth/signin
 2. Login with any student email / `admin123`
 3. Access Student Dashboard at http://localhost:3000/student
@@ -97,12 +107,14 @@
 ## 📚 Available Features
 
 ### Super Admin Features:
+
 - ✅ School approval/rejection
 - ✅ Platform-wide analytics
 - ✅ User management
 - ✅ System settings
 
 ### School Admin Features:
+
 - ✅ Create and manage exams
 - ✅ Add/edit questions (MCQ, True/False, Essay)
 - ✅ Student management
@@ -111,22 +123,26 @@
 - ✅ School dashboard
 
 ### Student Features:
+
 - ✅ Take exams
 - ✅ View exam results
 - ✅ Student dashboard
 - ✅ Exam history
 
 ## 🔧 Database Information
+
 - **Database**: Supabase PostgreSQL
 - **Connection**: Successfully established
 - **Tables**: 8 tables created
 - **Sample Data**: Loaded and ready
 
 ## 🚀 Getting Started
+
 1. **Start the application**: `npm run dev`
 2. **Access**: http://localhost:3002
 3. **Login** with any of the credentials above
 4. **Explore** the different dashboards and features
 
 ---
+
 **Note**: All passwords are set to `admin123` for testing purposes. Change these in production!

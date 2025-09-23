@@ -1,78 +1,78 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
-import { Badge } from '../ui/badge'
-import { Button } from '../ui/button'
-import { 
-  TrendingUp, 
-  School, 
-  BookOpen, 
-  Calendar, 
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import {
+  TrendingUp,
+  School,
+  BookOpen,
+  Calendar,
   Users,
   BarChart3,
   PieChart,
-  AlertCircle
-} from 'lucide-react'
-import { format } from 'date-fns'
+  AlertCircle,
+} from 'lucide-react';
+import { format } from 'date-fns';
 
 interface ExamAnalyticsProps {
-  className?: string
+  className?: string;
 }
 
 interface AnalyticsData {
   summary: {
-    totalExams: number
-    activeExams: number
-    scheduledExams: number
-    closedExams: number
-    pendingApprovals: number
-  }
+    totalExams: number;
+    activeExams: number;
+    scheduledExams: number;
+    closedExams: number;
+    pendingApprovals: number;
+  };
   topSchools: Array<{
-    schoolId: string
-    schoolName: string
-    examCount: number
-  }>
+    schoolId: string;
+    schoolName: string;
+    examCount: number;
+  }>;
   questionTypeDistribution: Array<{
-    type: string
-    count: number
-  }>
+    type: string;
+    count: number;
+  }>;
   upcomingExams: Array<{
-    id: string
-    title: string
-    schoolName: string
-    startTime: string
-    questionsCount: number
-    registeredStudents: number
-  }>
+    id: string;
+    title: string;
+    schoolName: string;
+    startTime: string;
+    questionsCount: number;
+    registeredStudents: number;
+  }>;
   monthlyTrend: Array<{
-    month: string
-    count: number
-  }>
+    month: string;
+    count: number;
+  }>;
 }
 
 export function ExamAnalytics({ className }: ExamAnalyticsProps) {
-  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchAnalytics()
-  }, [])
+    fetchAnalytics();
+  }, []);
 
   const fetchAnalytics = async () => {
     try {
-      const response = await fetch('/api/admin/exams/analytics')
-      const data = await response.json()
+      const response = await fetch('/api/admin/exams/analytics');
+      const data = await response.json();
 
       if (response.ok) {
-        setAnalytics(data)
+        setAnalytics(data);
       }
     } catch (error) {
-      console.error('Failed to fetch analytics:', error)
+      console.error('Failed to fetch analytics:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -84,11 +84,11 @@ export function ExamAnalytics({ className }: ExamAnalyticsProps) {
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   if (!analytics) {
-    return null
+    return null;
   }
 
   return (
@@ -104,14 +104,21 @@ export function ExamAnalytics({ className }: ExamAnalyticsProps) {
         <CardContent>
           <div className="space-y-3">
             {analytics.topSchools.slice(0, 5).map((school, index) => (
-              <div key={school.schoolId} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div
+                key={school.schoolId}
+                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+              >
                 <div className="flex items-center gap-3">
                   <div className="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-600 rounded-full text-sm font-medium">
                     {index + 1}
                   </div>
                   <div>
-                    <div className="font-medium text-gray-900">{school.schoolName}</div>
-                    <div className="text-sm text-gray-500">{school.examCount} exams created</div>
+                    <div className="font-medium text-gray-900">
+                      {school.schoolName}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {school.examCount} exams created
+                    </div>
                   </div>
                 </div>
                 <Badge variant="outline" className="bg-blue-50 text-blue-700">
@@ -133,17 +140,26 @@ export function ExamAnalytics({ className }: ExamAnalyticsProps) {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {analytics.questionTypeDistribution.map((type) => (
-              <div key={type.type} className="text-center p-4 bg-gray-50 rounded-lg">
-                <div className="text-2xl font-bold text-gray-900">{type.count}</div>
-                <div className="text-sm text-gray-600">{type.type} Questions</div>
+            {analytics.questionTypeDistribution.map(type => (
+              <div
+                key={type.type}
+                className="text-center p-4 bg-gray-50 rounded-lg"
+              >
+                <div className="text-2xl font-bold text-gray-900">
+                  {type.count}
+                </div>
+                <div className="text-sm text-gray-600">
+                  {type.type} Questions
+                </div>
                 <div className="mt-2">
-                  <Badge 
-                    variant="outline" 
+                  <Badge
+                    variant="outline"
                     className={
-                      type.type === 'MCQ' ? 'bg-blue-50 text-blue-700' :
-                      type.type === 'ESSAY' ? 'bg-purple-50 text-purple-700' :
-                      'bg-green-50 text-green-700'
+                      type.type === 'MCQ'
+                        ? 'bg-blue-50 text-blue-700'
+                        : type.type === 'ESSAY'
+                          ? 'bg-purple-50 text-purple-700'
+                          : 'bg-green-50 text-green-700'
                     }
                   >
                     {type.type}
@@ -171,12 +187,18 @@ export function ExamAnalytics({ className }: ExamAnalyticsProps) {
             </div>
           ) : (
             <div className="space-y-3">
-              {analytics.upcomingExams.map((exam) => (
-                <div key={exam.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
+              {analytics.upcomingExams.map(exam => (
+                <div
+                  key={exam.id}
+                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
+                >
                   <div className="flex-1">
-                    <div className="font-medium text-gray-900">{exam.title}</div>
+                    <div className="font-medium text-gray-900">
+                      {exam.title}
+                    </div>
                     <div className="text-sm text-gray-600 mt-1">
-                      {exam.schoolName} • {format(new Date(exam.startTime), 'MMM dd, yyyy HH:mm')}
+                      {exam.schoolName} •{' '}
+                      {format(new Date(exam.startTime), 'MMM dd, yyyy HH:mm')}
                     </div>
                     <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
                       <span className="flex items-center gap-1">
@@ -190,13 +212,18 @@ export function ExamAnalytics({ className }: ExamAnalyticsProps) {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                    <Badge
+                      variant="outline"
+                      className="bg-blue-50 text-blue-700"
+                    >
                       Upcoming
                     </Badge>
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => window.open(`/admin/exams/${exam.id}`, '_blank')}
+                      onClick={() =>
+                        window.open(`/admin/exams/${exam.id}`, '_blank')
+                      }
                     >
                       View
                     </Button>
@@ -224,16 +251,16 @@ export function ExamAnalytics({ className }: ExamAnalyticsProps) {
             </div>
           ) : (
             <div className="space-y-4">
-              {analytics.monthlyTrend.slice(-6).map((item) => (
+              {analytics.monthlyTrend.slice(-6).map(item => (
                 <div key={item.month} className="flex items-center gap-4">
                   <div className="w-20 text-sm text-gray-600">
                     {format(new Date(item.month + '-01'), 'MMM yyyy')}
                   </div>
                   <div className="flex-1 bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-blue-600 h-2 rounded-full" 
-                      style={{ 
-                        width: `${Math.max(5, (item.count / Math.max(...analytics.monthlyTrend.map(m => m.count))) * 100)}%` 
+                    <div
+                      className="bg-blue-600 h-2 rounded-full"
+                      style={{
+                        width: `${Math.max(5, (item.count / Math.max(...analytics.monthlyTrend.map(m => m.count))) * 100)}%`,
                       }}
                     ></div>
                   </div>
@@ -261,7 +288,9 @@ export function ExamAnalytics({ className }: ExamAnalyticsProps) {
               <div className="flex items-start gap-3">
                 <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
                 <div>
-                  <div className="font-medium text-yellow-800">Placeholder for AI Analysis</div>
+                  <div className="font-medium text-yellow-800">
+                    Placeholder for AI Analysis
+                  </div>
                   <div className="text-sm text-yellow-700 mt-1">
                     Future AI features will include:
                   </div>
@@ -278,5 +307,5 @@ export function ExamAnalytics({ className }: ExamAnalyticsProps) {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

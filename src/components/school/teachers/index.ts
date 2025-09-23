@@ -1,8 +1,8 @@
-export { AddTeacherModal } from './AddTeacherModal'
-export { AssignClassesModal } from './AssignClassesModal'
-export { BulkUploadModal } from './BulkUploadModal'
-export { TeacherProfileDrawer } from './TeacherProfileDrawer'
-export { TeachersAnalytics } from './TeachersAnalytics'
-export { TeachersFilters } from './TeachersFilters'
-export { TeachersHeader } from './TeachersHeader'
-export { TeachersTable } from './TeachersTable'
+export { AddTeacherModal } from './AddTeacherModal';
+export { AssignClassesModal } from './AssignClassesModal';
+export { BulkUploadModal } from './BulkUploadModal';
+export { TeacherProfileDrawer } from './TeacherProfileDrawer';
+export { TeachersAnalytics } from './TeachersAnalytics';
+export { TeachersFilters } from './TeachersFilters';
+export { TeachersHeader } from './TeachersHeader';
+export { TeachersTable } from './TeachersTable';

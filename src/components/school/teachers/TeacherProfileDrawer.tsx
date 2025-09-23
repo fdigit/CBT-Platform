@@ -1,20 +1,20 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
+import { useState } from 'react';
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from '../../ui/sheet'
-import { Button } from '../../ui/button'
-import { Badge } from '../../ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar'
-import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card'
-import { Separator } from '../../ui/separator'
-import { Progress } from '../../ui/progress'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs'
+} from '../../ui/sheet';
+import { Button } from '../../ui/button';
+import { Badge } from '../../ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
+import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
+import { Separator } from '../../ui/separator';
+import { Progress } from '../../ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,13 +25,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '../../ui/alert-dialog'
-import { 
-  Edit, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Calendar, 
+} from '../../ui/alert-dialog';
+import {
+  Edit,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
   GraduationCap,
   Users,
   BookOpen,
@@ -45,61 +45,72 @@ import {
   BarChart3,
   TrendingUp,
   TrendingDown,
-  Activity
-} from 'lucide-react'
-import { format } from 'date-fns'
-import { cn } from '../../../lib/utils'
-import { Teacher } from '../../app/school/teachers/page'
-import { AssignClassesModal } from './AssignClassesModal'
+  Activity,
+} from 'lucide-react';
+import { format } from 'date-fns';
+import { cn } from '../../../lib/utils';
+import { Teacher } from '../../app/school/teachers/page';
+import { AssignClassesModal } from './AssignClassesModal';
 
 interface TeacherProfileDrawerProps {
-  teacher: Teacher | null
-  isOpen: boolean
-  onClose: () => void
-  onTeacherUpdate: (teacher: Teacher) => void
+  teacher: Teacher | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onTeacherUpdate: (teacher: Teacher) => void;
 }
 
-export function TeacherProfileDrawer({ 
-  teacher, 
-  isOpen, 
-  onClose, 
-  onTeacherUpdate 
+export function TeacherProfileDrawer({
+  teacher,
+  isOpen,
+  onClose,
+  onTeacherUpdate,
 }: TeacherProfileDrawerProps) {
-  const [isEditing, setIsEditing] = useState(false)
-  const [isAssignClassesModalOpen, setIsAssignClassesModalOpen] = useState(false)
+  const [isEditing, setIsEditing] = useState(false);
+  const [isAssignClassesModalOpen, setIsAssignClassesModalOpen] =
+    useState(false);
 
-  if (!teacher) return null
+  if (!teacher) return null;
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'ACTIVE': return 'bg-green-100 text-green-800 border-green-200'
-      case 'ON_LEAVE': return 'bg-yellow-100 text-yellow-800 border-yellow-200'
-      case 'SUSPENDED': return 'bg-red-100 text-red-800 border-red-200'
-      case 'TERMINATED': return 'bg-gray-100 text-gray-800 border-gray-200'
-      default: return 'bg-gray-100 text-gray-800 border-gray-200'
+      case 'ACTIVE':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'ON_LEAVE':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'SUSPENDED':
+        return 'bg-red-100 text-red-800 border-red-200';
+      case 'TERMINATED':
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
     }
-  }
+  };
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'ACTIVE': return 'Active'
-      case 'ON_LEAVE': return 'On Leave'
-      case 'SUSPENDED': return 'Suspended'
-      case 'TERMINATED': return 'Retired'
-      default: return status
+      case 'ACTIVE':
+        return 'Active';
+      case 'ON_LEAVE':
+        return 'On Leave';
+      case 'SUSPENDED':
+        return 'Suspended';
+      case 'TERMINATED':
+        return 'Retired';
+      default:
+        return status;
     }
-  }
+  };
 
   const handleStatusToggle = async () => {
-    const newStatus = teacher.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE'
-    const updatedTeacher = { ...teacher, status: newStatus as any }
-    onTeacherUpdate(updatedTeacher)
-  }
+    const newStatus = teacher.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE';
+    const updatedTeacher = { ...teacher, status: newStatus as any };
+    onTeacherUpdate(updatedTeacher);
+  };
 
   const handleResetPassword = async () => {
     // TODO: API call to reset password
-    console.log('Reset password for teacher:', teacher.id)
-  }
+    console.log('Reset password for teacher:', teacher.id);
+  };
 
   // Mock performance data (in real app, this would come from API)
   const performanceData = {
@@ -107,15 +118,24 @@ export function TeacherProfileDrawer({
     classesManaged: teacher.classCount,
     studentsCount: 120, // Mock data
     attendanceRate: 95,
-    lastLoginDays: teacher.lastLogin ? 
-      Math.floor((new Date().getTime() - new Date(teacher.lastLogin).getTime()) / (1000 * 3600 * 24)) : 
-      null,
+    lastLoginDays: teacher.lastLogin
+      ? Math.floor(
+          (new Date().getTime() - new Date(teacher.lastLogin).getTime()) /
+            (1000 * 3600 * 24)
+        )
+      : null,
     recentActivities: [
-      { date: '2024-01-15', activity: 'Uploaded exam results for SS1 Mathematics' },
-      { date: '2024-01-14', activity: 'Created new assignment for JSS3 Physics' },
+      {
+        date: '2024-01-15',
+        activity: 'Uploaded exam results for SS1 Mathematics',
+      },
+      {
+        date: '2024-01-14',
+        activity: 'Created new assignment for JSS3 Physics',
+      },
       { date: '2024-01-12', activity: 'Attended staff meeting' },
-    ]
-  }
+    ],
+  };
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
@@ -125,17 +145,23 @@ export function TeacherProfileDrawer({
             <Avatar className="h-16 w-16">
               <AvatarImage src={teacher.avatar} alt={teacher.name} />
               <AvatarFallback className="bg-blue-100 text-blue-700 text-xl">
-                {teacher.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                {teacher.name
+                  .split(' ')
+                  .map(n => n[0])
+                  .join('')
+                  .substring(0, 2)}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <SheetTitle className="text-xl font-bold">{teacher.name}</SheetTitle>
+              <SheetTitle className="text-xl font-bold">
+                {teacher.name}
+              </SheetTitle>
               <SheetDescription className="text-base">
                 {teacher.employeeId} • {teacher.specialization || 'Teacher'}
               </SheetDescription>
               <div className="flex items-center space-x-2 mt-2">
-                <Badge 
-                  variant="outline" 
+                <Badge
+                  variant="outline"
                   className={cn('border', getStatusColor(teacher.status))}
                 >
                   {getStatusLabel(teacher.status)}
@@ -164,8 +190,8 @@ export function TeacherProfileDrawer({
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="text-lg">Basic Information</CardTitle>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => setIsEditing(true)}
                 >
@@ -218,7 +244,9 @@ export function TeacherProfileDrawer({
             {/* Professional Information */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Professional Information</CardTitle>
+                <CardTitle className="text-lg">
+                  Professional Information
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -244,7 +272,9 @@ export function TeacherProfileDrawer({
                     <Users className="h-5 w-5 text-gray-400" />
                     <div>
                       <p className="text-sm text-gray-500">Classes Assigned</p>
-                      <p className="font-medium">{teacher.classCount} classes</p>
+                      <p className="font-medium">
+                        {teacher.classCount} classes
+                      </p>
                     </div>
                   </div>
                   {performanceData.lastLoginDays !== null && (
@@ -253,9 +283,11 @@ export function TeacherProfileDrawer({
                       <div>
                         <p className="text-sm text-gray-500">Last Login</p>
                         <p className="font-medium">
-                          {performanceData.lastLoginDays === 0 ? 'Today' : 
-                           performanceData.lastLoginDays === 1 ? 'Yesterday' :
-                           `${performanceData.lastLoginDays} days ago`}
+                          {performanceData.lastLoginDays === 0
+                            ? 'Today'
+                            : performanceData.lastLoginDays === 1
+                              ? 'Yesterday'
+                              : `${performanceData.lastLoginDays} days ago`}
                         </p>
                       </div>
                     </div>
@@ -271,7 +303,9 @@ export function TeacherProfileDrawer({
                   <div className="flex items-center space-x-2">
                     <Users className="h-8 w-8 text-blue-600" />
                     <div>
-                      <p className="text-2xl font-bold">{performanceData.studentsCount}</p>
+                      <p className="text-2xl font-bold">
+                        {performanceData.studentsCount}
+                      </p>
                       <p className="text-sm text-gray-500">Students</p>
                     </div>
                   </div>
@@ -282,7 +316,9 @@ export function TeacherProfileDrawer({
                   <div className="flex items-center space-x-2">
                     <BarChart3 className="h-8 w-8 text-green-600" />
                     <div>
-                      <p className="text-2xl font-bold">{performanceData.averageStudentScore}%</p>
+                      <p className="text-2xl font-bold">
+                        {performanceData.averageStudentScore}%
+                      </p>
                       <p className="text-sm text-gray-500">Avg. Score</p>
                     </div>
                   </div>
@@ -293,7 +329,9 @@ export function TeacherProfileDrawer({
                   <div className="flex items-center space-x-2">
                     <Activity className="h-8 w-8 text-orange-600" />
                     <div>
-                      <p className="text-2xl font-bold">{performanceData.attendanceRate}%</p>
+                      <p className="text-2xl font-bold">
+                        {performanceData.attendanceRate}%
+                      </p>
                       <p className="text-sm text-gray-500">Attendance</p>
                     </div>
                   </div>
@@ -311,18 +349,25 @@ export function TeacherProfileDrawer({
               <CardContent>
                 {teacher.classes.length > 0 ? (
                   <div className="space-y-3">
-                    {teacher.classes.map((cls) => (
-                      <div key={cls.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    {teacher.classes.map(cls => (
+                      <div
+                        key={cls.id}
+                        className="flex items-center justify-between p-3 border rounded-lg"
+                      >
                         <div>
                           <p className="font-medium">{cls.displayName}</p>
-                          <p className="text-sm text-gray-500">Academic Year: {cls.academicYear}</p>
+                          <p className="text-sm text-gray-500">
+                            Academic Year: {cls.academicYear}
+                          </p>
                         </div>
                         <Badge variant="outline">Active</Badge>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-500 text-center py-8">No classes assigned</p>
+                  <p className="text-gray-500 text-center py-8">
+                    No classes assigned
+                  </p>
                 )}
               </CardContent>
             </Card>
@@ -338,17 +383,31 @@ export function TeacherProfileDrawer({
                 <div className="space-y-4">
                   <div>
                     <div className="flex justify-between mb-2">
-                      <span className="text-sm font-medium">Student Average Score</span>
-                      <span className="text-sm text-gray-500">{performanceData.averageStudentScore}%</span>
+                      <span className="text-sm font-medium">
+                        Student Average Score
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        {performanceData.averageStudentScore}%
+                      </span>
                     </div>
-                    <Progress value={performanceData.averageStudentScore} className="h-2" />
+                    <Progress
+                      value={performanceData.averageStudentScore}
+                      className="h-2"
+                    />
                   </div>
                   <div>
                     <div className="flex justify-between mb-2">
-                      <span className="text-sm font-medium">Attendance Rate</span>
-                      <span className="text-sm text-gray-500">{performanceData.attendanceRate}%</span>
+                      <span className="text-sm font-medium">
+                        Attendance Rate
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        {performanceData.attendanceRate}%
+                      </span>
                     </div>
-                    <Progress value={performanceData.attendanceRate} className="h-2" />
+                    <Progress
+                      value={performanceData.attendanceRate}
+                      className="h-2"
+                    />
                   </div>
                 </div>
               </CardContent>
@@ -365,7 +424,9 @@ export function TeacherProfileDrawer({
                       <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
                       <div className="flex-1">
                         <p className="text-sm">{activity.activity}</p>
-                        <p className="text-xs text-gray-500">{format(new Date(activity.date), 'MMM dd, yyyy')}</p>
+                        <p className="text-xs text-gray-500">
+                          {format(new Date(activity.date), 'MMM dd, yyyy')}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -385,26 +446,36 @@ export function TeacherProfileDrawer({
                   <div>
                     <p className="font-medium">Account Status</p>
                     <p className="text-sm text-gray-500">
-                      {teacher.status === 'ACTIVE' ? 'Teacher account is active' : 'Teacher account is inactive'}
+                      {teacher.status === 'ACTIVE'
+                        ? 'Teacher account is active'
+                        : 'Teacher account is inactive'}
                     </p>
                   </div>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button variant="outline" size="sm">
                         {teacher.status === 'ACTIVE' ? (
-                          <><UserX className="h-4 w-4 mr-2" />Suspend</>
+                          <>
+                            <UserX className="h-4 w-4 mr-2" />
+                            Suspend
+                          </>
                         ) : (
-                          <><UserCheck className="h-4 w-4 mr-2" />Activate</>
+                          <>
+                            <UserCheck className="h-4 w-4 mr-2" />
+                            Activate
+                          </>
                         )}
                       </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
                         <AlertDialogTitle>
-                          {teacher.status === 'ACTIVE' ? 'Suspend Teacher' : 'Activate Teacher'}
+                          {teacher.status === 'ACTIVE'
+                            ? 'Suspend Teacher'
+                            : 'Activate Teacher'}
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                          {teacher.status === 'ACTIVE' 
+                          {teacher.status === 'ACTIVE'
                             ? 'Are you sure you want to suspend this teacher? They will not be able to access the system.'
                             : 'Are you sure you want to activate this teacher? They will regain access to the system.'}
                         </AlertDialogDescription>
@@ -424,7 +495,9 @@ export function TeacherProfileDrawer({
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium">Reset Password</p>
-                    <p className="text-sm text-gray-500">Generate a new password for this teacher</p>
+                    <p className="text-sm text-gray-500">
+                      Generate a new password for this teacher
+                    </p>
                   </div>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
@@ -435,10 +508,13 @@ export function TeacherProfileDrawer({
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>Reset Teacher Password</AlertDialogTitle>
+                        <AlertDialogTitle>
+                          Reset Teacher Password
+                        </AlertDialogTitle>
                         <AlertDialogDescription>
-                          A new temporary password will be generated and sent to the teacher's email address.
-                          They will be required to change it on their next login.
+                          A new temporary password will be generated and sent to
+                          the teacher's email address. They will be required to
+                          change it on their next login.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
@@ -456,10 +532,12 @@ export function TeacherProfileDrawer({
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium">Assign/Unassign Classes</p>
-                    <p className="text-sm text-gray-500">Manage class assignments for this teacher</p>
+                    <p className="text-sm text-gray-500">
+                      Manage class assignments for this teacher
+                    </p>
                   </div>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     size="sm"
                     onClick={() => setIsAssignClassesModalOpen(true)}
                   >
@@ -472,7 +550,7 @@ export function TeacherProfileDrawer({
           </TabsContent>
         </Tabs>
       </SheetContent>
-      
+
       {/* Assign Classes Modal */}
       <AssignClassesModal
         isOpen={isAssignClassesModalOpen}
@@ -481,5 +559,5 @@ export function TeacherProfileDrawer({
         teacher={teacher}
       />
     </Sheet>
-  )
+  );
 }

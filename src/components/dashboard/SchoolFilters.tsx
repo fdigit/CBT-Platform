@@ -1,70 +1,66 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Input } from '../ui/input'
-import { Button } from '../ui/button'
+import { useState } from 'react';
+import { Input } from '../ui/input';
+import { Button } from '../ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../ui/select'
+} from '../ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { Calendar } from '../ui/calendar';
+import { Badge } from '../ui/badge';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '../ui/popover'
-import { Calendar } from '../ui/calendar'
-import { Badge } from '../ui/badge'
-import { 
-  Search, 
-  Filter, 
+  Search,
+  Filter,
   Calendar as CalendarIcon,
   X,
   Download,
-  RefreshCw
-} from 'lucide-react'
-import { cn } from '../../lib/utils'
-import { format } from 'date-fns'
+  RefreshCw,
+} from 'lucide-react';
+import { cn } from '../../lib/utils';
+import { format } from 'date-fns';
 
 interface SchoolFiltersProps {
-  onFiltersChange: (filters: SchoolFilters) => void
-  onExport: (format: 'csv' | 'excel' | 'pdf') => void
-  onRefresh: () => void
-  loading?: boolean
+  onFiltersChange: (filters: SchoolFilters) => void;
+  onExport: (format: 'csv' | 'excel' | 'pdf') => void;
+  onRefresh: () => void;
+  loading?: boolean;
 }
 
 export interface SchoolFilters {
-  search: string
-  status: string
+  search: string;
+  status: string;
   dateRange: {
-    from: Date | null
-    to: Date | null
-  }
+    from: Date | null;
+    to: Date | null;
+  };
 }
 
-export function SchoolFilters({ 
-  onFiltersChange, 
-  onExport, 
-  onRefresh, 
-  loading 
+export function SchoolFilters({
+  onFiltersChange,
+  onExport,
+  onRefresh,
+  loading,
 }: SchoolFiltersProps) {
   const [filters, setFilters] = useState<SchoolFilters>({
     search: '',
     status: 'all',
     dateRange: {
       from: null,
-      to: null
-    }
-  })
-  const [showFilters, setShowFilters] = useState(false)
+      to: null,
+    },
+  });
+  const [showFilters, setShowFilters] = useState(false);
 
   const updateFilters = (newFilters: Partial<SchoolFilters>) => {
-    const updatedFilters = { ...filters, ...newFilters }
-    setFilters(updatedFilters)
-    onFiltersChange(updatedFilters)
-  }
+    const updatedFilters = { ...filters, ...newFilters };
+    setFilters(updatedFilters);
+    onFiltersChange(updatedFilters);
+  };
 
   const clearFilters = () => {
     const clearedFilters: SchoolFilters = {
@@ -72,20 +68,20 @@ export function SchoolFilters({
       status: 'all',
       dateRange: {
         from: null,
-        to: null
-      }
-    }
-    setFilters(clearedFilters)
-    onFiltersChange(clearedFilters)
-  }
+        to: null,
+      },
+    };
+    setFilters(clearedFilters);
+    onFiltersChange(clearedFilters);
+  };
 
   const getActiveFiltersCount = () => {
-    let count = 0
-    if (filters.search) count++
-    if (filters.status && filters.status !== 'all') count++
-    if (filters.dateRange.from || filters.dateRange.to) count++
-    return count
-  }
+    let count = 0;
+    if (filters.search) count++;
+    if (filters.status && filters.status !== 'all') count++;
+    if (filters.dateRange.from || filters.dateRange.to) count++;
+    return count;
+  };
 
   return (
     <div className="space-y-4">
@@ -96,11 +92,11 @@ export function SchoolFilters({
           <Input
             placeholder="Search schools by name or email..."
             value={filters.search}
-            onChange={(e) => updateFilters({ search: e.target.value })}
+            onChange={e => updateFilters({ search: e.target.value })}
             className="pl-10"
           />
         </div>
-        
+
         <div className="flex gap-2">
           <Button
             variant="outline"
@@ -110,24 +106,22 @@ export function SchoolFilters({
             <Filter className="h-4 w-4 mr-2" />
             Filters
             {getActiveFiltersCount() > 0 && (
-              <Badge 
-                variant="secondary" 
+              <Badge
+                variant="secondary"
                 className="ml-2 h-5 w-5 p-0 text-xs rounded-full"
               >
                 {getActiveFiltersCount()}
               </Badge>
             )}
           </Button>
-          
-          <Button
-            variant="outline"
-            onClick={onRefresh}
-            disabled={loading}
-          >
-            <RefreshCw className={cn("h-4 w-4 mr-2", loading && "animate-spin")} />
+
+          <Button variant="outline" onClick={onRefresh} disabled={loading}>
+            <RefreshCw
+              className={cn('h-4 w-4 mr-2', loading && 'animate-spin')}
+            />
             Refresh
           </Button>
-          
+
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline">
@@ -137,22 +131,22 @@ export function SchoolFilters({
             </PopoverTrigger>
             <PopoverContent className="w-48" align="end">
               <div className="space-y-2">
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   className="w-full justify-start"
                   onClick={() => onExport('csv')}
                 >
                   Export as CSV
                 </Button>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   className="w-full justify-start"
                   onClick={() => onExport('excel')}
                 >
                   Export as Excel
                 </Button>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   className="w-full justify-start"
                   onClick={() => onExport('pdf')}
                 >
@@ -179,14 +173,14 @@ export function SchoolFilters({
               Clear All
             </Button>
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Status Filter */}
             <div className="space-y-2">
               <label className="text-sm font-medium">Status</label>
               <Select
                 value={filters.status}
-                onValueChange={(value) => updateFilters({ status: value })}
+                onValueChange={value => updateFilters({ status: value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="All statuses" />
@@ -203,61 +197,66 @@ export function SchoolFilters({
 
             {/* Date Range Filter */}
             <div className="space-y-2 sm:col-span-2">
-              <label className="text-sm font-medium">Registration Date Range</label>
+              <label className="text-sm font-medium">
+                Registration Date Range
+              </label>
               <div className="flex gap-2">
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
                       className={cn(
-                        "flex-1 justify-start text-left font-normal",
-                        !filters.dateRange.from && "text-muted-foreground"
+                        'flex-1 justify-start text-left font-normal',
+                        !filters.dateRange.from && 'text-muted-foreground'
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {filters.dateRange.from ? (
-                        format(filters.dateRange.from, "PPP")
-                      ) : (
-                        "From date"
-                      )}
+                      {filters.dateRange.from
+                        ? format(filters.dateRange.from, 'PPP')
+                        : 'From date'}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
                       mode="single"
                       selected={filters.dateRange.from || undefined}
-                      onSelect={(date) => updateFilters({
-                        dateRange: { ...filters.dateRange, from: date || null }
-                      })}
+                      onSelect={date =>
+                        updateFilters({
+                          dateRange: {
+                            ...filters.dateRange,
+                            from: date || null,
+                          },
+                        })
+                      }
                       initialFocus
                     />
                   </PopoverContent>
                 </Popover>
-                
+
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
                       className={cn(
-                        "flex-1 justify-start text-left font-normal",
-                        !filters.dateRange.to && "text-muted-foreground"
+                        'flex-1 justify-start text-left font-normal',
+                        !filters.dateRange.to && 'text-muted-foreground'
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {filters.dateRange.to ? (
-                        format(filters.dateRange.to, "PPP")
-                      ) : (
-                        "To date"
-                      )}
+                      {filters.dateRange.to
+                        ? format(filters.dateRange.to, 'PPP')
+                        : 'To date'}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
                       mode="single"
                       selected={filters.dateRange.to || undefined}
-                      onSelect={(date) => updateFilters({
-                        dateRange: { ...filters.dateRange, to: date || null }
-                      })}
+                      onSelect={date =>
+                        updateFilters({
+                          dateRange: { ...filters.dateRange, to: date || null },
+                        })
+                      }
                       initialFocus
                     />
                   </PopoverContent>
@@ -273,8 +272,8 @@ export function SchoolFilters({
               {filters.search && (
                 <Badge variant="secondary" className="gap-1">
                   Search: {filters.search}
-                  <X 
-                    className="h-3 w-3 cursor-pointer" 
+                  <X
+                    className="h-3 w-3 cursor-pointer"
                     onClick={() => updateFilters({ search: '' })}
                   />
                 </Badge>
@@ -282,8 +281,8 @@ export function SchoolFilters({
               {filters.status && filters.status !== 'all' && (
                 <Badge variant="secondary" className="gap-1">
                   Status: {filters.status}
-                  <X 
-                    className="h-3 w-3 cursor-pointer" 
+                  <X
+                    className="h-3 w-3 cursor-pointer"
                     onClick={() => updateFilters({ status: 'all' })}
                   />
                 </Badge>
@@ -291,11 +290,13 @@ export function SchoolFilters({
               {(filters.dateRange.from || filters.dateRange.to) && (
                 <Badge variant="secondary" className="gap-1">
                   Date Range
-                  <X 
-                    className="h-3 w-3 cursor-pointer" 
-                    onClick={() => updateFilters({ 
-                      dateRange: { from: null, to: null } 
-                    })}
+                  <X
+                    className="h-3 w-3 cursor-pointer"
+                    onClick={() =>
+                      updateFilters({
+                        dateRange: { from: null, to: null },
+                      })
+                    }
                   />
                 </Badge>
               )}
@@ -304,6 +305,5 @@ export function SchoolFilters({
         </div>
       )}
     </div>
-  )
+  );
 }
-

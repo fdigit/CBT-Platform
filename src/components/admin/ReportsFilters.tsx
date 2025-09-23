@@ -1,32 +1,38 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Card, CardContent } from '../ui/card'
-import { Button } from '../ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
-import { Calendar } from '../ui/calendar'
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
-import { Badge } from '../ui/badge'
-import { CalendarIcon, Download, RefreshCw, Filter, X } from 'lucide-react'
-import { format } from 'date-fns'
-import { cn } from '../../lib/utils'
+import { useState } from 'react';
+import { Card, CardContent } from '../ui/card';
+import { Button } from '../ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
+import { Calendar } from '../ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { Badge } from '../ui/badge';
+import { CalendarIcon, Download, RefreshCw, Filter, X } from 'lucide-react';
+import { format } from 'date-fns';
+import { cn } from '../../lib/utils';
 
 export interface ReportsFilters {
-  dateRange: string
-  schoolId?: string
-  role?: string
-  examType?: string
-  customDateFrom?: Date
-  customDateTo?: Date
+  dateRange: string;
+  schoolId?: string;
+  role?: string;
+  examType?: string;
+  customDateFrom?: Date;
+  customDateTo?: Date;
 }
 
 interface ReportsFiltersProps {
-  filters: ReportsFilters
-  onFiltersChange: (filters: ReportsFilters) => void
-  schools: Array<{ id: string; name: string }>
-  onRefresh: () => void
-  onExport: (format: 'csv' | 'json' | 'pdf') => void
-  loading?: boolean
+  filters: ReportsFilters;
+  onFiltersChange: (filters: ReportsFilters) => void;
+  schools: Array<{ id: string; name: string }>;
+  onRefresh: () => void;
+  onExport: (format: 'csv' | 'json' | 'pdf') => void;
+  loading?: boolean;
 }
 
 const DATE_RANGE_OPTIONS = [
@@ -35,47 +41,47 @@ const DATE_RANGE_OPTIONS = [
   { value: 'last30days', label: 'Last 30 days' },
   { value: 'last90days', label: 'Last 90 days' },
   { value: 'last12months', label: 'Last 12 months' },
-  { value: 'custom', label: 'Custom Range' }
-]
+  { value: 'custom', label: 'Custom Range' },
+];
 
 const ROLE_OPTIONS = [
   { value: 'all', label: 'All Roles' },
   { value: 'SUPER_ADMIN', label: 'Super Admins' },
   { value: 'SCHOOL_ADMIN', label: 'School Admins' },
-  { value: 'STUDENT', label: 'Students' }
-]
+  { value: 'STUDENT', label: 'Students' },
+];
 
 const EXAM_TYPE_OPTIONS = [
   { value: 'all', label: 'All Types' },
   { value: 'PRACTICE', label: 'Practice' },
   { value: 'ASSESSMENT', label: 'Assessment' },
-  { value: 'EXAM', label: 'Exam' }
-]
+  { value: 'EXAM', label: 'Exam' },
+];
 
-export function ReportsFilters({ 
-  filters, 
-  onFiltersChange, 
-  schools, 
-  onRefresh, 
-  onExport, 
-  loading 
+export function ReportsFilters({
+  filters,
+  onFiltersChange,
+  schools,
+  onRefresh,
+  onExport,
+  loading,
 }: ReportsFiltersProps) {
-  const [showCustomDatePicker, setShowCustomDatePicker] = useState(false)
+  const [showCustomDatePicker, setShowCustomDatePicker] = useState(false);
 
   const handleFilterChange = (key: keyof ReportsFilters, value: any) => {
-    const newFilters = { ...filters, [key]: value }
-    
+    const newFilters = { ...filters, [key]: value };
+
     // Reset custom dates if not using custom range
     if (key === 'dateRange' && value !== 'custom') {
-      newFilters.customDateFrom = undefined
-      newFilters.customDateTo = undefined
-      setShowCustomDatePicker(false)
+      newFilters.customDateFrom = undefined;
+      newFilters.customDateTo = undefined;
+      setShowCustomDatePicker(false);
     } else if (key === 'dateRange' && value === 'custom') {
-      setShowCustomDatePicker(true)
+      setShowCustomDatePicker(true);
     }
-    
-    onFiltersChange(newFilters)
-  }
+
+    onFiltersChange(newFilters);
+  };
 
   const clearFilters = () => {
     onFiltersChange({
@@ -84,18 +90,18 @@ export function ReportsFilters({
       role: undefined,
       examType: undefined,
       customDateFrom: undefined,
-      customDateTo: undefined
-    })
-    setShowCustomDatePicker(false)
-  }
+      customDateTo: undefined,
+    });
+    setShowCustomDatePicker(false);
+  };
 
   const activeFiltersCount = [
     filters.schoolId,
     filters.role && filters.role !== 'all',
     filters.examType && filters.examType !== 'all',
     filters.customDateFrom,
-    filters.customDateTo
-  ].filter(Boolean).length
+    filters.customDateTo,
+  ].filter(Boolean).length;
 
   return (
     <Card>
@@ -105,16 +111,18 @@ export function ReportsFilters({
           <div className="flex flex-wrap gap-4 items-center flex-1">
             {/* Date Range */}
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-gray-700">Date Range</label>
-              <Select 
-                value={filters.dateRange} 
-                onValueChange={(value) => handleFilterChange('dateRange', value)}
+              <label className="text-sm font-medium text-gray-700">
+                Date Range
+              </label>
+              <Select
+                value={filters.dateRange}
+                onValueChange={value => handleFilterChange('dateRange', value)}
               >
                 <SelectTrigger className="w-[160px]">
                   <SelectValue placeholder="Select range" />
                 </SelectTrigger>
                 <SelectContent>
-                  {DATE_RANGE_OPTIONS.map((option) => (
+                  {DATE_RANGE_OPTIONS.map(option => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label}
                     </SelectItem>
@@ -131,13 +139,13 @@ export function ReportsFilters({
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-[140px] justify-start text-left font-normal",
-                        !filters.customDateFrom && "text-muted-foreground"
+                        'w-[140px] justify-start text-left font-normal',
+                        !filters.customDateFrom && 'text-muted-foreground'
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {filters.customDateFrom ? (
-                        format(filters.customDateFrom, "MMM dd")
+                        format(filters.customDateFrom, 'MMM dd')
                       ) : (
                         <span>From date</span>
                       )}
@@ -147,24 +155,26 @@ export function ReportsFilters({
                     <Calendar
                       mode="single"
                       selected={filters.customDateFrom}
-                      onSelect={(date) => handleFilterChange('customDateFrom', date)}
+                      onSelect={date =>
+                        handleFilterChange('customDateFrom', date)
+                      }
                       initialFocus
                     />
                   </PopoverContent>
                 </Popover>
-                
+
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-[140px] justify-start text-left font-normal",
-                        !filters.customDateTo && "text-muted-foreground"
+                        'w-[140px] justify-start text-left font-normal',
+                        !filters.customDateTo && 'text-muted-foreground'
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {filters.customDateTo ? (
-                        format(filters.customDateTo, "MMM dd")
+                        format(filters.customDateTo, 'MMM dd')
                       ) : (
                         <span>To date</span>
                       )}
@@ -174,7 +184,9 @@ export function ReportsFilters({
                     <Calendar
                       mode="single"
                       selected={filters.customDateTo}
-                      onSelect={(date) => handleFilterChange('customDateTo', date)}
+                      onSelect={date =>
+                        handleFilterChange('customDateTo', date)
+                      }
                       initialFocus
                     />
                   </PopoverContent>
@@ -184,17 +196,24 @@ export function ReportsFilters({
 
             {/* School Filter */}
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-gray-700">School</label>
-              <Select 
-                value={filters.schoolId || 'all'} 
-                onValueChange={(value) => handleFilterChange('schoolId', value === 'all' ? undefined : value)}
+              <label className="text-sm font-medium text-gray-700">
+                School
+              </label>
+              <Select
+                value={filters.schoolId || 'all'}
+                onValueChange={value =>
+                  handleFilterChange(
+                    'schoolId',
+                    value === 'all' ? undefined : value
+                  )
+                }
               >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="All Schools" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Schools</SelectItem>
-                  {schools.map((school) => (
+                  {schools.map(school => (
                     <SelectItem key={school.id} value={school.id}>
                       {school.name}
                     </SelectItem>
@@ -206,15 +225,20 @@ export function ReportsFilters({
             {/* Role Filter */}
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium text-gray-700">Role</label>
-              <Select 
-                value={filters.role || 'all'} 
-                onValueChange={(value) => handleFilterChange('role', value === 'all' ? undefined : value)}
+              <Select
+                value={filters.role || 'all'}
+                onValueChange={value =>
+                  handleFilterChange(
+                    'role',
+                    value === 'all' ? undefined : value
+                  )
+                }
               >
                 <SelectTrigger className="w-[140px]">
                   <SelectValue placeholder="All Roles" />
                 </SelectTrigger>
                 <SelectContent>
-                  {ROLE_OPTIONS.map((option) => (
+                  {ROLE_OPTIONS.map(option => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label}
                     </SelectItem>
@@ -225,16 +249,23 @@ export function ReportsFilters({
 
             {/* Exam Type Filter */}
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-gray-700">Exam Type</label>
-              <Select 
-                value={filters.examType || 'all'} 
-                onValueChange={(value) => handleFilterChange('examType', value === 'all' ? undefined : value)}
+              <label className="text-sm font-medium text-gray-700">
+                Exam Type
+              </label>
+              <Select
+                value={filters.examType || 'all'}
+                onValueChange={value =>
+                  handleFilterChange(
+                    'examType',
+                    value === 'all' ? undefined : value
+                  )
+                }
               >
                 <SelectTrigger className="w-[140px]">
                   <SelectValue placeholder="All Types" />
                 </SelectTrigger>
                 <SelectContent>
-                  {EXAM_TYPE_OPTIONS.map((option) => (
+                  {EXAM_TYPE_OPTIONS.map(option => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label}
                     </SelectItem>
@@ -252,9 +283,9 @@ export function ReportsFilters({
                   <Filter className="h-3 w-3" />
                   {activeFiltersCount} filter{activeFiltersCount > 1 ? 's' : ''}
                 </Badge>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={clearFilters}
                   className="text-gray-500 hover:text-gray-700"
                 >
@@ -263,20 +294,26 @@ export function ReportsFilters({
                 </Button>
               </>
             )}
-            
-            <Button 
-              variant="outline" 
-              size="sm" 
+
+            <Button
+              variant="outline"
+              size="sm"
               onClick={onRefresh}
               disabled={loading}
             >
-              <RefreshCw className={cn("h-4 w-4 mr-2", loading && "animate-spin")} />
+              <RefreshCw
+                className={cn('h-4 w-4 mr-2', loading && 'animate-spin')}
+              />
               Refresh
             </Button>
 
             {/* Export Dropdown */}
             <div className="relative">
-              <Select onValueChange={(format) => onExport(format as 'csv' | 'json' | 'pdf')}>
+              <Select
+                onValueChange={format =>
+                  onExport(format as 'csv' | 'json' | 'pdf')
+                }
+              >
                 <SelectTrigger className="w-[120px]">
                   <Download className="h-4 w-4 mr-2" />
                   <SelectValue placeholder="Export" />
@@ -298,46 +335,57 @@ export function ReportsFilters({
               <span className="text-sm text-gray-500">Active filters:</span>
               {filters.schoolId && (
                 <Badge variant="outline" className="flex items-center gap-1">
-                  School: {schools.find(s => s.id === filters.schoolId)?.name || 'Unknown'}
-                  <X 
-                    className="h-3 w-3 cursor-pointer" 
+                  School:{' '}
+                  {schools.find(s => s.id === filters.schoolId)?.name ||
+                    'Unknown'}
+                  <X
+                    className="h-3 w-3 cursor-pointer"
                     onClick={() => handleFilterChange('schoolId', undefined)}
                   />
                 </Badge>
               )}
               {filters.role && filters.role !== 'all' && (
                 <Badge variant="outline" className="flex items-center gap-1">
-                  Role: {ROLE_OPTIONS.find(r => r.value === filters.role)?.label}
-                  <X 
-                    className="h-3 w-3 cursor-pointer" 
+                  Role:{' '}
+                  {ROLE_OPTIONS.find(r => r.value === filters.role)?.label}
+                  <X
+                    className="h-3 w-3 cursor-pointer"
                     onClick={() => handleFilterChange('role', undefined)}
                   />
                 </Badge>
               )}
               {filters.examType && filters.examType !== 'all' && (
                 <Badge variant="outline" className="flex items-center gap-1">
-                  Type: {EXAM_TYPE_OPTIONS.find(t => t.value === filters.examType)?.label}
-                  <X 
-                    className="h-3 w-3 cursor-pointer" 
+                  Type:{' '}
+                  {
+                    EXAM_TYPE_OPTIONS.find(t => t.value === filters.examType)
+                      ?.label
+                  }
+                  <X
+                    className="h-3 w-3 cursor-pointer"
                     onClick={() => handleFilterChange('examType', undefined)}
                   />
                 </Badge>
               )}
               {filters.customDateFrom && (
                 <Badge variant="outline" className="flex items-center gap-1">
-                  From: {format(filters.customDateFrom, "MMM dd, yyyy")}
-                  <X 
-                    className="h-3 w-3 cursor-pointer" 
-                    onClick={() => handleFilterChange('customDateFrom', undefined)}
+                  From: {format(filters.customDateFrom, 'MMM dd, yyyy')}
+                  <X
+                    className="h-3 w-3 cursor-pointer"
+                    onClick={() =>
+                      handleFilterChange('customDateFrom', undefined)
+                    }
                   />
                 </Badge>
               )}
               {filters.customDateTo && (
                 <Badge variant="outline" className="flex items-center gap-1">
-                  To: {format(filters.customDateTo, "MMM dd, yyyy")}
-                  <X 
-                    className="h-3 w-3 cursor-pointer" 
-                    onClick={() => handleFilterChange('customDateTo', undefined)}
+                  To: {format(filters.customDateTo, 'MMM dd, yyyy')}
+                  <X
+                    className="h-3 w-3 cursor-pointer"
+                    onClick={() =>
+                      handleFilterChange('customDateTo', undefined)
+                    }
                   />
                 </Badge>
               )}
@@ -346,5 +394,5 @@ export function ReportsFilters({
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

@@ -1,10 +1,10 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Button } from '../../ui/button'
-import { Input } from '../../ui/input'
-import { Label } from '../../ui/label'
-import { Textarea } from '../../ui/textarea'
+import { useState, useEffect } from 'react';
+import { Button } from '../../ui/button';
+import { Input } from '../../ui/input';
+import { Label } from '../../ui/label';
+import { Textarea } from '../../ui/textarea';
 import {
   Dialog,
   DialogContent,
@@ -12,50 +12,50 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '../../ui/dialog'
+} from '../../ui/dialog';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../ui/select'
-import { useToast } from '../../../hooks/use-toast'
+} from '../../ui/select';
+import { useToast } from '../../../hooks/use-toast';
 
 interface Subject {
-  id: string
-  name: string
-  code?: string
-  description?: string
-  status: string
-  createdAt: string
+  id: string;
+  name: string;
+  code?: string;
+  description?: string;
+  status: string;
+  createdAt: string;
   _count: {
-    teachers: number
-    classSubjects: number
-  }
+    teachers: number;
+    classSubjects: number;
+  };
 }
 
 interface EditSubjectModalProps {
-  subject: Subject | null
-  isOpen: boolean
-  onClose: () => void
-  onSubjectUpdated: (subject: Subject) => void
+  subject: Subject | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onSubjectUpdated: (subject: Subject) => void;
 }
 
 export function EditSubjectModal({
   subject,
   isOpen,
   onClose,
-  onSubjectUpdated
+  onSubjectUpdated,
 }: EditSubjectModalProps) {
   const [formData, setFormData] = useState({
     name: '',
     code: '',
     description: '',
-    status: 'ACTIVE'
-  })
-  const [isLoading, setIsLoading] = useState(false)
-  const { toast } = useToast()
+    status: 'ACTIVE',
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (subject) {
@@ -63,67 +63,68 @@ export function EditSubjectModal({
         name: subject.name,
         code: subject.code || '',
         description: subject.description || '',
-        status: subject.status
-      })
+        status: subject.status,
+      });
     }
-  }, [subject])
+  }, [subject]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!subject) return
+    e.preventDefault();
+    if (!subject) return;
 
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
       const response = await fetch(`/api/school/subjects/${subject.id}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           name: formData.name,
           code: formData.code || undefined,
           description: formData.description || undefined,
-          status: formData.status
-        })
-      })
+          status: formData.status,
+        }),
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to update subject')
+        throw new Error(data.message || 'Failed to update subject');
       }
 
       toast({
         title: 'Success',
-        description: 'Subject updated successfully'
-      })
+        description: 'Subject updated successfully',
+      });
 
-      onSubjectUpdated(data)
-      onClose()
+      onSubjectUpdated(data);
+      onClose();
     } catch (error) {
       toast({
         title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to update subject',
-        variant: 'destructive'
-      })
+        description:
+          error instanceof Error ? error.message : 'Failed to update subject',
+        variant: 'destructive',
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
-    }))
-  }
+      [field]: value,
+    }));
+  };
 
   const handleClose = () => {
     if (!isLoading) {
-      onClose()
+      onClose();
     }
-  }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -141,7 +142,7 @@ export function EditSubjectModal({
             <Input
               id="edit-name"
               value={formData.name}
-              onChange={(e) => handleChange('name', e.target.value)}
+              onChange={e => handleChange('name', e.target.value)}
               placeholder="e.g., Mathematics, English Language"
               required
             />
@@ -152,7 +153,7 @@ export function EditSubjectModal({
             <Input
               id="edit-code"
               value={formData.code}
-              onChange={(e) => handleChange('code', e.target.value)}
+              onChange={e => handleChange('code', e.target.value)}
               placeholder="e.g., MATH101, ENG101"
             />
           </div>
@@ -162,7 +163,7 @@ export function EditSubjectModal({
             <Textarea
               id="edit-description"
               value={formData.description}
-              onChange={(e) => handleChange('description', e.target.value)}
+              onChange={e => handleChange('description', e.target.value)}
               placeholder="Brief description of the subject..."
               rows={3}
             />
@@ -170,7 +171,10 @@ export function EditSubjectModal({
 
           <div className="space-y-2">
             <Label htmlFor="edit-status">Status</Label>
-            <Select value={formData.status} onValueChange={(value) => handleChange('status', value)}>
+            <Select
+              value={formData.status}
+              onValueChange={value => handleChange('status', value)}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
@@ -183,16 +187,16 @@ export function EditSubjectModal({
           </div>
 
           <DialogFooter>
-            <Button 
-              type="button" 
-              variant="outline" 
+            <Button
+              type="button"
+              variant="outline"
               onClick={handleClose}
               disabled={isLoading}
             >
               Cancel
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={isLoading || !formData.name.trim()}
               className="bg-blue-600 hover:bg-blue-700"
             >
@@ -202,5 +206,5 @@ export function EditSubjectModal({
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

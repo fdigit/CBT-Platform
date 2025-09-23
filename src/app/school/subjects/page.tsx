@@ -1,9 +1,9 @@
-'use client'
+'use client';
 
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { useEffect, useState, useRef } from 'react'
-import { SchoolDashboardLayout } from '../../../components/school/SchoolDashboardLayout'
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState, useRef } from 'react';
+import { SchoolDashboardLayout } from '../../../components/school/SchoolDashboardLayout';
 import {
   SubjectsHeader,
   CreateSubjectForm,
@@ -12,101 +12,110 @@ import {
   AssignTeachersForm,
   TeacherSubjectsTable,
   AssignClassesForm,
-  ClassSubjectsTable
-} from '../../../components/school/subjects'
-import type { CreateSubjectFormRef } from '../../../components/school/subjects/CreateSubjectForm'
-import { useToast } from '../../../hooks/use-toast'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../components/ui/tabs'
+  ClassSubjectsTable,
+} from '../../../components/school/subjects';
+import type { CreateSubjectFormRef } from '../../../components/school/subjects/CreateSubjectForm';
+import { useToast } from '../../../hooks/use-toast';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '../../../components/ui/tabs';
 
 interface Subject {
-  id: string
-  name: string
-  code?: string
-  description?: string
-  status: string
-  createdAt: string
+  id: string;
+  name: string;
+  code?: string;
+  description?: string;
+  status: string;
+  createdAt: string;
   _count: {
-    teachers: number
-    classSubjects: number
-  }
+    teachers: number;
+    classSubjects: number;
+  };
 }
 
 interface Teacher {
-  id: string
-  name: string
-  email: string
-  employeeId: string
+  id: string;
+  name: string;
+  email: string;
+  employeeId: string;
 }
 
 interface Class {
-  id: string
-  name: string
-  section?: string
-  academicYear: string
+  id: string;
+  name: string;
+  section?: string;
+  academicYear: string;
 }
 
 interface TeacherSubjectAssignment {
-  id: string
+  id: string;
   teacher: {
-    id: string
-    name: string
-    email: string
-    employeeId: string
-  }
+    id: string;
+    name: string;
+    email: string;
+    employeeId: string;
+  };
   subject: {
-    id: string
-    name: string
-    code?: string
-  }
-  createdAt: string
+    id: string;
+    name: string;
+    code?: string;
+  };
+  createdAt: string;
 }
 
 interface ClassSubjectAssignment {
-  id: string
+  id: string;
   class: {
-    id: string
-    name: string
-    section?: string
-    academicYear: string
-  }
+    id: string;
+    name: string;
+    section?: string;
+    academicYear: string;
+  };
   teacher: {
-    id: string
-    name: string
-    email: string
-    employeeId: string
-  }
+    id: string;
+    name: string;
+    email: string;
+    employeeId: string;
+  };
   subject: {
-    id: string
-    name: string
-    code?: string
-  }
-  createdAt: string
+    id: string;
+    name: string;
+    code?: string;
+  };
+  createdAt: string;
 }
 
 export default function SubjectsPage() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
-  const [subjects, setSubjects] = useState<Subject[]>([])
-  const [teachers, setTeachers] = useState<Teacher[]>([])
-  const [classes, setClasses] = useState<Class[]>([])
-  const [teacherSubjectAssignments, setTeacherSubjectAssignments] = useState<TeacherSubjectAssignment[]>([])
-  const [classSubjectAssignments, setClassSubjectAssignments] = useState<ClassSubjectAssignment[]>([])
-  const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState('subjects')
-  const [editingSubject, setEditingSubject] = useState<Subject | null>(null)
-  const createSubjectFormRef = useRef<CreateSubjectFormRef>(null)
-  const { toast } = useToast()
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [classes, setClasses] = useState<Class[]>([]);
+  const [teacherSubjectAssignments, setTeacherSubjectAssignments] = useState<
+    TeacherSubjectAssignment[]
+  >([]);
+  const [classSubjectAssignments, setClassSubjectAssignments] = useState<
+    ClassSubjectAssignment[]
+  >([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('subjects');
+  const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
+  const createSubjectFormRef = useRef<CreateSubjectFormRef>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
-    if (status === 'loading') return
-    
+    if (status === 'loading') return;
+
     if (!session || session.user.role !== 'SCHOOL_ADMIN') {
-      router.push('/auth/signin')
-      return
+      router.push('/auth/signin');
+      return;
     }
 
-    fetchInitialData()
-  }, [session, status, router])
+    fetchInitialData();
+  }, [session, status, router]);
 
   const fetchInitialData = async () => {
     try {
@@ -115,101 +124,101 @@ export default function SubjectsPage() {
         fetchTeachers(),
         fetchClasses(),
         fetchTeacherSubjectAssignments(),
-        fetchClassSubjectAssignments()
-      ])
+        fetchClassSubjectAssignments(),
+      ]);
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to load initial data',
         variant: 'destructive',
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const fetchSubjects = async () => {
     try {
-      const response = await fetch('/api/school/subjects')
+      const response = await fetch('/api/school/subjects');
       if (response.ok) {
-        const data = await response.json()
-        setSubjects(data.subjects || [])
+        const data = await response.json();
+        setSubjects(data.subjects || []);
       }
     } catch (error) {
-      console.error('Error fetching subjects:', error)
+      console.error('Error fetching subjects:', error);
     }
-  }
+  };
 
   const fetchTeachers = async () => {
     try {
-      const response = await fetch('/api/school/teachers')
+      const response = await fetch('/api/school/teachers');
       if (response.ok) {
-        const data = await response.json()
-        setTeachers(data.teachers || [])
+        const data = await response.json();
+        setTeachers(data.teachers || []);
       }
     } catch (error) {
-      console.error('Error fetching teachers:', error)
+      console.error('Error fetching teachers:', error);
     }
-  }
+  };
 
   const fetchClasses = async () => {
     try {
-      const response = await fetch('/api/school/classes')
+      const response = await fetch('/api/school/classes');
       if (response.ok) {
-        const data = await response.json()
-        setClasses(data.classes || [])
+        const data = await response.json();
+        setClasses(data.classes || []);
       }
     } catch (error) {
-      console.error('Error fetching classes:', error)
+      console.error('Error fetching classes:', error);
     }
-  }
+  };
 
   const fetchTeacherSubjectAssignments = async () => {
     try {
-      const response = await fetch('/api/school/subjects/assign-teachers')
+      const response = await fetch('/api/school/subjects/assign-teachers');
       if (response.ok) {
-        const data = await response.json()
-        setTeacherSubjectAssignments(data.assignments || [])
+        const data = await response.json();
+        setTeacherSubjectAssignments(data.assignments || []);
       }
     } catch (error) {
-      console.error('Error fetching teacher-subject assignments:', error)
+      console.error('Error fetching teacher-subject assignments:', error);
     }
-  }
+  };
 
   const fetchClassSubjectAssignments = async () => {
     try {
-      const response = await fetch('/api/school/subjects/assign-classes')
+      const response = await fetch('/api/school/subjects/assign-classes');
       if (response.ok) {
-        const data = await response.json()
-        setClassSubjectAssignments(data.assignments || [])
+        const data = await response.json();
+        setClassSubjectAssignments(data.assignments || []);
       }
     } catch (error) {
-      console.error('Error fetching class-subject assignments:', error)
+      console.error('Error fetching class-subject assignments:', error);
     }
-  }
+  };
 
   const handleSubjectCreated = (newSubject: Subject) => {
-    setSubjects(prev => [newSubject, ...prev])
-  }
+    setSubjects(prev => [newSubject, ...prev]);
+  };
 
   const handleSubjectUpdate = (updatedSubject: Subject) => {
-    setSubjects(prev => 
-      prev.map(subject => 
+    setSubjects(prev =>
+      prev.map(subject =>
         subject.id === updatedSubject.id ? updatedSubject : subject
       )
-    )
-    setEditingSubject(null)
-  }
+    );
+    setEditingSubject(null);
+  };
 
   const handleSubjectDelete = (subjectId: string) => {
-    setSubjects(prev => prev.filter(subject => subject.id !== subjectId))
-  }
+    setSubjects(prev => prev.filter(subject => subject.id !== subjectId));
+  };
 
   const handleAssignmentCreated = () => {
-    fetchSubjects() // Refresh subjects to update counts
-    fetchTeacherSubjectAssignments()
-    fetchClassSubjectAssignments()
-  }
+    fetchSubjects(); // Refresh subjects to update counts
+    fetchTeacherSubjectAssignments();
+    fetchClassSubjectAssignments();
+  };
 
   if (status === 'loading' || loading) {
     return (
@@ -221,43 +230,56 @@ export default function SubjectsPage() {
           </div>
         </div>
       </SchoolDashboardLayout>
-    )
+    );
   }
 
   return (
     <SchoolDashboardLayout>
       <div className="space-y-6">
         {/* Header */}
-        <SubjectsHeader 
+        <SubjectsHeader
           onAddSubject={() => {
-            setActiveTab('subjects')
+            setActiveTab('subjects');
             // Focus the form after a short delay to ensure tab switch is complete
             setTimeout(() => {
-              createSubjectFormRef.current?.focus()
-            }, 100)
+              createSubjectFormRef.current?.focus();
+            }, 100);
           }}
-          onExport={() => {/* TODO: Implement export */}}
+          onExport={() => {
+            /* TODO: Implement export */
+          }}
         />
 
         {/* Main Content */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-6"
+        >
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="subjects">Subjects Management</TabsTrigger>
-            <TabsTrigger value="teacher-assignments">Teacher Assignments</TabsTrigger>
-            <TabsTrigger value="class-assignments">Class Assignments</TabsTrigger>
+            <TabsTrigger value="teacher-assignments">
+              Teacher Assignments
+            </TabsTrigger>
+            <TabsTrigger value="class-assignments">
+              Class Assignments
+            </TabsTrigger>
           </TabsList>
 
           {/* Subjects Management Tab */}
           <TabsContent value="subjects" className="space-y-6">
-            <CreateSubjectForm ref={createSubjectFormRef} onSubjectCreated={handleSubjectCreated} />
-            <SubjectsTable 
+            <CreateSubjectForm
+              ref={createSubjectFormRef}
+              onSubjectCreated={handleSubjectCreated}
+            />
+            <SubjectsTable
               subjects={subjects}
               loading={false}
               onSubjectUpdate={setEditingSubject}
               onSubjectDelete={handleSubjectDelete}
               onRefresh={fetchSubjects}
             />
-            
+
             <EditSubjectModal
               subject={editingSubject}
               isOpen={!!editingSubject}
@@ -268,12 +290,12 @@ export default function SubjectsPage() {
 
           {/* Teacher Assignments Tab */}
           <TabsContent value="teacher-assignments" className="space-y-6">
-            <AssignTeachersForm 
+            <AssignTeachersForm
               subjects={subjects.filter(s => s.status === 'ACTIVE')}
               teachers={teachers}
               onAssignmentCreated={handleAssignmentCreated}
             />
-            <TeacherSubjectsTable 
+            <TeacherSubjectsTable
               assignments={teacherSubjectAssignments}
               loading={false}
               onRefresh={handleAssignmentCreated}
@@ -282,12 +304,12 @@ export default function SubjectsPage() {
 
           {/* Class Assignments Tab */}
           <TabsContent value="class-assignments" className="space-y-6">
-            <AssignClassesForm 
+            <AssignClassesForm
               classes={classes}
               teachers={teachers}
               onAssignmentCreated={handleAssignmentCreated}
             />
-            <ClassSubjectsTable 
+            <ClassSubjectsTable
               assignments={classSubjectAssignments}
               loading={false}
               onRefresh={handleAssignmentCreated}
@@ -296,5 +318,5 @@ export default function SubjectsPage() {
         </Tabs>
       </div>
     </SchoolDashboardLayout>
-  )
+  );
 }
