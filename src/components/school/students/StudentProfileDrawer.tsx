@@ -371,7 +371,7 @@ export function StudentProfileDrawer({
                         <div className="flex items-center space-x-2">
                           <Phone className="h-4 w-4 text-gray-400" />
                           <span>
-                            {displayStudent.parentPhone || 'Not specified'}
+                            {'Not specified'}
                           </span>
                         </div>
                       )}
