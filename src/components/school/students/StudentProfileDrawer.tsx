@@ -433,7 +433,7 @@ export function StudentProfileDrawer({
                           onChange={e => setFormData({ ...formData })}
                         />
                       ) : (
-                        <span>{displayStudent.class || 'Not assigned'}</span>
+                        <span>{'Not assigned'}</span>
                       )}
                     </div>
 
