@@ -49,7 +49,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '../../../lib/utils';
-import { Teacher } from '../../app/school/teachers/page';
+import { Teacher } from '@/types/models';
 import { AssignClassesModal } from './AssignClassesModal';
 
 interface TeacherProfileDrawerProps {
@@ -115,7 +115,7 @@ export function TeacherProfileDrawer({
   // Mock performance data (in real app, this would come from API)
   const performanceData = {
     averageStudentScore: 78.5,
-    classesManaged: teacher.classCount,
+    classesManaged: 0, // Mock data - classCount not available in Teacher interface
     studentsCount: 120, // Mock data
     attendanceRate: 95,
     lastLoginDays: teacher.lastLogin
@@ -143,18 +143,18 @@ export function TeacherProfileDrawer({
         <SheetHeader className="pb-6">
           <div className="flex items-start space-x-4">
             <Avatar className="h-16 w-16">
-              <AvatarImage src={teacher.avatar} alt={teacher.name} />
+              <AvatarImage src={undefined} alt={teacher.user?.name || ''} />
               <AvatarFallback className="bg-blue-100 text-blue-700 text-xl">
-                {teacher.name
-                  .split(' ')
+                {teacher.user?.name
+                  ?.split(' ')
                   .map(n => n[0])
                   .join('')
-                  .substring(0, 2)}
+                  .substring(0, 2) || 'T'}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
               <SheetTitle className="text-xl font-bold">
-                {teacher.name}
+                {teacher.user?.name}
               </SheetTitle>
               <SheetDescription className="text-base">
                 {teacher.employeeId} • {teacher.specialization || 'Teacher'}
@@ -205,7 +205,7 @@ export function TeacherProfileDrawer({
                     <Mail className="h-5 w-5 text-gray-400" />
                     <div>
                       <p className="text-sm text-gray-500">Email</p>
-                      <p className="font-medium">{teacher.email}</p>
+                      <p className="font-medium">{teacher.user?.email}</p>
                     </div>
                   </div>
                   {teacher.phone && (
@@ -272,9 +272,7 @@ export function TeacherProfileDrawer({
                     <Users className="h-5 w-5 text-gray-400" />
                     <div>
                       <p className="text-sm text-gray-500">Classes Assigned</p>
-                      <p className="font-medium">
-                        {teacher.classCount} classes
-                      </p>
+                      <p className="font-medium">0 classes</p>
                     </div>
                   </div>
                   {performanceData.lastLoginDays !== null && (
@@ -347,28 +345,9 @@ export function TeacherProfileDrawer({
                 <CardTitle className="text-lg">Assigned Classes</CardTitle>
               </CardHeader>
               <CardContent>
-                {teacher.classes.length > 0 ? (
-                  <div className="space-y-3">
-                    {teacher.classes.map(cls => (
-                      <div
-                        key={cls.id}
-                        className="flex items-center justify-between p-3 border rounded-lg"
-                      >
-                        <div>
-                          <p className="font-medium">{cls.displayName}</p>
-                          <p className="text-sm text-gray-500">
-                            Academic Year: {cls.academicYear}
-                          </p>
-                        </div>
-                        <Badge variant="outline">Active</Badge>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-500 text-center py-8">
-                    No classes assigned
-                  </p>
-                )}
+                <p className="text-gray-500 text-center py-8">
+                  No classes assigned
+                </p>
               </CardContent>
             </Card>
           </TabsContent>

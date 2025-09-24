@@ -22,11 +22,24 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { format } from 'date-fns';
-import { StudentsFilters as FiltersType } from '../../app/school/students/page';
+// Define the filters type locally since it's not exported from the page
+interface StudentsFilters {
+  search: string;
+  class: string;
+  section: string;
+  gender: string;
+  status: string;
+  academicYear: string;
+  dateRange: {
+    from?: Date;
+    to?: Date;
+  };
+  tags: string[];
+}
 
 interface StudentsFiltersProps {
-  filters: FiltersType;
-  onChange: (filters: Partial<FiltersType>) => void;
+  filters: StudentsFilters;
+  onChange: (filters: Partial<StudentsFilters>) => void;
 }
 
 const CLASSES = [
@@ -90,7 +103,7 @@ export function StudentsFilters({ filters, onChange }: StudentsFiltersProps) {
     onChange({ search: value });
   };
 
-  const handleFilterChange = (key: keyof FiltersType, value: any) => {
+  const handleFilterChange = (key: keyof StudentsFilters, value: any) => {
     onChange({ [key]: value });
   };
 

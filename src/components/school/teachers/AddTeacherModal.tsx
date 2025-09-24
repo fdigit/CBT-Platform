@@ -51,7 +51,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { useToast } from '../../../hooks/use-toast';
-import { Teacher } from '../../app/school/teachers/page';
+import { Teacher } from '@/types/models';
 
 const teacherSchema = z.object({
   // Personal Information

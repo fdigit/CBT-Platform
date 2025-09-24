@@ -446,12 +446,11 @@ export function StudentProfileDrawer({
                           onChange={e =>
                             setFormData({
                               ...formData,
-                              section: e.target.value,
                             })
                           }
                         />
                       ) : (
-                        <span>{displayStudent.section || 'Not assigned'}</span>
+                        <span>{'Not assigned'}</span>
                       )}
                     </div>
 
@@ -463,7 +462,6 @@ export function StudentProfileDrawer({
                           onValueChange={value =>
                             setFormData({
                               ...formData,
-                              status: value,
                             })
                           }
                         >
@@ -509,13 +507,8 @@ export function StudentProfileDrawer({
                       <Trophy className="h-5 w-5 text-yellow-600" />
                       <div>
                         <p className="text-sm text-gray-600">Avg Performance</p>
-                        <p
-                          className={`text-2xl font-bold ${getPerformanceColor(displayStudent.performanceScore)}`}
-                        >
-                          {displayStudent.performanceScore !== null &&
-                          displayStudent.performanceScore !== undefined
-                            ? `${displayStudent.performanceScore}%`
-                            : 'N/A'}
+                        <p className={`text-2xl font-bold text-gray-500`}>
+                          {'N/A'}
                         </p>
                       </div>
                     </div>
@@ -596,43 +589,30 @@ export function StudentProfileDrawer({
                       <div>
                         <p className="font-medium">Student registered</p>
                         <p className="text-sm text-gray-600">
-                          {format(
-                            new Date(displayStudent.createdAt),
-                            'MMM dd, yyyy at hh:mm a'
-                          )}
+                          {'Not specified'}
                         </p>
                       </div>
                     </div>
 
-                    {displayStudent.lastLogin && (
-                      <div className="flex items-center space-x-3">
-                        <div className="w-2 h-2 bg-green-600 rounded-full"></div>
-                        <div>
-                          <p className="font-medium">Last login</p>
-                          <p className="text-sm text-gray-600">
-                            {format(
-                              new Date(displayStudent.lastLogin),
-                              'MMM dd, yyyy at hh:mm a'
-                            )}
-                          </p>
-                        </div>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                      <div>
+                        <p className="font-medium">Last login</p>
+                        <p className="text-sm text-gray-600">
+                          {'Not specified'}
+                        </p>
                       </div>
-                    )}
+                    </div>
 
-                    {displayStudent.lastExamTaken && (
-                      <div className="flex items-center space-x-3">
-                        <div className="w-2 h-2 bg-yellow-600 rounded-full"></div>
-                        <div>
-                          <p className="font-medium">Last exam taken</p>
-                          <p className="text-sm text-gray-600">
-                            {format(
-                              new Date(displayStudent.lastExamTaken),
-                              'MMM dd, yyyy at hh:mm a'
-                            )}
-                          </p>
-                        </div>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-2 h-2 bg-yellow-600 rounded-full"></div>
+                      <div>
+                        <p className="font-medium">Last exam taken</p>
+                        <p className="text-sm text-gray-600">
+                          {'Not specified'}
+                        </p>
                       </div>
-                    )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>

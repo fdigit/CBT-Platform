@@ -25,7 +25,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '../../../lib/utils';
-import { TeachersFilters as FiltersType } from '../../app/school/teachers/page';
+import { TeachersFilters as FiltersType } from '@/app/school/teachers/page';
 
 interface TeachersFiltersProps {
   filters: FiltersType;

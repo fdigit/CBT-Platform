@@ -13,31 +13,7 @@ import { AddTeacherModal } from '../../../components/school/teachers/AddTeacherM
 import { TeacherProfileDrawer } from '../../../components/school/teachers/TeacherProfileDrawer';
 import { BulkUploadModal } from '../../../components/school/teachers/BulkUploadModal';
 
-export interface Teacher {
-  id: string;
-  employeeId: string;
-  name: string;
-  email: string;
-  qualification?: string;
-  specialization?: string;
-  experience?: number;
-  phone?: string;
-  address?: string;
-  avatar?: string;
-  status: 'ACTIVE' | 'SUSPENDED' | 'TERMINATED' | 'ON_LEAVE';
-  hireDate?: string;
-  lastLogin?: string;
-  classCount: number;
-  classes: Array<{
-    id: string;
-    name: string;
-    section?: string;
-    academicYear: string;
-    displayName: string;
-  }>;
-  createdAt: string;
-  updatedAt: string;
-}
+import { Teacher } from '@/types/models';
 
 export interface TeachersFilters {
   search: string;

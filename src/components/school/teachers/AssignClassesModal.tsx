@@ -12,7 +12,7 @@ import { Checkbox } from '../../ui/checkbox';
 import { Badge } from '../../ui/badge';
 import { Input } from '../../ui/input';
 import { useToast } from '../../../hooks/use-toast';
-import { Teacher } from '../../app/school/teachers/page';
+import { Teacher } from '@/types/models';
 import { Users, Search, BookOpen } from 'lucide-react';
 
 interface AssignClassesModalProps {
@@ -169,7 +169,7 @@ export function AssignClassesModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
-          <DialogTitle>Assign Classes to {teacher.name}</DialogTitle>
+          <DialogTitle>Assign Classes to {teacher.user?.name}</DialogTitle>
           <p className="text-sm text-gray-600">
             Select classes to assign to this teacher. Currently assigned to{' '}
             {currentlyAssignedCount} class

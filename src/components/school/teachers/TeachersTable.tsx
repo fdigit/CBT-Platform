@@ -54,7 +54,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '../../../lib/utils';
-import { Teacher } from '../../app/school/teachers/page';
+import { Teacher } from '@/types/models';
 
 interface TeachersTableProps {
   teachers: Teacher[];
@@ -344,27 +344,32 @@ export function TeachersTable({
                         handleSelectTeacher(teacher.id, checked as boolean)
                       }
                       onClick={e => e.stopPropagation()}
-                      aria-label={`Select ${teacher.name}`}
+                      aria-label={`Select ${teacher.user?.name}`}
                     />
                   </TableCell>
                   <TableCell>
                     <Avatar className="h-10 w-10">
-                      <AvatarImage src={teacher.avatar} alt={teacher.name} />
+                      <AvatarImage
+                        src={undefined}
+                        alt={teacher.user?.name || ''}
+                      />
                       <AvatarFallback className="bg-blue-100 text-blue-700">
-                        {teacher.name
-                          .split(' ')
+                        {teacher.user?.name
+                          ?.split(' ')
                           .map(n => n[0])
                           .join('')
-                          .substring(0, 2)}
+                          .substring(0, 2) || 'T'}
                       </AvatarFallback>
                     </Avatar>
                   </TableCell>
                   <TableCell>
                     <div>
                       <p className="font-medium text-gray-900">
-                        {teacher.name}
+                        {teacher.user?.name}
                       </p>
-                      <p className="text-sm text-gray-500">{teacher.email}</p>
+                      <p className="text-sm text-gray-500">
+                        {teacher.user?.email}
+                      </p>
                       {teacher.specialization && (
                         <p className="text-xs text-blue-600">
                           {teacher.specialization}
@@ -381,22 +386,11 @@ export function TeachersTable({
                     <div className="space-y-1">
                       <div className="flex items-center text-sm">
                         <GraduationCap className="h-4 w-4 mr-1 text-gray-400" />
-                        <span>{teacher.classCount} classes</span>
+                        <span>0 classes</span>
                       </div>
-                      {teacher.classes.slice(0, 2).map(cls => (
-                        <Badge
-                          key={cls.id}
-                          variant="outline"
-                          className="text-xs"
-                        >
-                          {cls.displayName}
-                        </Badge>
-                      ))}
-                      {teacher.classes.length > 2 && (
-                        <Badge variant="outline" className="text-xs">
-                          +{teacher.classes.length - 2} more
-                        </Badge>
-                      )}
+                      <Badge variant="outline" className="text-xs">
+                        No classes assigned
+                      </Badge>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -412,7 +406,7 @@ export function TeachersTable({
                       <div className="flex items-center text-sm text-gray-600">
                         <Mail className="h-4 w-4 mr-2" />
                         <span className="truncate max-w-[120px]">
-                          {teacher.email}
+                          {teacher.user?.email}
                         </span>
                       </div>
                       {teacher.phone && (
@@ -502,13 +496,13 @@ export function TeachersTable({
               <CardContent className="p-4">
                 <div className="flex items-start space-x-4">
                   <Avatar className="h-12 w-12">
-                    <AvatarImage src={teacher.avatar} alt={teacher.name} />
+                    <AvatarImage src={undefined} alt={teacher.user?.name || ''} />
                     <AvatarFallback className="bg-blue-100 text-blue-700">
-                      {teacher.name
-                        .split(' ')
+                      {teacher.user?.name
+                        ?.split(' ')
                         .map(n => n[0])
                         .join('')
-                        .substring(0, 2)}
+                        .substring(0, 2) || 'T'}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">

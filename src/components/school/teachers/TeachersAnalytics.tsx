@@ -14,7 +14,7 @@ import {
   BarChart3,
   TrendingUp,
 } from 'lucide-react';
-import { TeachersStats } from '../../app/school/teachers/page';
+import { TeachersStats } from '@/app/school/teachers/page';
 
 interface TeachersAnalyticsProps {
   stats: TeachersStats;

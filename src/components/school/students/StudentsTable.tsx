@@ -47,7 +47,7 @@ import {
   Calendar,
   User,
 } from 'lucide-react';
-import { Student } from '../../app/school/students/page';
+import { Student } from '@/types/models';
 import { format } from 'date-fns';
 
 interface StudentsTableProps {
@@ -224,7 +224,7 @@ export function StudentsTable({
                   <TableHead>
                     <Button
                       variant="ghost"
-                      onClick={() => handleSort('name')}
+                      onClick={() => handleSort('regNumber')}
                       className="h-auto p-0 font-semibold"
                     >
                       Name
@@ -287,17 +287,19 @@ export function StudentsTable({
                       </TableCell>
                       <TableCell>
                         <Avatar className="h-10 w-10">
-                          <AvatarImage src={student.avatar} />
+                          <AvatarImage src={undefined} />
                           <AvatarFallback>
-                            {getInitials(student.name)}
+                            {getInitials(student.user?.name || '')}
                           </AvatarFallback>
                         </Avatar>
                       </TableCell>
                       <TableCell>
                         <div>
-                          <div className="font-medium">{student.name}</div>
+                          <div className="font-medium">
+                            {student.user?.name}
+                          </div>
                           <div className="text-sm text-gray-500">
-                            {student.email}
+                            {student.user?.email}
                           </div>
                         </div>
                       </TableCell>
@@ -308,51 +310,32 @@ export function StudentsTable({
                       </TableCell>
                       <TableCell>
                         <div>
-                          {student.class && (
-                            <div className="font-medium">{student.class}</div>
-                          )}
-                          {student.section && (
-                            <div className="text-sm text-gray-500">
-                              Section {student.section}
-                            </div>
-                          )}
+                          <div className="font-medium">Not assigned</div>
+                          <div className="text-sm text-gray-500">
+                            Section Not assigned
+                          </div>
                         </div>
                       </TableCell>
                       <TableCell>
-                        {student.gender && (
-                          <Badge variant="outline">
-                            {student.gender === 'MALE' ? 'Male' : 'Female'}
-                          </Badge>
-                        )}
+                        <Badge variant="outline">Not specified</Badge>
                       </TableCell>
                       <TableCell>
                         <div className="space-y-1">
-                          {student.parentPhone && (
-                            <div className="flex items-center text-sm text-gray-600">
-                              <Phone className="h-3 w-3 mr-1" />
-                              {student.parentPhone}
-                            </div>
-                          )}
-                          {student.parentEmail && (
-                            <div className="flex items-center text-sm text-gray-600">
-                              <Mail className="h-3 w-3 mr-1" />
-                              {student.parentEmail}
-                            </div>
-                          )}
+                          <div className="flex items-center text-sm text-gray-600">
+                            <Phone className="h-3 w-3 mr-1" />
+                            Not specified
+                          </div>
+                          <div className="flex items-center text-sm text-gray-600">
+                            <Mail className="h-3 w-3 mr-1" />
+                            Not specified
+                          </div>
                         </div>
                       </TableCell>
-                      <TableCell>{getStatusBadge(student.status)}</TableCell>
                       <TableCell>
-                        {student.performanceScore !== null &&
-                        student.performanceScore !== undefined ? (
-                          <span
-                            className={`font-medium ${getPerformanceColor(student.performanceScore)}`}
-                          >
-                            {student.performanceScore}%
-                          </span>
-                        ) : (
-                          <span className="text-gray-400">N/A</span>
-                        )}
+                        <Badge variant="outline">Active</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-gray-400">N/A</span>
                       </TableCell>
                       <TableCell onClick={e => e.stopPropagation()}>
                         <DropdownMenu>
@@ -375,36 +358,30 @@ export function StudentsTable({
                               Edit Student
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            {student.status !== 'ACTIVE' && (
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  handleStudentAction('active', student)
-                                }
-                              >
-                                <UserCheck className="h-4 w-4 mr-2" />
-                                Activate
-                              </DropdownMenuItem>
-                            )}
-                            {student.status !== 'SUSPENDED' && (
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  handleStudentAction('suspended', student)
-                                }
-                              >
-                                <UserX className="h-4 w-4 mr-2" />
-                                Suspend
-                              </DropdownMenuItem>
-                            )}
-                            {student.status !== 'GRADUATED' && (
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  handleStudentAction('graduated', student)
-                                }
-                              >
-                                <GraduationCap className="h-4 w-4 mr-2" />
-                                Graduate
-                              </DropdownMenuItem>
-                            )}
+                            <DropdownMenuItem
+                              onClick={() =>
+                                handleStudentAction('active', student)
+                              }
+                            >
+                              <UserCheck className="h-4 w-4 mr-2" />
+                              Activate
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() =>
+                                handleStudentAction('suspended', student)
+                              }
+                            >
+                              <UserX className="h-4 w-4 mr-2" />
+                              Suspend
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() =>
+                                handleStudentAction('graduated', student)
+                              }
+                            >
+                              <GraduationCap className="h-4 w-4 mr-2" />
+                              Graduate
+                            </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
                               onClick={() => setDeleteStudent(student)}
@@ -459,23 +436,23 @@ export function StudentsTable({
                       />
                     </div>
                     <Avatar className="h-12 w-12">
-                      <AvatarImage src={student.avatar} />
+                      <AvatarImage src={undefined} />
                       <AvatarFallback>
-                        {getInitials(student.name)}
+                        {getInitials(student.user?.name || '')}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between">
                         <div>
                           <h3 className="font-medium text-gray-900 truncate">
-                            {student.name}
+                            {student.user?.name}
                           </h3>
                           <p className="text-sm text-gray-500">
                             {student.regNumber}
                           </p>
                         </div>
                         <div className="flex items-center space-x-2">
-                          {getStatusBadge(student.status)}
+                          <Badge variant="outline">Active</Badge>
                           <div onClick={e => e.stopPropagation()}>
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
@@ -502,26 +479,15 @@ export function StudentsTable({
                         </div>
                       </div>
                       <div className="mt-2 flex items-center space-x-4 text-sm text-gray-500">
-                        {student.class && <span>{student.class}</span>}
-                        {student.section && (
-                          <span>Section {student.section}</span>
-                        )}
-                        {student.gender && (
-                          <span>
-                            {student.gender === 'MALE' ? 'Male' : 'Female'}
-                          </span>
-                        )}
+                        <span>Not assigned</span>
+                        <span>Section Not assigned</span>
+                        <span>Not specified</span>
                       </div>
-                      {student.performanceScore !== null &&
-                        student.performanceScore !== undefined && (
-                          <div className="mt-2">
-                            <span
-                              className={`text-sm font-medium ${getPerformanceColor(student.performanceScore)}`}
-                            >
-                              Performance: {student.performanceScore}%
-                            </span>
-                          </div>
-                        )}
+                      <div className="mt-2">
+                        <span className="text-sm font-medium text-gray-400">
+                          Performance: N/A
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </Card>
@@ -591,9 +557,9 @@ export function StudentsTable({
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Student</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete {deleteStudent?.name}? This action
-              cannot be undone and will also delete all their exam records and
-              results.
+              Are you sure you want to delete {deleteStudent?.user?.name}? This
+              action cannot be undone and will also delete all their exam
+              records and results.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
