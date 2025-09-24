@@ -496,7 +496,10 @@ export function TeachersTable({
               <CardContent className="p-4">
                 <div className="flex items-start space-x-4">
                   <Avatar className="h-12 w-12">
-                    <AvatarImage src={undefined} alt={teacher.user?.name || ''} />
+                    <AvatarImage
+                      src={undefined}
+                      alt={teacher.user?.name || ''}
+                    />
                     <AvatarFallback className="bg-blue-100 text-blue-700">
                       {teacher.user?.name
                         ?.split(' ')
@@ -509,7 +512,7 @@ export function TeachersTable({
                     <div className="flex items-start justify-between">
                       <div>
                         <h3 className="font-medium text-gray-900 truncate">
-                          {teacher.name}
+                          {teacher.user?.name}
                         </h3>
                         <p className="text-sm text-gray-500">
                           {teacher.employeeId}
@@ -529,7 +532,7 @@ export function TeachersTable({
                     <div className="mt-2 space-y-1">
                       <div className="flex items-center text-sm text-gray-600">
                         <Mail className="h-4 w-4 mr-2" />
-                        <span className="truncate">{teacher.email}</span>
+                        <span className="truncate">{teacher.user?.email}</span>
                       </div>
                       {teacher.phone && (
                         <div className="flex items-center text-sm text-gray-600">
@@ -539,7 +542,7 @@ export function TeachersTable({
                       )}
                       <div className="flex items-center text-sm text-gray-600">
                         <GraduationCap className="h-4 w-4 mr-2" />
-                        <span>{teacher.classCount} classes</span>
+                        <span>0 classes</span>
                       </div>
                     </div>
 
