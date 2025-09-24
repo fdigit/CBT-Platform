@@ -395,7 +395,7 @@ export function TeachersFilters({ filters, onChange }: TeachersFiltersProps) {
                 variant="secondary"
                 className="flex items-center space-x-1"
               >
-                <span>Search: "{filters.search}"</span>
+                <span>Search: &quot;{filters.search}&quot;</span>
                 <X
                   className="h-3 w-3 cursor-pointer"
                   onClick={() => onChange({ search: '' })}

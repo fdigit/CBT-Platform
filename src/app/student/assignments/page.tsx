@@ -826,7 +826,7 @@ export default function StudentAssignments() {
                 <DialogHeader>
                   <DialogTitle>Submit Assignment</DialogTitle>
                   <DialogDescription>
-                    Submit your work for "{selectedAssignment.title}"
+                    Submit your work for &quot;{selectedAssignment.title}&quot;
                   </DialogDescription>
                 </DialogHeader>
 

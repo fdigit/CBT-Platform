@@ -492,8 +492,8 @@ export function TeacherProfileDrawer({
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                           A new temporary password will be generated and sent to
-                          the teacher's email address. They will be required to
-                          change it on their next login.
+                          the teacher&apos;s email address. They will be
+                          required to change it on their next login.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>

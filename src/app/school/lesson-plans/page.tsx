@@ -3,12 +3,7 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '../../../components/ui/card';
+import { Card, CardContent } from '../../../components/ui/card';
 import { Button } from '../../../components/ui/button';
 import { Badge } from '../../../components/ui/badge';
 import { Input } from '../../../components/ui/input';
@@ -46,14 +41,11 @@ import {
 import {
   FileText,
   Search,
-  Filter,
   Eye,
   CheckCircle,
-  XCircle,
   Clock,
   Calendar,
   User,
-  BookOpen,
   AlertTriangle,
   MessageSquare,
   Download,
@@ -939,7 +931,7 @@ export default function SchoolLessonPlans() {
                 <DialogHeader>
                   <DialogTitle>Review Lesson Plan</DialogTitle>
                   <DialogDescription>
-                    Provide feedback for "{selectedLesson.title}" by{' '}
+                    Provide feedback for &quot;{selectedLesson.title}&quot; by{' '}
                     {selectedLesson.teacherName}
                   </DialogDescription>
                 </DialogHeader>

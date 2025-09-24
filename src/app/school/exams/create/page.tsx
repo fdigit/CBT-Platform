@@ -332,7 +332,8 @@ export default function CreateExamPage() {
               {questions.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
                   <p>
-                    No questions added yet. Click "Add Question" to get started.
+                    No questions added yet. Click &quot;Add Question&quot; to
+                    get started.
                   </p>
                 </div>
               ) : (

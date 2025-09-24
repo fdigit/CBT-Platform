@@ -249,7 +249,7 @@ export function AddTeacherModal({
             <span>Add New Teacher</span>
           </DialogTitle>
           <DialogDescription>
-            Fill in the teacher's information to create a new account. All
+            Fill in the teacher&apos;s information to create a new account. All
             fields marked with * are required.
           </DialogDescription>
         </DialogHeader>

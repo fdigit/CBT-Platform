@@ -313,7 +313,7 @@ export default function ExamResultsPage({
               No Results Found
             </h2>
             <p className="text-gray-600 mb-6">
-              This exam doesn't have any results yet.
+              This exam doesn&apos;t have any results yet.
             </p>
             <Button onClick={() => router.back()}>
               <ArrowLeft className="h-4 w-4 mr-2" />

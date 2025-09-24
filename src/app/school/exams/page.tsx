@@ -425,8 +425,8 @@ export default function ExamsPage() {
                   No Exams Yet
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  Teachers haven't created any exams yet, or create your own
-                  exam
+                  Teachers haven&apos;t created any exams yet, or create your
+                  own exam
                 </p>
                 <Button
                   onClick={() => router.push('/school/exams/create')}

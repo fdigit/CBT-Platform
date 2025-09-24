@@ -358,7 +358,7 @@ export default function SupportPage() {
                   <span>Submit a Support Ticket</span>
                 </CardTitle>
                 <CardDescription>
-                  Describe your issue and we'll get back to you as soon as
+                  Describe your issue and we&apos;ll get back to you as soon as
                   possible
                 </CardDescription>
               </CardHeader>

@@ -538,7 +538,7 @@ export function BulkUploadModal({
                 <span>Upload Complete</span>
               </DialogTitle>
               <DialogDescription>
-                Here's a summary of the bulk upload results.
+                Here&apos;s a summary of the bulk upload results.
               </DialogDescription>
             </DialogHeader>
 

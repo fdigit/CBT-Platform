@@ -305,7 +305,7 @@ export function TeacherDashboardOverview() {
             Teacher Dashboard
           </h1>
           <p className="text-gray-600 mt-1">
-            Welcome back! Here's your teaching overview.
+            Welcome back! Here&apos;s your teaching overview.
           </p>
         </div>
         <div className="mt-4 sm:mt-0 flex items-center space-x-4">
@@ -451,7 +451,7 @@ export function TeacherDashboardOverview() {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Calendar className="h-5 w-5" />
-              <span>Today's Schedule</span>
+              <span>Today&apos;s Schedule</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
