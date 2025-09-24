@@ -392,7 +392,7 @@ export function StudentProfileDrawer({
                         <div className="flex items-center space-x-2">
                           <Mail className="h-4 w-4 text-gray-400" />
                           <span>
-                            {displayStudent.parentEmail || 'Not specified'}
+                            {'Not specified'}
                           </span>
                         </div>
                       )}
