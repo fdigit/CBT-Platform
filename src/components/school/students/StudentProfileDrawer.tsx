@@ -409,7 +409,7 @@ export function StudentProfileDrawer({
                     ) : (
                       <div className="flex items-start space-x-2">
                         <MapPin className="h-4 w-4 text-gray-400 mt-0.5" />
-                        <span>{displayStudent.address || 'Not specified'}</span>
+                        <span>{'Not specified'}</span>
                       </div>
                     )}
                   </div>
