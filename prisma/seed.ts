@@ -62,6 +62,22 @@ async function main() {
 
   console.log('✅ School Admin created:', schoolAdmin.email);
 
+  // Create Sample Teacher
+  const teacherPassword = await bcrypt.hash('admin123', 12);
+  const teacher = await prisma.user.upsert({
+    where: { email: 'teacher1@littleteddies.com' },
+    update: {},
+    create: {
+      email: 'teacher1@littleteddies.com',
+      password: teacherPassword,
+      name: 'Mrs. Sarah Johnson',
+      role: 'TEACHER',
+      schoolId: school.id,
+    },
+  });
+
+  console.log('✅ Teacher created:', teacher.email);
+
   // Create Sample Students
   const studentPassword = await bcrypt.hash('student123', 12);
   const students = [
