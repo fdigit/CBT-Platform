@@ -35,11 +35,15 @@ export async function GET(
       include: {
         teachers: {
           include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
+            teacher: {
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                  },
+                },
               },
             },
           },
@@ -68,11 +72,11 @@ export async function GET(
       status: classItem.status,
       studentCount: classItem._count.students,
       examCount: classItem._count.exams,
-      teachers: classItem.teachers.map(teacher => ({
-        id: teacher.id,
-        name: teacher.user.name,
-        email: teacher.user.email,
-        employeeId: teacher.employeeId,
+      teachers: classItem.teachers.map(teacherClass => ({
+        id: teacherClass.teacher.id,
+        name: teacherClass.teacher.user.name,
+        email: teacherClass.teacher.user.email,
+        employeeId: teacherClass.teacher.employeeId,
       })),
       createdAt: classItem.createdAt.toISOString(),
       updatedAt: classItem.updatedAt.toISOString(),
