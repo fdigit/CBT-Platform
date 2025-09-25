@@ -37,7 +37,10 @@ import {
   GraduationCap,
   Settings,
   HelpCircle,
+  Upload,
+  X,
 } from 'lucide-react';
+import { QuestionFileUpload } from '../../../../components/teacher/QuestionFileUpload';
 
 interface Question {
   id: string;
@@ -99,6 +102,7 @@ export default function CreateExamPage() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [subjects, setSubjects] = useState<any[]>([]);
   const [classes, setClasses] = useState<any[]>([]);
+  const [showFileUpload, setShowFileUpload] = useState(false);
   const { toast } = useToast();
 
   const [examData, setExamData] = useState<ExamData>({
@@ -201,6 +205,19 @@ export default function CreateExamPage() {
 
   const removeQuestion = (id: string) => {
     setQuestions(questions.filter(q => q.id !== id));
+  };
+
+  const handleQuestionsImported = (importedQuestions: Question[]) => {
+    // Add imported questions to existing questions
+    const newQuestions = [...questions, ...importedQuestions];
+    setQuestions(newQuestions);
+
+    toast({
+      title: 'Questions imported successfully',
+      description: `Added ${importedQuestions.length} questions to your exam`,
+    });
+
+    setShowFileUpload(false);
   };
 
   const addOption = (questionId: string) => {
@@ -711,10 +728,19 @@ export default function CreateExamPage() {
                 </CardTitle>
                 <CardDescription>Add questions to your exam</CardDescription>
               </div>
-              <Button onClick={addQuestion}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Question
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowFileUpload(true)}
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  Upload from File
+                </Button>
+                <Button onClick={addQuestion}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Question
+                </Button>
+              </div>
             </div>
           </CardHeader>
           <CardContent>
@@ -722,10 +748,19 @@ export default function CreateExamPage() {
               <div className="text-center py-8">
                 <HelpCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-500 mb-4">No questions added yet</p>
-                <Button onClick={addQuestion}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Your First Question
-                </Button>
+                <div className="flex gap-2 justify-center">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowFileUpload(true)}
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload from File
+                  </Button>
+                  <Button onClick={addQuestion}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Your First Question
+                  </Button>
+                </div>
               </div>
             ) : (
               <div className="space-y-6">
@@ -959,6 +994,31 @@ export default function CreateExamPage() {
             Create & Submit for Approval
           </Button>
         </div>
+
+        {/* File Upload Modal */}
+        {showFileUpload && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-semibold">
+                    Upload Questions from File
+                  </h2>
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowFileUpload(false)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+                <QuestionFileUpload
+                  onQuestionsParsed={handleQuestionsImported}
+                  onClose={() => setShowFileUpload(false)}
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </TeacherDashboardLayout>
   );

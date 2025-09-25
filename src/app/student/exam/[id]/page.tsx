@@ -46,6 +46,8 @@ export default function ExamPage({
   const [timeLeft, setTimeLeft] = useState(0);
   const [loading, setLoading] = useState(true);
   const [examId, setExamId] = useState<string>('');
+  const [attemptId, setAttemptId] = useState<string>('');
+  const [startTime, setStartTime] = useState<Date | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -82,36 +84,39 @@ export default function ExamPage({
 
   const fetchExam = async (id: string) => {
     try {
-      const response = await fetch(`/api/exams/${id}`);
+      const response = await fetch(`/api/student/exams/${id}/start`, {
+        method: 'POST',
+      });
       if (response.ok) {
-        const examData = await response.json();
+        const responseData = await response.json();
 
-        // Check if exam is available for students
-        const now = new Date();
-        const startTime = new Date(examData.startTime);
-        const endTime = new Date(examData.endTime);
+        // The start endpoint returns exam data in a nested structure
+        const examData = responseData.exam;
+        const questions = responseData.questions;
+        const timeRemaining = responseData.timeRemaining;
 
-        const isExamAvailable =
-          examData.is_live || (now >= startTime && now <= endTime);
+        setExam({
+          id: examData.id,
+          title: examData.title,
+          description: examData.description,
+          startTime: examData.startTime,
+          endTime: examData.endTime,
+          duration: examData.duration,
+          is_live: true, // If we can start the exam, it's live
+          questions: questions || [],
+        });
 
-        if (!isExamAvailable) {
-          toast({
-            title: 'Exam Not Available',
-            description: examData.is_live
-              ? 'This exam is currently offline.'
-              : `This exam is scheduled from ${startTime.toLocaleString()} to ${endTime.toLocaleString()}.`,
-            variant: 'destructive',
-          });
-          router.push('/student');
-          return;
-        }
+        // Set attempt ID and start time
+        setAttemptId(responseData.attempt.id);
+        setStartTime(new Date());
 
-        setExam(examData);
-        setTimeLeft(examData.duration * 60); // Convert minutes to seconds
+        // Set time remaining from the response
+        setTimeLeft(Math.floor(timeRemaining / 1000));
       } else {
+        const errorData = await response.json();
         toast({
-          title: 'Error',
-          description: 'Failed to load exam',
+          title: 'Exam Not Available',
+          description: errorData.error || 'Failed to start exam',
           variant: 'destructive',
         });
         router.push('/student');

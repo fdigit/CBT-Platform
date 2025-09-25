@@ -379,7 +379,7 @@ export default function TakeExamPage() {
               {question.options?.map((option, index) => (
                 <div key={index} className="flex items-center space-x-2">
                   <RadioGroupItem
-                    value={index.toString()}
+                    value={option}
                     id={`${question.id}-${index}`}
                   />
                   <Label

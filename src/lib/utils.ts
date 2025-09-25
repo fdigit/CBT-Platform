@@ -43,10 +43,23 @@ export function calculateScore(answers: any[], questions: any[]) {
     const answer = answers.find(a => a.questionId === question.id);
 
     if (answer && question.type === 'MCQ') {
-      if (
-        JSON.stringify(answer.response) ===
-        JSON.stringify(question.correctAnswer)
-      ) {
+      // For MCQ, compare the response with the correct answer
+      // Handle both option index and option text responses
+      let studentAnswer = answer.response;
+
+      // If response is a number or string number (option index), get the actual option text
+      if (question.options && Array.isArray(question.options)) {
+        const optionIndex = parseInt(studentAnswer);
+        if (
+          !isNaN(optionIndex) &&
+          optionIndex >= 0 &&
+          optionIndex < question.options.length
+        ) {
+          studentAnswer = question.options[optionIndex];
+        }
+      }
+
+      if (studentAnswer === question.correctAnswer) {
         score += question.points;
       }
     } else if (answer && question.type === 'TRUE_FALSE') {

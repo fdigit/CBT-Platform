@@ -148,14 +148,15 @@ export async function POST(
       }
 
       // Compare the actual option value with correct answer
-      if (
+      if (typeof correctAnswer === 'string') {
+        // For MCQ, compare with the actual option text
+        isCorrect = studentAnswer === correctAnswer;
+      } else if (
         correctAnswer &&
         typeof correctAnswer === 'object' &&
         'answer' in correctAnswer
       ) {
         isCorrect = studentAnswer === (correctAnswer as any).answer;
-      } else if (typeof correctAnswer === 'string') {
-        isCorrect = studentAnswer === correctAnswer;
       }
 
       if (isCorrect) {
