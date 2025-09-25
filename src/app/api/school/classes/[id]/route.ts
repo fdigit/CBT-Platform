@@ -177,11 +177,15 @@ export async function PUT(
       include: {
         teachers: {
           include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
+            teacher: {
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                  },
+                },
               },
             },
           },
@@ -206,11 +210,11 @@ export async function PUT(
       status: updatedClass.status,
       studentCount: updatedClass._count.students,
       examCount: updatedClass._count.exams,
-      teachers: updatedClass.teachers.map(teacher => ({
-        id: teacher.id,
-        name: teacher.user.name,
-        email: teacher.user.email,
-        employeeId: teacher.employeeId,
+      teachers: updatedClass.teachers.map(teacherClass => ({
+        id: teacherClass.teacher.id,
+        name: teacherClass.teacher.user.name,
+        email: teacherClass.teacher.user.email,
+        employeeId: teacherClass.teacher.employeeId,
       })),
       createdAt: updatedClass.createdAt.toISOString(),
       updatedAt: updatedClass.updatedAt.toISOString(),

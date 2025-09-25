@@ -56,11 +56,15 @@ export async function GET(request: NextRequest) {
       include: {
         teachers: {
           include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
+            teacher: {
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                  },
+                },
               },
             },
           },
@@ -92,11 +96,11 @@ export async function GET(request: NextRequest) {
       status: classItem.status,
       studentCount: classItem._count.students,
       examCount: classItem._count.exams,
-      teachers: classItem.teachers.map(teacher => ({
-        id: teacher.id,
-        name: teacher.user.name,
-        email: teacher.user.email,
-        employeeId: teacher.employeeId,
+      teachers: classItem.teachers.map(teacherClass => ({
+        id: teacherClass.teacher.id,
+        name: teacherClass.teacher.user.name,
+        email: teacherClass.teacher.user.email,
+        employeeId: teacherClass.teacher.employeeId,
       })),
       createdAt: classItem.createdAt.toISOString(),
       updatedAt: classItem.updatedAt.toISOString(),
@@ -187,11 +191,15 @@ export async function POST(request: NextRequest) {
       include: {
         teachers: {
           include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
+            teacher: {
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                  },
+                },
               },
             },
           },
@@ -216,11 +224,11 @@ export async function POST(request: NextRequest) {
       status: newClass.status,
       studentCount: newClass._count.students,
       examCount: newClass._count.exams,
-      teachers: newClass.teachers.map(teacher => ({
-        id: teacher.id,
-        name: teacher.user.name,
-        email: teacher.user.email,
-        employeeId: teacher.employeeId,
+      teachers: newClass.teachers.map(teacherClass => ({
+        id: teacherClass.teacher.id,
+        name: teacherClass.teacher.user.name,
+        email: teacherClass.teacher.user.email,
+        employeeId: teacherClass.teacher.employeeId,
       })),
       createdAt: newClass.createdAt.toISOString(),
       updatedAt: newClass.updatedAt.toISOString(),
