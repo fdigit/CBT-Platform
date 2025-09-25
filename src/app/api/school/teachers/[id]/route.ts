@@ -45,11 +45,15 @@ export async function GET(
           },
         },
         classes: {
-          select: {
-            id: true,
-            name: true,
-            section: true,
-            academicYear: true,
+          include: {
+            class: {
+              select: {
+                id: true,
+                name: true,
+                section: true,
+                academicYear: true,
+              },
+            },
           },
         },
         _count: {
@@ -82,12 +86,12 @@ export async function GET(
       lastLogin: teacher.lastLogin?.toISOString(),
       avatar: teacher.avatar,
       classCount: teacher._count.classes,
-      classes: teacher.classes.map(cls => ({
-        id: cls.id,
-        name: cls.name,
-        section: cls.section,
-        academicYear: cls.academicYear,
-        displayName: `${cls.name}${cls.section ? ` - ${cls.section}` : ''} (${cls.academicYear})`,
+      classes: teacher.classes.map(teacherClass => ({
+        id: teacherClass.class.id,
+        name: teacherClass.class.name,
+        section: teacherClass.class.section,
+        academicYear: teacherClass.class.academicYear,
+        displayName: `${teacherClass.class.name}${teacherClass.class.section ? ` - ${teacherClass.class.section}` : ''} (${teacherClass.class.academicYear})`,
       })),
       createdAt: teacher.user.createdAt.toISOString(),
       updatedAt: teacher.user.updatedAt.toISOString(),
@@ -235,12 +239,12 @@ export async function PUT(
       lastLogin: result.lastLogin?.toISOString(),
       avatar: result.avatar,
       classCount: result._count.classes,
-      classes: result.classes.map(cls => ({
-        id: cls.id,
-        name: cls.name,
-        section: cls.section,
-        academicYear: cls.academicYear,
-        displayName: `${cls.name}${cls.section ? ` - ${cls.section}` : ''} (${cls.academicYear})`,
+      classes: result.classes.map(teacherClass => ({
+        id: teacherClass.class.id,
+        name: teacherClass.class.name,
+        section: teacherClass.class.section,
+        academicYear: teacherClass.class.academicYear,
+        displayName: `${teacherClass.class.name}${teacherClass.class.section ? ` - ${teacherClass.class.section}` : ''} (${teacherClass.class.academicYear})`,
       })),
       createdAt: result.user.createdAt.toISOString(),
       updatedAt: result.user.updatedAt.toISOString(),

@@ -97,11 +97,15 @@ export async function POST(
           },
         },
         classes: {
-          select: {
-            id: true,
-            name: true,
-            section: true,
-            academicYear: true,
+          include: {
+            class: {
+              select: {
+                id: true,
+                name: true,
+                section: true,
+                academicYear: true,
+              },
+            },
           },
         },
       },
@@ -129,12 +133,12 @@ export async function POST(
       hireDate: updatedTeacher.hireDate?.toISOString(),
       lastLogin: updatedTeacher.lastLogin?.toISOString(),
       classCount: updatedTeacher.classes.length,
-      classes: updatedTeacher.classes.map(cls => ({
-        id: cls.id,
-        name: cls.name,
-        section: cls.section,
-        academicYear: cls.academicYear,
-        displayName: `${cls.name}${cls.section ? ` - ${cls.section}` : ''}`,
+      classes: updatedTeacher.classes.map(teacherClass => ({
+        id: teacherClass.class.id,
+        name: teacherClass.class.name,
+        section: teacherClass.class.section,
+        academicYear: teacherClass.class.academicYear,
+        displayName: `${teacherClass.class.name}${teacherClass.class.section ? ` - ${teacherClass.class.section}` : ''}`,
       })),
       createdAt: updatedTeacher.user.createdAt.toISOString(),
       updatedAt: updatedTeacher.user.updatedAt.toISOString(),
@@ -185,14 +189,18 @@ export async function GET(
       },
       include: {
         classes: {
-          select: {
-            id: true,
-            name: true,
-            section: true,
-            academicYear: true,
-            _count: {
+          include: {
+            class: {
               select: {
-                students: true,
+                id: true,
+                name: true,
+                section: true,
+                academicYear: true,
+                _count: {
+                  select: {
+                    students: true,
+                  },
+                },
               },
             },
           },
@@ -228,16 +236,16 @@ export async function GET(
       orderBy: [{ academicYear: 'desc' }, { name: 'asc' }, { section: 'asc' }],
     });
 
-    const assignedClassIds = teacher.classes.map(c => c.id);
+    const assignedClassIds = teacher.classes.map(c => c.class.id);
 
     return NextResponse.json({
-      assignedClasses: teacher.classes.map(cls => ({
-        id: cls.id,
-        name: cls.name,
-        section: cls.section,
-        academicYear: cls.academicYear,
-        studentCount: cls._count.students,
-        displayName: `${cls.name}${cls.section ? ` - ${cls.section}` : ''}`,
+      assignedClasses: teacher.classes.map(teacherClass => ({
+        id: teacherClass.class.id,
+        name: teacherClass.class.name,
+        section: teacherClass.class.section,
+        academicYear: teacherClass.class.academicYear,
+        studentCount: teacherClass.class._count.students,
+        displayName: `${teacherClass.class.name}${teacherClass.class.section ? ` - ${teacherClass.class.section}` : ''}`,
       })),
       availableClasses: allClasses.map(cls => ({
         id: cls.id,
