@@ -1,4 +1,4 @@
-// MongoDB-compatible Prisma schema
+// This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
@@ -107,9 +107,9 @@ model Teacher {
   // Relations
   user          User   @relation(fields: [userId], references: [id])
   school        School @relation(fields: [schoolId], references: [id])
+  classes       Class[]
   subjects      TeacherSubject[]
   classSubjects ClassSubject[]
-  classes       TeacherClass[]
   assignments   Assignment[]
   lessonPlans   LessonPlan[]
   gradedSubmissions AssignmentSubmission[]
@@ -118,8 +118,8 @@ model Teacher {
 
 /// Class model for organizing students and teachers
 model Class {
-  id          String @id @default(auto()) @map("_id") @db.ObjectId
-  schoolId    String @db.ObjectId
+  id          String @id @default(uuid())
+  schoolId    String
   name        String // e.g., "SS 1", "JSS 2", "Grade 5"
   section     String? // e.g., "A", "B", "C"
   academicYear String // e.g., "2024/2025"
@@ -137,25 +137,26 @@ model Class {
   // Relations
   school      School    @relation(fields: [schoolId], references: [id])
   students    Student[]
+  teachers    Teacher[]
   exams       Exam[]
   subjects    ClassSubject[]
-  teachers    TeacherClass[]
   assignments Assignment[]
   lessonPlans LessonPlan[]
   
   @@unique([schoolId, name, section, academicYear])
+  @@map("classes")
 }
 
 /// Student profile (links to User)
 model Student {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  userId   String @unique @db.ObjectId
-  schoolId String @db.ObjectId
+  id       String @id @default(uuid())
+  userId   String @unique
+  schoolId String
   regNumber String @unique // Changed from regNo to regNumber for clarity
   
   // Personal Information
   gender       Gender?
-  classId      String? @db.ObjectId
+  classId      String?
   parentPhone  String?
   parentEmail  String?
   dateOfBirth  String?
@@ -175,6 +176,8 @@ model Student {
   results  Result[]
   examAttempts ExamAttempt[]
   submissions AssignmentSubmission[]
+
+  @@map("students")
 }
 
 enum Gender {
@@ -207,7 +210,7 @@ enum ClassStatus {
 /// Exams & Questions
 /// -----------------------------
 model Exam {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  id          String    @id @default(uuid())
   title       String
   description String?
   startTime   DateTime
@@ -219,11 +222,11 @@ model Exam {
   updatedAt   DateTime  @updatedAt
   
   // Teacher and approval fields
-  teacherId   String? @db.ObjectId
+  teacherId   String?
   teacher     Teacher?  @relation(fields: [teacherId], references: [id])
   
   // Subject and class assignment
-  subjectId   String? @db.ObjectId
+  subjectId   String?
   subject     Subject?  @relation(fields: [subjectId], references: [id])
   
   // Exam configuration
@@ -231,7 +234,7 @@ model Exam {
   passingMarks Int?
   status      ExamStatus @default(DRAFT)
   publishedAt DateTime?
-  approvedBy  String? @db.ObjectId
+  approvedBy  String?
   approver    User?     @relation("ExamApprover", fields: [approvedBy], references: [id])
   approvedAt  DateTime?
   rejectionReason String?
@@ -253,18 +256,20 @@ model Exam {
   isCompleted Boolean @default(false) // Manual completion status (overrides time-based)
 
   // Relations
-  schoolId String @db.ObjectId
+  schoolId String
   school   School   @relation(fields: [schoolId], references: [id])
-  classId  String? @db.ObjectId
+  classId  String?
   class    Class?   @relation(fields: [classId], references: [id])
   questions Question[]
   answers   Answer[]
   results   Result[]
   attempts  ExamAttempt[]
+
+  @@map("exams")
 }
 
 model Question {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  id        String    @id @default(uuid())
   text      String    // Keep as 'text' to match existing database
   type      QuestionType
   options   Json?     // for MCQ/TrueFalse
@@ -279,9 +284,11 @@ model Question {
   tags      Json?     // Array of tags
 
   // Relations
-  examId String @db.ObjectId
+  examId String
   exam   Exam      @relation(fields: [examId], references: [id])
   answers Answer[]
+
+  @@map("questions")
 }
 
 enum QuestionType {
@@ -327,9 +334,9 @@ enum AttemptStatus {
 /// Exam Attempts, Answers & Results
 /// -----------------------------
 model ExamAttempt {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  examId      String   @db.ObjectId
-  studentId   String   @db.ObjectId
+  id          String   @id @default(uuid())
+  examId      String
+  studentId   String
   attemptNumber Int    @default(1)
   startedAt   DateTime @default(now())
   submittedAt DateTime?
@@ -343,14 +350,15 @@ model ExamAttempt {
   student  Student  @relation(fields: [studentId], references: [id])
 
   @@unique([studentId, examId, attemptNumber])
+  @@map("exam_attempts")
 }
 
 model Answer {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  studentId String   @db.ObjectId
-  questionId String  @db.ObjectId
-  examId    String   @db.ObjectId
-  attemptId String?  @db.ObjectId
+  id        String   @id @default(uuid())
+  studentId String
+  questionId String
+  examId    String
+  attemptId String?
   response  Json?
   isCorrect Boolean?
   pointsAwarded Float?
@@ -363,12 +371,13 @@ model Answer {
   exam     Exam     @relation(fields: [examId], references: [id])
 
   @@unique([studentId, questionId, examId])
+  @@map("answers")
 }
 
 model Result {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  studentId String   @db.ObjectId
-  examId    String   @db.ObjectId
+  id        String   @id @default(uuid())
+  studentId String
+  examId    String
   score     Float
   gradedAt  DateTime @default(now())
 
@@ -377,14 +386,15 @@ model Result {
   exam    Exam    @relation(fields: [examId], references: [id])
 
   @@unique([studentId, examId])
+  @@map("results")
 }
 
 /// -----------------------------
 /// Payments
 /// -----------------------------
 model Payment {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  schoolId  String   @db.ObjectId
+  id        String   @id @default(uuid())
+  schoolId  String
   amount    Float
   currency  String   @default("NGN")
   status    PaymentStatus
@@ -393,6 +403,8 @@ model Payment {
 
   // Relations
   school School @relation(fields: [schoolId], references: [id])
+
+  @@map("payments")
 }
 
 enum PaymentStatus {
@@ -405,17 +417,19 @@ enum PaymentStatus {
 /// Notifications
 /// -----------------------------
 model Notification {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id        String   @id @default(uuid())
   title     String
   message   String
   type      NotificationType
   isRead    Boolean  @default(false)
-  userId    String   @db.ObjectId // Super admin user ID
+  userId    String   // Super admin user ID
   metadata  Json?    // Additional data (schoolId, etc.)
   createdAt DateTime @default(now())
   
   // Relations
   user User @relation(fields: [userId], references: [id])
+  
+  @@map("notifications")
 }
 
 enum NotificationType {
@@ -447,8 +461,8 @@ enum NotificationType {
 /// Subjects & Relationships
 /// -----------------------------
 model Subject {
-  id          String @id @default(auto()) @map("_id") @db.ObjectId
-  schoolId    String @db.ObjectId
+  id          String @id @default(uuid())
+  schoolId    String
   name        String // e.g., "Mathematics", "English Language"
   code        String? // e.g., "MATH101", "ENG101"
   description String?
@@ -468,6 +482,7 @@ model Subject {
   
   @@unique([schoolId, name])
   @@unique([schoolId, code])
+  @@map("subjects")
 }
 
 enum SubjectStatus {
@@ -478,9 +493,9 @@ enum SubjectStatus {
 
 /// Many-to-many relationship between Teachers and Subjects
 model TeacherSubject {
-  id        String @id @default(auto()) @map("_id") @db.ObjectId
-  teacherId String @db.ObjectId
-  subjectId String @db.ObjectId
+  id        String @id @default(uuid())
+  teacherId String
+  subjectId String
   createdAt DateTime @default(now())
   
   // Relations
@@ -488,14 +503,15 @@ model TeacherSubject {
   subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
   
   @@unique([teacherId, subjectId])
+  @@map("teacher_subjects")
 }
 
 /// Many-to-many relationship between Classes, Teachers, and Subjects
 model ClassSubject {
-  id        String @id @default(auto()) @map("_id") @db.ObjectId
-  classId   String @db.ObjectId
-  teacherId String @db.ObjectId
-  subjectId String @db.ObjectId
+  id        String @id @default(uuid())
+  classId   String
+  teacherId String
+  subjectId String
   createdAt DateTime @default(now())
   
   // Relations
@@ -504,27 +520,14 @@ model ClassSubject {
   subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
   
   @@unique([classId, teacherId, subjectId])
-}
-
-/// Many-to-many relationship between Teachers and Classes
-model TeacherClass {
-  id        String @id @default(auto()) @map("_id") @db.ObjectId
-  teacherId String @db.ObjectId
-  classId   String @db.ObjectId
-  createdAt DateTime @default(now())
-  
-  // Relations
-  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
-  class   Class   @relation(fields: [classId], references: [id], onDelete: Cascade)
-  
-  @@unique([teacherId, classId])
+  @@map("class_subjects")
 }
 
 /// -----------------------------
 /// Assignments & Notes
 /// -----------------------------
 model Assignment {
-  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  id          String @id @default(uuid())
   title       String
   description String?
   instructions String?
@@ -540,10 +543,10 @@ model Assignment {
   status      AssignmentStatus @default(DRAFT)
   
   // Relations
-  schoolId    String @db.ObjectId
-  teacherId   String @db.ObjectId
-  classId     String? @db.ObjectId
-  subjectId   String? @db.ObjectId
+  schoolId    String
+  teacherId   String
+  classId     String?
+  subjectId   String?
   
   school      School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   teacher     Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
@@ -553,6 +556,8 @@ model Assignment {
   // Assignment content
   attachments AssignmentAttachment[]
   submissions AssignmentSubmission[]
+  
+  @@map("assignments")
 }
 
 enum AssignmentType {
@@ -573,8 +578,8 @@ enum AssignmentStatus {
 }
 
 model AssignmentAttachment {
-  id           String @id @default(auto()) @map("_id") @db.ObjectId
-  assignmentId String @db.ObjectId
+  id           String @id @default(uuid())
+  assignmentId String
   fileName     String
   originalName String
   filePath     String
@@ -583,12 +588,14 @@ model AssignmentAttachment {
   uploadedAt   DateTime @default(now())
   
   assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  
+  @@map("assignment_attachments")
 }
 
 model AssignmentSubmission {
-  id           String @id @default(auto()) @map("_id") @db.ObjectId
-  assignmentId String @db.ObjectId
-  studentId    String @db.ObjectId
+  id           String @id @default(uuid())
+  assignmentId String
+  studentId    String
   
   // Submission content
   textContent  String?
@@ -599,7 +606,7 @@ model AssignmentSubmission {
   score        Float?
   feedback     String?
   gradedAt     DateTime?
-  gradedBy     String? @db.ObjectId // Teacher ID
+  gradedBy     String? // Teacher ID
   status       SubmissionStatus @default(SUBMITTED)
   
   // Relations
@@ -611,6 +618,7 @@ model AssignmentSubmission {
   attachments  SubmissionAttachment[]
   
   @@unique([assignmentId, studentId])
+  @@map("assignment_submissions")
 }
 
 enum SubmissionStatus {
@@ -622,8 +630,8 @@ enum SubmissionStatus {
 }
 
 model SubmissionAttachment {
-  id           String @id @default(auto()) @map("_id") @db.ObjectId
-  submissionId String @db.ObjectId
+  id           String @id @default(uuid())
+  submissionId String
   fileName     String
   originalName String
   filePath     String
@@ -632,13 +640,15 @@ model SubmissionAttachment {
   uploadedAt   DateTime @default(now())
   
   submission   AssignmentSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  
+  @@map("submission_attachments")
 }
 
 /// -----------------------------
 /// Lesson Plans
 /// -----------------------------
 model LessonPlan {
-  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  id          String @id @default(uuid())
   title       String
   topic       String?
   duration    Int // in minutes
@@ -661,13 +671,13 @@ model LessonPlan {
   reviewStatus  ReviewStatus @default(PENDING)
   reviewNotes   String?
   reviewedAt    DateTime?
-  reviewedBy    String? @db.ObjectId // Admin/HOD user ID
+  reviewedBy    String? // Admin/HOD user ID
   
   // Relations
-  schoolId      String @db.ObjectId
-  teacherId     String @db.ObjectId
-  classId       String? @db.ObjectId
-  subjectId     String? @db.ObjectId
+  schoolId      String
+  teacherId     String
+  classId       String?
+  subjectId     String?
   
   school        School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   teacher       Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
@@ -677,6 +687,8 @@ model LessonPlan {
   
   // Resources
   resources     LessonPlanResource[]
+  
+  @@map("lesson_plans")
 }
 
 enum LessonPlanStatus {
@@ -693,8 +705,8 @@ enum ReviewStatus {
 }
 
 model LessonPlanResource {
-  id           String @id @default(auto()) @map("_id") @db.ObjectId
-  lessonPlanId String @db.ObjectId
+  id           String @id @default(uuid())
+  lessonPlanId String
   fileName     String
   originalName String
   filePath     String
@@ -704,6 +716,8 @@ model LessonPlanResource {
   uploadedAt   DateTime @default(now())
   
   lessonPlan   LessonPlan @relation(fields: [lessonPlanId], references: [id], onDelete: Cascade)
+  
+  @@map("lesson_plan_resources")
 }
 
 enum ResourceType {
