@@ -100,7 +100,11 @@ export async function GET(request: NextRequest) {
         },
         classes: {
           include: {
-            students: true,
+            class: {
+              include: {
+                students: true,
+              },
+            },
           },
         },
       },
@@ -110,7 +114,7 @@ export async function GET(request: NextRequest) {
       .map(teacher => {
         const classCount = teacher.classes.length;
         const studentCount = teacher.classes.reduce(
-          (sum, cls) => sum + cls.students.length,
+          (sum, cls) => sum + cls.class.students.length,
           0
         );
 
@@ -135,7 +139,7 @@ export async function GET(request: NextRequest) {
       .filter(teacher => {
         const classCount = teacher.classes.length;
         const studentCount = teacher.classes.reduce(
-          (sum, cls) => sum + cls.students.length,
+          (sum, cls) => sum + cls.class.students.length,
           0
         );
         return classCount > 6 || studentCount > 200; // Overloaded teachers

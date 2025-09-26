@@ -206,11 +206,15 @@ export async function PUT(
             },
           },
           classes: {
-            select: {
-              id: true,
-              name: true,
-              section: true,
-              academicYear: true,
+            include: {
+              class: {
+                select: {
+                  id: true,
+                  name: true,
+                  section: true,
+                  academicYear: true,
+                },
+              },
             },
           },
           _count: {

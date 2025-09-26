@@ -67,11 +67,15 @@ export async function GET(request: NextRequest) {
           },
         },
         classes: {
-          select: {
-            id: true,
-            name: true,
-            section: true,
-            academicYear: true,
+          include: {
+            class: {
+              select: {
+                id: true,
+                name: true,
+                section: true,
+                academicYear: true,
+              },
+            },
           },
         },
         _count: {
@@ -109,11 +113,11 @@ export async function GET(request: NextRequest) {
       avatar: teacher.avatar,
       classCount: teacher._count.classes,
       classes: teacher.classes.map(cls => ({
-        id: cls.id,
-        name: cls.name,
-        section: cls.section,
-        academicYear: cls.academicYear,
-        displayName: `${cls.name}${cls.section ? ` - ${cls.section}` : ''} (${cls.academicYear})`,
+        id: cls.class.id,
+        name: cls.class.name,
+        section: cls.class.section,
+        academicYear: cls.class.academicYear,
+        displayName: `${cls.class.name}${cls.class.section ? ` - ${cls.class.section}` : ''} (${cls.class.academicYear})`,
       })),
       createdAt: teacher.user.createdAt.toISOString(),
       updatedAt: teacher.user.updatedAt.toISOString(),

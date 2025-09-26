@@ -39,11 +39,15 @@ export async function GET(request: NextRequest) {
           },
         },
         classes: {
-          select: {
-            id: true,
-            name: true,
-            section: true,
-            academicYear: true,
+          include: {
+            class: {
+              select: {
+                id: true,
+                name: true,
+                section: true,
+                academicYear: true,
+              },
+            },
           },
         },
       },
@@ -88,7 +92,7 @@ export async function GET(request: NextRequest) {
         teacher.classes
           .map(
             cls =>
-              `${cls.name}${cls.section ? ` - ${cls.section}` : ''} (${cls.academicYear})`
+              `${cls.class.name}${cls.class.section ? ` - ${cls.class.section}` : ''} (${cls.class.academicYear})`
           )
           .join('; '),
         teacher.address || '',
