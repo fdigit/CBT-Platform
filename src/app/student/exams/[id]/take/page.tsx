@@ -707,29 +707,43 @@ export default function TakeExamPage() {
             </Button>
           </div>
 
-          {/* Question Navigation - Fixed Layout */}
+          {/* Question Navigation - Fixed Layout v2.0 */}
           <div className="bg-white rounded-lg border p-4">
             <h3 className="text-sm font-medium text-gray-700 mb-3">
               Jump to Question
             </h3>
-            <div className="flex flex-wrap justify-center gap-2 w-full max-w-4xl mx-auto overflow-x-auto pb-2">
-              {questions.map((_, index) => (
-                <Button
-                  key={index}
-                  variant={
-                    index === currentQuestionIndex ? 'default' : 'outline'
-                  }
-                  size="sm"
-                  onClick={() => setCurrentQuestionIndex(index)}
-                  className={`w-8 h-8 text-xs flex-shrink-0 ${
-                    answers[questions[index].id]
-                      ? 'bg-green-100 border-green-300 text-green-700'
-                      : ''
-                  }`}
-                >
-                  {index + 1}
-                </Button>
-              ))}
+            <div
+              className="w-full overflow-hidden"
+              style={{ maxWidth: '100%', overflow: 'hidden' }}
+            >
+              <div
+                className="flex flex-wrap justify-center gap-2"
+                style={{
+                  maxWidth: '896px',
+                  width: '100%',
+                  margin: '0 auto',
+                  overflowX: 'auto',
+                  paddingBottom: '8px',
+                }}
+              >
+                {questions.map((_, index) => (
+                  <Button
+                    key={index}
+                    variant={
+                      index === currentQuestionIndex ? 'default' : 'outline'
+                    }
+                    size="sm"
+                    onClick={() => setCurrentQuestionIndex(index)}
+                    className={`w-8 h-8 text-xs flex-shrink-0 ${
+                      answers[questions[index].id]
+                        ? 'bg-green-100 border-green-300 text-green-700'
+                        : ''
+                    }`}
+                  >
+                    {index + 1}
+                  </Button>
+                ))}
+              </div>
             </div>
             <div className="mt-3 flex items-center justify-center space-x-4 text-xs text-gray-500">
               <div className="flex items-center space-x-1">
