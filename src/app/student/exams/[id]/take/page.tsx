@@ -535,6 +535,23 @@ export default function TakeExamPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <style jsx>{`
+        .question-nav-container-v3 {
+          max-width: 100% !important;
+          overflow: hidden !important;
+        }
+        .question-buttons-grid-v3 {
+          max-width: 896px !important;
+          width: 100% !important;
+          margin: 0 auto !important;
+          overflow-x: auto !important;
+          padding-bottom: 8px !important;
+          display: flex !important;
+          flex-wrap: wrap !important;
+          justify-content: center !important;
+          gap: 8px !important;
+        }
+      `}</style>
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -707,17 +724,17 @@ export default function TakeExamPage() {
             </Button>
           </div>
 
-          {/* Question Navigation - Fixed Layout v2.0 */}
+          {/* Question Navigation - Fixed Layout v3.0 - FORCE REBUILD */}
           <div className="bg-white rounded-lg border p-4">
             <h3 className="text-sm font-medium text-gray-700 mb-3">
               Jump to Question
             </h3>
             <div
-              className="w-full overflow-hidden"
+              className="w-full overflow-hidden question-nav-container-v3"
               style={{ maxWidth: '100%', overflow: 'hidden' }}
             >
               <div
-                className="flex flex-wrap justify-center gap-2"
+                className="flex flex-wrap justify-center gap-2 question-buttons-grid-v3"
                 style={{
                   maxWidth: '896px',
                   width: '100%',
