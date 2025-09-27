@@ -1,8 +1,6 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
 import {
   Card,
   CardContent,
@@ -10,24 +8,24 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
-  BookOpen,
-  Clock,
-  CheckCircle,
   AlertCircle,
-  TrendingUp,
+  BookOpen,
   Calendar,
+  CheckCircle,
+  Clock,
   Target,
 } from 'lucide-react';
-import { useToast } from '../../hooks/use-toast';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import {
-  StudentDashboardLayout,
-  StatsCard,
   ExamCard,
   ResultsTable,
+  StatsCard,
+  StudentDashboardLayout,
 } from '../../components/student';
+import { useToast } from '../../hooks/use-toast';
 
 interface Exam {
   id: string;
@@ -120,7 +118,7 @@ export default function StudentDashboard() {
   };
 
   const handleStartExam = (examId: string) => {
-    router.push(`/student/exam/${examId}`);
+    router.push(`/student/exams/${examId}/take`);
   };
 
   const getExamStatus = (exam: Exam): 'upcoming' | 'active' | 'completed' => {
