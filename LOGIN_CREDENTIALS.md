@@ -20,7 +20,9 @@
 - **Email**: `admin@littleteddies.com`
 - **Password**: `admin123`
 - **Role**: SCHOOL_ADMIN
+- **Name**: Little Teddies Administrator
 - **School**: Little Teddies
+- **School Status**: APPROVED
 - **Access**: School management, exam approval, student management
 - **Dashboard**: http://localhost:3000/school
 
@@ -73,6 +75,20 @@
 - `student5@littleteddies.com` - Edward Norton (Primary 1 A)
 - `student7@littleteddies.com` - George Wilson (Primary 2 A)
 - `student9@littleteddies.com` - Ian Thompson (Primary 3 A)
+
+### 🧪 Universal Test Student (For Testing All Features)
+
+- **Email**: `student10@littleteddies.com`
+- **Password**: `admin123`
+- **Role**: STUDENT
+- **Name**: Test Student Universal
+- **Registration Number**: LT010
+- **School**: Little Teddies
+- **Primary Class**: Primary 3 A
+- **Status**: ACTIVE
+- **Access**: Can test all student features across multiple classes and subjects
+- **Available Exams**: Mathematics Assessment, English Language Test
+- **Dashboard**: http://localhost:3000/student
 
 ## 🎯 Quick Start Guide
 

@@ -123,15 +123,33 @@ export async function POST(
     }
 
     // Update exam status
-    const updateData: any = {
+    const updateData: {
+      approvedBy: string;
+      approvedAt: Date;
+      status?: 'APPROVED' | 'PUBLISHED' | 'REJECTED';
+      publishedAt?: Date;
+      manualControl?: boolean;
+      isLive?: boolean;
+      isCompleted?: boolean;
+      rejectionReason?: string;
+    } = {
       approvedBy: session.user.id,
       approvedAt: new Date(),
     };
 
     if (action === 'approve') {
       updateData.status = publishNow ? 'PUBLISHED' : 'APPROVED';
+      // Always enable manual control for approved exams
+      updateData.manualControl = true;
+      updateData.isCompleted = false;
+
       if (publishNow) {
         updateData.publishedAt = new Date();
+        // Make exam live when publishing
+        updateData.isLive = true;
+      } else {
+        // Keep exam not live when just approving
+        updateData.isLive = false;
       }
     } else {
       updateData.status = 'REJECTED';

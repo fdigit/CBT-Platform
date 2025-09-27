@@ -130,8 +130,6 @@ export function canSaveAnswers(
   exam: ExamData,
   currentTime: Date = new Date()
 ): boolean {
-  const status = calculateExamStatus(exam, currentTime);
-
   // Allow saving if:
   // 1. Exam is active (either time-based or manual control)
   // 2. Student has an active attempt

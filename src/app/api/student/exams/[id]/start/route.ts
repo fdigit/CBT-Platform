@@ -66,50 +66,6 @@ export async function POST(
     const startTime = new Date(exam.startTime);
     const endTime = new Date(exam.endTime);
 
-    // Check if exam is currently active (considering manual control)
-    if (exam.manualControl) {
-      // Manual control enabled - check manual status
-      if (!exam.isLive) {
-        return NextResponse.json(
-          {
-            error: 'Exam is not currently live',
-            startTime: exam.startTime,
-          },
-          { status: 400 }
-        );
-      }
-      if (exam.isCompleted) {
-        return NextResponse.json(
-          {
-            error: 'Exam has been completed',
-            endTime: exam.endTime,
-          },
-          { status: 400 }
-        );
-      }
-    } else {
-      // Original time-based logic
-      if (now < startTime) {
-        return NextResponse.json(
-          {
-            error: 'Exam has not started yet',
-            startTime: exam.startTime,
-          },
-          { status: 400 }
-        );
-      }
-
-      if (now > endTime) {
-        return NextResponse.json(
-          {
-            error: 'Exam has ended',
-            endTime: exam.endTime,
-          },
-          { status: 400 }
-        );
-      }
-    }
-
     // Check existing attempts
     const existingAttempts = await prisma.examAttempt.findMany({
       where: {
@@ -124,7 +80,7 @@ export async function POST(
       attempt => attempt.status === 'IN_PROGRESS'
     );
     if (activeAttempt) {
-      // Resume existing attempt
+      // Resume existing attempt - allow regardless of exam live status
       const questions = exam.shuffle
         ? [...exam.questions].sort(() => Math.random() - 0.5)
         : exam.questions;
@@ -162,6 +118,54 @@ export async function POST(
       );
     }
 
+    // Check if exam is currently active (considering manual control) - only for new attempts
+    if (exam.manualControl) {
+      // Manual control enabled - check manual status
+      if (!exam.isLive) {
+        return NextResponse.json(
+          {
+            error:
+              'Exam is not currently live. Please wait for admin to make it live.',
+            startTime: exam.startTime,
+            manualControl: true,
+          },
+          { status: 400 }
+        );
+      }
+      if (exam.isCompleted) {
+        return NextResponse.json(
+          {
+            error: 'Exam has been completed by admin',
+            endTime: exam.endTime,
+            manualControl: true,
+          },
+          { status: 400 }
+        );
+      }
+      // If manual control is enabled and exam is live, allow access regardless of time
+    } else {
+      // Original time-based logic
+      if (now < startTime) {
+        return NextResponse.json(
+          {
+            error: 'Exam has not started yet',
+            startTime: exam.startTime,
+          },
+          { status: 400 }
+        );
+      }
+
+      if (now > endTime) {
+        return NextResponse.json(
+          {
+            error: 'Exam has ended',
+            endTime: exam.endTime,
+          },
+          { status: 400 }
+        );
+      }
+    }
+
     // Get client info for tracking
     const userAgent = request.headers.get('user-agent') || '';
     const forwardedFor = request.headers.get('x-forwarded-for');
@@ -169,7 +173,8 @@ export async function POST(
     const ipAddress = forwardedFor?.split(',')[0] || realIp || 'unknown';
 
     // Create new attempt with proper attempt number calculation
-    const nextAttemptNumber = existingAttempts.length + 1;
+    const nextAttemptNumber =
+      Math.max(0, ...existingAttempts.map(a => a.attemptNumber)) + 1;
 
     // Use upsert to handle potential race conditions
     const newAttempt = await prisma.examAttempt.upsert({

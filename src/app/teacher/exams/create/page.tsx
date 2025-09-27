@@ -348,6 +348,10 @@ export default function CreateExamPage() {
         ...examData,
         questions: questions.map(({ id, ...question }) => question),
         status,
+        // Enable manual control for all submitted exams
+        manualControl: status === 'PENDING_APPROVAL',
+        isLive: false,
+        isCompleted: false,
       };
 
       const response = await fetch('/api/teacher/exams', {
@@ -360,22 +364,19 @@ export default function CreateExamPage() {
 
       if (response.ok) {
         const result = await response.json();
-        toast({
-          title: 'Success',
-          description:
-            status === 'DRAFT'
-              ? 'Exam saved as draft successfully!'
-              : 'Exam created and submitted for approval!',
-        });
 
         if (status === 'PENDING_APPROVAL') {
-          // Submit for approval
-          await fetch(
-            `/api/teacher/exams/${result.exam.id}/submit-for-approval`,
-            {
-              method: 'POST',
-            }
-          );
+          // Exam is already submitted for approval during creation
+          toast({
+            title: 'Success',
+            description:
+              'Exam created and submitted for approval successfully!',
+          });
+        } else {
+          toast({
+            title: 'Success',
+            description: 'Exam saved as draft successfully!',
+          });
         }
 
         router.push('/teacher/exams');
@@ -383,11 +384,12 @@ export default function CreateExamPage() {
         const error = await response.json();
         toast({
           title: 'Error',
-          description: error.error || 'Failed to create exam',
+          description: error.message || error.error || 'Failed to create exam',
           variant: 'destructive',
         });
       }
     } catch (error) {
+      console.error('Exam creation error:', error);
       toast({
         title: 'Error',
         description: 'An error occurred while creating exam',

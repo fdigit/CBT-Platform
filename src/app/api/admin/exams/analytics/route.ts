@@ -16,35 +16,27 @@ export async function GET() {
 
     // Get exams by status
     const now = new Date();
-    const [draftExams, activeExams, scheduledExams, closedExams] =
-      await Promise.all([
-        prisma.exam.count({
-          where: {
-            startTime: {
-              gt: now,
-            },
+    const [activeExams, scheduledExams, closedExams] = await Promise.all([
+      prisma.exam.count({
+        where: {
+          AND: [{ startTime: { lte: now } }, { endTime: { gte: now } }],
+        },
+      }),
+      prisma.exam.count({
+        where: {
+          startTime: {
+            gt: now,
           },
-        }),
-        prisma.exam.count({
-          where: {
-            AND: [{ startTime: { lte: now } }, { endTime: { gte: now } }],
+        },
+      }),
+      prisma.exam.count({
+        where: {
+          endTime: {
+            lt: now,
           },
-        }),
-        prisma.exam.count({
-          where: {
-            startTime: {
-              gt: now,
-            },
-          },
-        }),
-        prisma.exam.count({
-          where: {
-            endTime: {
-              lt: now,
-            },
-          },
-        }),
-      ]);
+        },
+      }),
+    ]);
 
     // Get exams by school
     const examsBySchool = await prisma.exam.groupBy({

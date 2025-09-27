@@ -52,7 +52,11 @@ export async function POST(
       return NextResponse.json({ error: 'Exam not found' }, { status: 404 });
     }
 
-    let updateData: any = {};
+    let updateData: {
+      isLive?: boolean;
+      isCompleted?: boolean;
+      manualControl?: boolean;
+    } = {};
 
     switch (action) {
       case 'make_live':

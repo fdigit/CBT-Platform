@@ -162,7 +162,16 @@ async function parseExcelFile(buffer: ArrayBuffer): Promise<any[]> {
           case 'correct':
           case 'correct answer':
           case 'answer':
-            question.correctAnswer = value;
+            // Convert letter answers (A, B, C, D) to index (0, 1, 2, 3)
+            if (/^[A-D]$/i.test(value)) {
+              question.correctAnswer = (
+                value.toUpperCase().charCodeAt(0) - 65
+              ).toString();
+            } else if (/^[1-4]$/.test(value)) {
+              question.correctAnswer = (parseInt(value) - 1).toString();
+            } else {
+              question.correctAnswer = value;
+            }
             break;
           case 'points':
           case 'marks':
@@ -369,7 +378,16 @@ async function parseCSVFile(buffer: ArrayBuffer): Promise<any[]> {
           case 'correct':
           case 'correct answer':
           case 'answer':
-            question.correctAnswer = value;
+            // Convert letter answers (A, B, C, D) to index (0, 1, 2, 3)
+            if (/^[A-D]$/i.test(value)) {
+              question.correctAnswer = (
+                value.toUpperCase().charCodeAt(0) - 65
+              ).toString();
+            } else if (/^[1-4]$/.test(value)) {
+              question.correctAnswer = (parseInt(value) - 1).toString();
+            } else {
+              question.correctAnswer = value;
+            }
             break;
           case 'points':
           case 'marks':

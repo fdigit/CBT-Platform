@@ -38,8 +38,14 @@ export async function POST(request: NextRequest) {
     const validatedExam = examSchema.parse(exam);
 
     // Validate questions
-    const validatedQuestions = questions.map((q: any) =>
-      questionSchema.parse(q)
+    const validatedQuestions = questions.map(
+      (q: {
+        text: string;
+        type: string;
+        options?: string[];
+        correctAnswer?: string;
+        points?: number;
+      }) => questionSchema.parse(q)
     );
 
     // Create exam and questions in a transaction
@@ -55,22 +61,33 @@ export async function POST(request: NextRequest) {
           shuffle: validatedExam.shuffle,
           negativeMarking: validatedExam.negativeMarking,
           schoolId: schoolId!,
+          // Enable manual control for school admin created exams
+          manualControl: true,
+          isLive: false,
+          isCompleted: false,
         },
       });
 
       // Create questions
       const createdQuestions = await Promise.all(
-        validatedQuestions.map((question: any) =>
-          tx.question.create({
-            data: {
-              text: question.text,
-              type: question.type,
-              options: question.options || null,
-              correctAnswer: question.correctAnswer || null,
-              points: question.points,
-              examId: newExam.id,
-            },
-          })
+        validatedQuestions.map(
+          (question: {
+            text: string;
+            type: string;
+            options?: string[];
+            correctAnswer?: string;
+            points: number;
+          }) =>
+            tx.question.create({
+              data: {
+                text: question.text,
+                type: question.type as any,
+                options: question.options || null,
+                correctAnswer: question.correctAnswer || null,
+                points: question.points,
+                examId: newExam.id,
+              },
+            })
         )
       );
 
@@ -91,7 +108,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
 
@@ -110,7 +127,11 @@ export async function GET(request: NextRequest) {
     }
 
     // Build where clause based on user role
-    let whereClause: any = {};
+    const whereClause: {
+      schoolId?: string;
+      status?: { in: any[] };
+      teacherId?: string;
+    } = {};
 
     if (session.user.role === Role.SCHOOL_ADMIN) {
       whereClause.schoolId = session.user.schoolId;

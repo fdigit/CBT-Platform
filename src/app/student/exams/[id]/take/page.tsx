@@ -2,7 +2,7 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter, useParams } from 'next/navigation';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import {
   Card,
   CardContent,
@@ -98,6 +98,60 @@ export default function TakeExamPage() {
     'saved' | 'saving' | 'error'
   >('saved');
   const [showWarning, setShowWarning] = useState(false);
+  const handleAutoSubmitRef = useRef<() => Promise<void>>();
+
+  const saveAnswer = useCallback(
+    async (questionId: string, response: any, showToast: boolean = true) => {
+      if (!attempt) return;
+
+      try {
+        setAutoSaveStatus('saving');
+        const saveResponse = await fetch(
+          `/api/student/exams/${examId}/answer`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              questionId,
+              response,
+              attemptId: attempt.id,
+            }),
+          }
+        );
+
+        if (saveResponse.ok) {
+          setAutoSaveStatus('saved');
+          if (showToast) {
+            toast({
+              title: 'Answer Saved',
+              description: 'Your answer has been saved successfully',
+            });
+          }
+        } else {
+          setAutoSaveStatus('error');
+          if (showToast) {
+            toast({
+              title: 'Save Failed',
+              description: 'Failed to save answer. Please try again.',
+              variant: 'destructive',
+            });
+          }
+        }
+      } catch (error) {
+        setAutoSaveStatus('error');
+        if (showToast) {
+          toast({
+            title: 'Save Error',
+            description: 'An error occurred while saving answer',
+            variant: 'destructive',
+          });
+        }
+      }
+    },
+    [attempt, examId, toast]
+  );
 
   // Timer effect
   useEffect(() => {
@@ -107,7 +161,10 @@ export default function TakeExamPage() {
       setTimeRemaining(prev => {
         const newTime = prev - 1000;
         if (newTime <= 0) {
-          handleAutoSubmit();
+          // Call auto-submit using ref to avoid circular dependency
+          if (handleAutoSubmitRef.current) {
+            handleAutoSubmitRef.current();
+          }
           return 0;
         }
 
@@ -126,7 +183,7 @@ export default function TakeExamPage() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [timeRemaining, showWarning]);
+  }, [timeRemaining, showWarning, toast]);
 
   // Auto-save effect
   useEffect(() => {
@@ -140,7 +197,7 @@ export default function TakeExamPage() {
     }, 3000); // Auto-save after 3 seconds of inactivity
 
     return () => clearTimeout(autoSaveTimer);
-  }, [answers, currentQuestionIndex, attempt, questions]);
+  }, [answers, currentQuestionIndex, attempt, questions, saveAnswer]);
 
   useEffect(() => {
     if (status === 'loading') return;
@@ -197,62 +254,15 @@ export default function TakeExamPage() {
     }
   };
 
-  const saveAnswer = async (
-    questionId: string,
-    response: any,
-    showToast: boolean = true
-  ) => {
-    if (!attempt) return;
-
-    try {
-      setAutoSaveStatus('saving');
-      const saveResponse = await fetch(`/api/student/exams/${examId}/answer`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          questionId,
-          response,
-          attemptId: attempt.id,
-        }),
-      });
-
-      if (saveResponse.ok) {
-        setAutoSaveStatus('saved');
-        if (showToast) {
-          toast({
-            title: 'Answer Saved',
-            description: 'Your answer has been saved successfully',
-          });
-        }
-      } else {
-        setAutoSaveStatus('error');
-        if (showToast) {
-          toast({
-            title: 'Save Failed',
-            description: 'Failed to save answer. Please try again.',
-            variant: 'destructive',
-          });
-        }
-      }
-    } catch (error) {
-      setAutoSaveStatus('error');
-      if (showToast) {
-        toast({
-          title: 'Save Error',
-          description: 'An error occurred while saving answer',
-          variant: 'destructive',
-        });
-      }
+  const handleAnswerChange = (questionId: string, value: any) => {
+    setAnswers(prev => ({ ...prev, [questionId]: value }));
+    // Auto-save immediately when answer changes
+    if (attempt) {
+      saveAnswer(questionId, value, false);
     }
   };
 
-  const handleAnswerChange = (questionId: string, value: any) => {
-    setAnswers(prev => ({ ...prev, [questionId]: value }));
-  };
-
-  const handleAutoSubmit = async () => {
+  const handleAutoSubmit = useCallback(async () => {
     if (!attempt || submitting) return;
 
     setSubmitting(true);
@@ -293,7 +303,12 @@ export default function TakeExamPage() {
         variant: 'destructive',
       });
     }
-  };
+  }, [attempt, submitting, examId, exam, router, toast]);
+
+  // Update ref when handleAutoSubmit changes
+  useEffect(() => {
+    handleAutoSubmitRef.current = handleAutoSubmit;
+  }, [handleAutoSubmit]);
 
   const handleManualSubmit = async () => {
     if (!attempt || submitting) return;
@@ -478,13 +493,31 @@ export default function TakeExamPage() {
     );
   }
 
-  if (!exam || !attempt || !questions.length) {
+  if (!exam || !attempt) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <AlertTriangle className="h-16 w-16 text-red-500 mx-auto mb-4" />
           <h2 className="text-xl font-semibold mb-2">Exam Not Available</h2>
           <p className="text-gray-600 mb-4">Unable to load exam data</p>
+          <Button onClick={() => router.push('/student/exams')}>
+            Back to Exams
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!questions.length) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <AlertTriangle className="h-16 w-16 text-orange-500 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold mb-2">Exam Not Ready</h2>
+          <p className="text-gray-600 mb-4">
+            This exam has no questions yet. Please contact your teacher or
+            administrator.
+          </p>
           <Button onClick={() => router.push('/student/exams')}>
             Back to Exams
           </Button>
@@ -505,7 +538,7 @@ export default function TakeExamPage() {
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-4 space-y-4 sm:space-y-0">
             <div className="flex items-center space-x-4">
               <BookOpen className="h-6 w-6 text-blue-600" />
               <div>
@@ -518,48 +551,50 @@ export default function TakeExamPage() {
               </div>
             </div>
 
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <Target className="h-4 w-4 text-gray-500" />
-                <span className="text-sm text-gray-600">
-                  {answeredCount}/{questions.length} answered
-                </span>
-              </div>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <Target className="h-4 w-4 text-gray-500" />
+                  <span className="text-sm text-gray-600">
+                    {answeredCount}/{questions.length} answered
+                  </span>
+                </div>
 
-              <div className="flex items-center space-x-2">
-                <Timer className="h-4 w-4 text-gray-500" />
-                <span
-                  className={`text-sm font-mono ${timeRemaining <= 5 * 60 * 1000 ? 'text-red-600' : 'text-gray-600'}`}
-                >
-                  {formatTime(timeRemaining)}
-                </span>
-              </div>
+                <div className="flex items-center space-x-2">
+                  <Timer className="h-4 w-4 text-gray-500" />
+                  <span
+                    className={`text-sm font-mono ${timeRemaining <= 5 * 60 * 1000 ? 'text-red-600' : 'text-gray-600'}`}
+                  >
+                    {formatTime(timeRemaining)}
+                  </span>
+                </div>
 
-              <div className="flex items-center space-x-2">
-                {autoSaveStatus === 'saving' && (
-                  <div className="flex items-center space-x-1 text-yellow-600">
-                    <div className="animate-spin rounded-full h-3 w-3 border-b border-yellow-600"></div>
-                    <span className="text-xs">Saving...</span>
-                  </div>
-                )}
-                {autoSaveStatus === 'saved' && (
-                  <div className="flex items-center space-x-1 text-green-600">
-                    <CheckCircle className="h-3 w-3" />
-                    <span className="text-xs">Saved</span>
-                  </div>
-                )}
-                {autoSaveStatus === 'error' && (
-                  <div className="flex items-center space-x-1 text-red-600">
-                    <AlertTriangle className="h-3 w-3" />
-                    <span className="text-xs">Error</span>
-                  </div>
-                )}
+                <div className="flex items-center space-x-2">
+                  {autoSaveStatus === 'saving' && (
+                    <div className="flex items-center space-x-1 text-yellow-600">
+                      <div className="animate-spin rounded-full h-3 w-3 border-b border-yellow-600"></div>
+                      <span className="text-xs">Saving...</span>
+                    </div>
+                  )}
+                  {autoSaveStatus === 'saved' && (
+                    <div className="flex items-center space-x-1 text-green-600">
+                      <CheckCircle className="h-3 w-3" />
+                      <span className="text-xs">Saved</span>
+                    </div>
+                  )}
+                  {autoSaveStatus === 'error' && (
+                    <div className="flex items-center space-x-1 text-red-600">
+                      <AlertTriangle className="h-3 w-3" />
+                      <span className="text-xs">Error</span>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <Button
                 onClick={handleManualSubmit}
                 disabled={submitting}
-                className="bg-green-600 hover:bg-green-700"
+                className="bg-green-600 hover:bg-green-700 w-full sm:w-auto"
               >
                 <Send className="h-4 w-4 mr-2" />
                 {submitting ? 'Submitting...' : 'Submit Exam'}
@@ -638,48 +673,79 @@ export default function TakeExamPage() {
         </Card>
 
         {/* Navigation */}
-        <div className="flex items-center justify-between">
-          <Button
-            variant="outline"
-            onClick={() =>
-              setCurrentQuestionIndex(Math.max(0, currentQuestionIndex - 1))
-            }
-            disabled={currentQuestionIndex === 0}
-          >
-            <ChevronLeft className="h-4 w-4 mr-2" />
-            Previous
-          </Button>
+        <div className="space-y-4">
+          {/* Previous/Next Buttons */}
+          <div className="flex items-center justify-between">
+            <Button
+              variant="outline"
+              onClick={() =>
+                setCurrentQuestionIndex(Math.max(0, currentQuestionIndex - 1))
+              }
+              disabled={currentQuestionIndex === 0}
+            >
+              <ChevronLeft className="h-4 w-4 mr-2" />
+              Previous
+            </Button>
 
-          <div className="flex space-x-2">
-            {questions.map((_, index) => (
-              <Button
-                key={index}
-                variant={index === currentQuestionIndex ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setCurrentQuestionIndex(index)}
-                className={`w-10 h-10 ${
-                  answers[questions[index].id]
-                    ? 'bg-green-100 border-green-300'
-                    : ''
-                }`}
-              >
-                {index + 1}
-              </Button>
-            ))}
+            <div className="flex items-center space-x-2">
+              <span className="text-sm text-gray-600">
+                Question {currentQuestionIndex + 1} of {questions.length}
+              </span>
+            </div>
+
+            <Button
+              variant="outline"
+              onClick={() =>
+                setCurrentQuestionIndex(
+                  Math.min(questions.length - 1, currentQuestionIndex + 1)
+                )
+              }
+              disabled={currentQuestionIndex === questions.length - 1}
+            >
+              Next
+              <ChevronRight className="h-4 w-4 ml-2" />
+            </Button>
           </div>
 
-          <Button
-            variant="outline"
-            onClick={() =>
-              setCurrentQuestionIndex(
-                Math.min(questions.length - 1, currentQuestionIndex + 1)
-              )
-            }
-            disabled={currentQuestionIndex === questions.length - 1}
-          >
-            Next
-            <ChevronRight className="h-4 w-4 ml-2" />
-          </Button>
+          {/* Question Navigation Grid */}
+          <div className="bg-white rounded-lg border p-4">
+            <h3 className="text-sm font-medium text-gray-700 mb-3">
+              Jump to Question
+            </h3>
+            <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 xl:grid-cols-16 gap-2">
+              {questions.map((_, index) => (
+                <Button
+                  key={index}
+                  variant={
+                    index === currentQuestionIndex ? 'default' : 'outline'
+                  }
+                  size="sm"
+                  onClick={() => setCurrentQuestionIndex(index)}
+                  className={`w-8 h-8 text-xs ${
+                    answers[questions[index].id]
+                      ? 'bg-green-100 border-green-300 text-green-700'
+                      : ''
+                  }`}
+                >
+                  {index + 1}
+                </Button>
+              ))}
+            </div>
+            <div className="mt-3 flex items-center justify-center space-x-4 text-xs text-gray-500">
+              <div className="flex items-center space-x-1">
+                <div className="w-3 h-3 bg-green-100 border border-green-300 rounded"></div>
+                <span>Answered</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <div className="w-3 h-3 bg-blue-100 border border-blue-300 rounded"></div>
+                <span>Current</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <div className="w-3 h-3 bg-gray-100 border border-gray-300 rounded"></div>
+                <span>Unanswered</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

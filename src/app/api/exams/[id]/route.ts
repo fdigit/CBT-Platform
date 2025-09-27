@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { examSchema, questionSchema } from '@/lib/validations';
+import { examSchema } from '@/lib/validations';
 
 export async function GET(
   request: NextRequest,
@@ -94,37 +94,62 @@ export async function PUT(
     const validatedExam = examSchema.parse(exam);
 
     // Validate questions (handle both 'text' and 'question' field names)
-    const validatedQuestions = questions.map((q: any) => {
-      // Basic validation and field mapping
-      const questionForValidation = {
-        text: q.text || q.question || '',
-        type: q.type,
-        options: q.options || [],
-        correctAnswer: q.correctAnswer,
-        points: q.points || 1,
-        order: q.order,
-        imageUrl: q.imageUrl,
-        audioUrl: q.audioUrl,
-        videoUrl: q.videoUrl,
-        explanation: q.explanation,
-        difficulty: q.difficulty || 'MEDIUM',
-        tags: q.tags,
-      };
+    const validatedQuestions = questions.map(
+      (q: {
+        text?: string;
+        question?: string;
+        type: string;
+        options?: string[];
+        correctAnswer?: string;
+        points?: number;
+        order?: number;
+        imageUrl?: string;
+        audioUrl?: string;
+        videoUrl?: string;
+        explanation?: string;
+        difficulty?: string;
+        tags?: string[];
+      }) => {
+        // Basic validation and field mapping
+        const questionForValidation = {
+          text: q.text || q.question || '',
+          type: q.type,
+          options: q.options || [],
+          correctAnswer: q.correctAnswer,
+          points: q.points || 1,
+          order: q.order,
+          imageUrl: q.imageUrl,
+          audioUrl: q.audioUrl,
+          videoUrl: q.videoUrl,
+          explanation: q.explanation,
+          difficulty: q.difficulty || 'MEDIUM',
+          tags: q.tags,
+        };
 
-      // Basic validation without using Zod schema to avoid null issues
-      if (
-        !questionForValidation.text ||
-        questionForValidation.text.length < 3
-      ) {
-        throw new Error('Question text must be at least 3 characters');
+        // Basic validation without using Zod schema to avoid null issues
+        if (
+          !questionForValidation.text ||
+          questionForValidation.text.length < 3
+        ) {
+          throw new Error('Question text must be at least 3 characters');
+        }
+
+        if (!questionForValidation.type) {
+          throw new Error('Question type is required');
+        }
+
+        return {
+          ...questionForValidation,
+          order: q.order,
+          imageUrl: q.imageUrl,
+          audioUrl: q.audioUrl,
+          videoUrl: q.videoUrl,
+          explanation: q.explanation,
+          difficulty: q.difficulty || 'MEDIUM',
+          tags: q.tags,
+        };
       }
-
-      if (!questionForValidation.type) {
-        throw new Error('Question type is required');
-      }
-
-      return questionForValidation;
-    });
+    );
 
     // Check if exam exists and belongs to the school
     const existingExam = await prisma.exam.findFirst({
@@ -172,24 +197,41 @@ export async function PUT(
 
       // Create new questions
       const createdQuestions = await Promise.all(
-        validatedQuestions.map((question: any, index: number) =>
-          tx.question.create({
-            data: {
-              text: question.text,
-              type: question.type,
-              options: question.options || null,
-              correctAnswer: question.correctAnswer || null,
-              points: question.points,
-              order: question.order || index + 1,
-              imageUrl: question.imageUrl,
-              audioUrl: question.audioUrl,
-              videoUrl: question.videoUrl,
-              explanation: question.explanation,
-              difficulty: question.difficulty || 'MEDIUM',
-              tags: question.tags || null,
-              examId: examId,
+        validatedQuestions.map(
+          (
+            question: {
+              text: string;
+              type: string;
+              options?: string[];
+              correctAnswer?: string;
+              points: number;
+              order?: number;
+              imageUrl?: string;
+              audioUrl?: string;
+              videoUrl?: string;
+              explanation?: string;
+              difficulty?: string;
+              tags?: string[];
             },
-          })
+            index: number
+          ) =>
+            tx.question.create({
+              data: {
+                text: question.text,
+                type: question.type as any,
+                options: question.options || null,
+                correctAnswer: question.correctAnswer || null,
+                points: question.points,
+                order: question.order || index + 1,
+                imageUrl: question.imageUrl,
+                audioUrl: question.audioUrl,
+                videoUrl: question.videoUrl,
+                explanation: question.explanation,
+                difficulty: (question.difficulty || 'MEDIUM') as any,
+                tags: question.tags || null,
+                examId: examId,
+              },
+            })
         )
       );
 

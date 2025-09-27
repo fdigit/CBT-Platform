@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
     const now = new Date();
 
     // Build where clause - only show published exams
-    let where: any = {
+    const where: any = {
       schoolId: student.schoolId,
       status: {
         in: ['PUBLISHED', 'APPROVED'],
@@ -58,17 +58,65 @@ export async function GET(request: NextRequest) {
       ];
     }
 
-    // Filter by status
+    // Filter by status - consider manual control
     if (status === 'upcoming') {
-      where.startTime = { gt: now };
+      where.AND = [
+        ...(where.AND || []),
+        {
+          OR: [
+            // Time-based upcoming
+            { startTime: { gt: now } },
+            // Manual control not live yet
+            {
+              AND: [
+                { manualControl: true },
+                { isLive: false },
+                { isCompleted: false },
+              ],
+            },
+          ],
+        },
+      ];
     } else if (status === 'active') {
       where.AND = [
         ...(where.AND || []),
-        { startTime: { lte: now } },
-        { endTime: { gte: now } },
+        {
+          OR: [
+            // Time-based active
+            {
+              AND: [
+                { startTime: { lte: now } },
+                { endTime: { gte: now } },
+                { manualControl: false },
+              ],
+            },
+            // Manual control live
+            {
+              AND: [
+                { manualControl: true },
+                { isLive: true },
+                { isCompleted: false },
+              ],
+            },
+          ],
+        },
       ];
     } else if (status === 'completed') {
-      where.endTime = { lt: now };
+      where.AND = [
+        ...(where.AND || []),
+        {
+          OR: [
+            // Time-based completed
+            {
+              AND: [{ endTime: { lt: now } }, { manualControl: false }],
+            },
+            // Manual control completed
+            {
+              AND: [{ manualControl: true }, { isCompleted: true }],
+            },
+          ],
+        },
+      ];
     }
 
     // Get exams with student's attempts and results

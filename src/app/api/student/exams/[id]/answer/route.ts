@@ -131,12 +131,13 @@ export async function POST(
     if (['MCQ', 'TRUE_FALSE'].includes(question.type) && response) {
       const correctAnswer = question.correctAnswer;
 
-      // For MCQ, convert index to actual option value if needed
+      // For MCQ, handle both index-based and text-based responses
       if (
         question.type === 'MCQ' &&
         question.options &&
         Array.isArray(question.options)
       ) {
+        // If response is a number (index), convert to option text
         const optionIndex = parseInt(response);
         if (
           !isNaN(optionIndex) &&
@@ -145,12 +146,27 @@ export async function POST(
         ) {
           studentAnswer = question.options[optionIndex];
         }
+        // If response is already text, keep it as is
       }
 
-      // Compare the actual option value with correct answer
+      // Compare answers - handle both index and text comparisons
       if (typeof correctAnswer === 'string') {
-        // For MCQ, compare with the actual option text
-        isCorrect = studentAnswer === correctAnswer;
+        // Check if correctAnswer is an index (0, 1, 2, 3) or actual text
+        const correctIndex = parseInt(correctAnswer);
+        if (
+          !isNaN(correctIndex) &&
+          question.options &&
+          (question.options as string[])[correctIndex]
+        ) {
+          // correctAnswer is an index, compare with the actual option text
+          const correctOptionText = (question.options as string[])[
+            correctIndex
+          ];
+          isCorrect = studentAnswer === correctOptionText;
+        } else {
+          // correctAnswer is actual text, compare directly
+          isCorrect = studentAnswer === correctAnswer;
+        }
       } else if (
         correctAnswer &&
         typeof correctAnswer === 'object' &&

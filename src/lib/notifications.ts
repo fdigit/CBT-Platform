@@ -15,7 +15,7 @@ export interface NotificationData {
     | 'SCHOOL_APPROVED'
     | 'SCHOOL_REJECTED';
   userId: string;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
 }
 
 export async function createNotification(data: NotificationData) {
@@ -26,7 +26,7 @@ export async function createNotification(data: NotificationData) {
         message: data.message,
         type: data.type,
         userId: data.userId,
-        metadata: data.metadata || {},
+        metadata: (data.metadata || {}) as any,
         isRead: false,
       },
     });
@@ -48,7 +48,7 @@ export async function createBulkNotifications(
         message: notification.message,
         type: notification.type,
         userId: notification.userId,
-        metadata: notification.metadata || {},
+        metadata: (notification.metadata || {}) as any,
         isRead: false,
       })),
     });
@@ -275,7 +275,6 @@ export async function createSchoolApprovalNotification(
   approved: boolean,
   rejectionReason?: string
 ) {
-  const status = approved ? 'approved' : 'rejected';
   const message = approved
     ? `Your school "${schoolName}" has been approved and is now active`
     : `Your school "${schoolName}" registration has been rejected. Reason: ${rejectionReason || 'Not specified'}`;

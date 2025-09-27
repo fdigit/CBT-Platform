@@ -212,13 +212,49 @@ export async function POST(request: NextRequest) {
       duration,
       totalMarks,
       passingMarks,
-      instructions,
       shuffle,
       negativeMarking,
       allowPreview,
       showResultsImmediately,
       maxAttempts,
       questions,
+      status,
+      manualControl,
+      isLive,
+      isCompleted,
+    }: {
+      title: string;
+      description: string;
+      subjectId: string;
+      classId: string;
+      startTime: string;
+      endTime: string;
+      duration: number;
+      totalMarks: number;
+      passingMarks: number;
+      shuffle: boolean;
+      negativeMarking: boolean;
+      allowPreview: boolean;
+      showResultsImmediately: boolean;
+      maxAttempts: number;
+      questions: Array<{
+        type: string;
+        question?: string;
+        text?: string;
+        options?: string[];
+        correctAnswer?: string;
+        points?: number;
+        explanation?: string;
+        difficulty?: string;
+        imageUrl?: string;
+        audioUrl?: string;
+        videoUrl?: string;
+        tags?: string[];
+      }>;
+      status?: string;
+      manualControl?: boolean;
+      isLive?: boolean;
+      isCompleted?: boolean;
     } = body;
 
     // Validation
@@ -266,7 +302,10 @@ export async function POST(request: NextRequest) {
     // Calculate total marks from questions if not provided
     const calculatedTotalMarks =
       totalMarks ||
-      questions.reduce((sum: number, q: any) => sum + (q.points || 1), 0);
+      questions.reduce(
+        (sum: number, q: { points?: number }) => sum + (q.points || 1),
+        0
+      );
 
     // Create exam
     const exam = await prisma.exam.create({
@@ -285,24 +324,46 @@ export async function POST(request: NextRequest) {
         allowPreview: allowPreview || false,
         showResultsImmediately: showResultsImmediately || false,
         maxAttempts: maxAttempts || 1,
-        status: 'DRAFT',
+        status: (status || 'DRAFT') as any,
         teacherId: teacher.id,
         schoolId: teacher.schoolId,
+        // Manual control settings
+        manualControl: manualControl || false,
+        isLive: isLive || false,
+        isCompleted: isCompleted || false,
         questions: {
-          create: questions.map((q: any, index: number) => ({
-            type: q.type,
-            text: q.question || q.text, // Support both field names
-            options: q.options || [],
-            correctAnswer: q.correctAnswer,
-            points: q.points || 1,
-            explanation: q.explanation,
-            difficulty: q.difficulty || 'MEDIUM',
-            order: index + 1,
-            imageUrl: q.imageUrl,
-            audioUrl: q.audioUrl,
-            videoUrl: q.videoUrl,
-            tags: q.tags || [],
-          })),
+          create: (questions as any).map(
+            (
+              q: {
+                type: string;
+                question?: string;
+                text?: string;
+                options?: string[];
+                correctAnswer?: string;
+                points?: number;
+                explanation?: string;
+                difficulty?: string;
+                imageUrl?: string;
+                audioUrl?: string;
+                videoUrl?: string;
+                tags?: string[];
+              },
+              index: number
+            ) => ({
+              type: q.type,
+              text: q.question || q.text, // Support both field names
+              options: q.options || [],
+              correctAnswer: q.correctAnswer,
+              points: q.points || 1,
+              explanation: q.explanation,
+              difficulty: q.difficulty || 'MEDIUM',
+              order: index + 1,
+              imageUrl: q.imageUrl,
+              audioUrl: q.audioUrl,
+              videoUrl: q.videoUrl,
+              tags: q.tags || [],
+            })
+          ),
         },
       },
       include: {
@@ -311,6 +372,39 @@ export async function POST(request: NextRequest) {
         class: { select: { name: true, section: true } },
       },
     });
+
+    // If exam is submitted for approval, create notifications for school admins
+    if (status === 'PENDING_APPROVAL') {
+      const schoolAdmins = await prisma.schoolAdmin.findMany({
+        where: { schoolId: teacher.schoolId },
+        include: { user: true },
+      });
+
+      // Create notifications for all school admins
+      await Promise.all(
+        schoolAdmins.map(admin =>
+          prisma.notification.create({
+            data: {
+              title: 'Exam Approval Required',
+              message: `${teacher.user.name} has submitted exam "${exam.title}" for approval.`,
+              type: 'EXAM_SUBMITTED_FOR_APPROVAL',
+              userId: admin.userId,
+              metadata: {
+                examId: exam.id,
+                schoolId: teacher.schoolId,
+                teacherId: teacher.id,
+                teacherName: teacher.user.name,
+                examTitle: exam.title,
+                subjectName: exam.subject?.name,
+                className: exam.class
+                  ? `${exam.class.name} ${exam.class.section || ''}`
+                  : 'All Classes',
+              },
+            },
+          })
+        )
+      );
+    }
 
     return NextResponse.json(exam, { status: 201 });
   } catch (error) {
