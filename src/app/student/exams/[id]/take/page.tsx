@@ -707,12 +707,12 @@ export default function TakeExamPage() {
             </Button>
           </div>
 
-          {/* Question Navigation Grid */}
+          {/* Question Navigation - Fixed Layout */}
           <div className="bg-white rounded-lg border p-4">
             <h3 className="text-sm font-medium text-gray-700 mb-3">
               Jump to Question
             </h3>
-            <div className="flex flex-wrap justify-center gap-2 max-w-full overflow-x-auto pb-2">
+            <div className="flex flex-wrap justify-center gap-2 w-full max-w-4xl mx-auto overflow-x-auto pb-2">
               {questions.map((_, index) => (
                 <Button
                   key={index}
