@@ -712,7 +712,7 @@ export default function TakeExamPage() {
             <h3 className="text-sm font-medium text-gray-700 mb-3">
               Jump to Question
             </h3>
-            <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 xl:grid-cols-16 gap-2">
+            <div className="flex flex-wrap justify-center gap-2 max-w-full overflow-x-auto pb-2">
               {questions.map((_, index) => (
                 <Button
                   key={index}
@@ -721,7 +721,7 @@ export default function TakeExamPage() {
                   }
                   size="sm"
                   onClick={() => setCurrentQuestionIndex(index)}
-                  className={`w-8 h-8 text-xs ${
+                  className={`w-8 h-8 text-xs flex-shrink-0 ${
                     answers[questions[index].id]
                       ? 'bg-green-100 border-green-300 text-green-700'
                       : ''
