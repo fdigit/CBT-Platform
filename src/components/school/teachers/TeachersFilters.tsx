@@ -1,11 +1,24 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { TeachersFilters as FiltersType } from '@/app/school/teachers/page';
+import { format } from 'date-fns';
+import {
+  Calendar as CalendarIcon,
+  ChevronDown,
+  Filter,
+  RotateCcw,
+  Search,
+  X,
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { cn } from '../../../lib/utils';
+import { Badge } from '../../ui/badge';
 import { Button } from '../../ui/button';
+import { Calendar } from '../../ui/calendar';
+import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { Input } from '../../ui/input';
 import { Label } from '../../ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
-import { Badge } from '../../ui/badge';
+import { Popover, PopoverContent, PopoverTrigger } from '../../ui/popover';
 import {
   Select,
   SelectContent,
@@ -13,19 +26,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../ui/select';
-import { Popover, PopoverContent, PopoverTrigger } from '../../ui/popover';
-import { Calendar } from '../../ui/calendar';
-import {
-  Search,
-  Filter,
-  X,
-  Calendar as CalendarIcon,
-  ChevronDown,
-  RotateCcw,
-} from 'lucide-react';
-import { format } from 'date-fns';
-import { cn } from '../../../lib/utils';
-import { TeachersFilters as FiltersType } from '@/app/school/teachers/page';
 
 interface TeachersFiltersProps {
   filters: FiltersType;
@@ -216,7 +216,7 @@ export function TeachersFilters({ filters, onChange }: TeachersFiltersProps) {
                   <SelectValue placeholder="Select year" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Years</SelectItem>
+                  <SelectItem value="all">All Years</SelectItem>
                   {academicYears.map(year => (
                     <SelectItem key={year} value={year}>
                       {year}
@@ -237,7 +237,7 @@ export function TeachersFilters({ filters, onChange }: TeachersFiltersProps) {
                   <SelectValue placeholder="Select subject" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Subjects</SelectItem>
+                  <SelectItem value="all">All Subjects</SelectItem>
                   {subjects.map(subject => (
                     <SelectItem key={subject} value={subject}>
                       {subject}
@@ -258,7 +258,7 @@ export function TeachersFilters({ filters, onChange }: TeachersFiltersProps) {
                   <SelectValue placeholder="Select class" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Classes</SelectItem>
+                  <SelectItem value="all">All Classes</SelectItem>
                   {classes.map(cls => (
                     <SelectItem key={cls} value={cls}>
                       {cls}
@@ -279,7 +279,7 @@ export function TeachersFilters({ filters, onChange }: TeachersFiltersProps) {
                   <SelectValue placeholder="Select role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Roles</SelectItem>
+                  <SelectItem value="all">All Roles</SelectItem>
                   {roles.map(role => (
                     <SelectItem key={role.value} value={role.value}>
                       {role.label}
@@ -300,7 +300,7 @@ export function TeachersFilters({ filters, onChange }: TeachersFiltersProps) {
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Statuses</SelectItem>
+                  <SelectItem value="all">All Statuses</SelectItem>
                   {statuses.map(status => (
                     <SelectItem key={status.value} value={status.value}>
                       {status.label}
@@ -321,7 +321,7 @@ export function TeachersFilters({ filters, onChange }: TeachersFiltersProps) {
                   <SelectValue placeholder="Select gender" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Genders</SelectItem>
+                  <SelectItem value="all">All Genders</SelectItem>
                   {genders.map(gender => (
                     <SelectItem key={gender.value} value={gender.value}>
                       {gender.label}

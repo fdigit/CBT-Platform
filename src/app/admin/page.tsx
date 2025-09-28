@@ -1,5 +1,6 @@
 'use client';
 
+import { Role } from '../../types/models';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
@@ -13,7 +14,10 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (status === 'loading') return;
 
-    if (!session || session.user.role !== 'SUPER_ADMIN') {
+    if (
+      !session ||
+      ![Role.SUPER_ADMIN, Role.SCHOOL_ADMIN].includes(session.user.role)
+    ) {
       router.push('/auth/signin');
       return;
     }
@@ -30,7 +34,10 @@ export default function AdminDashboard() {
     );
   }
 
-  if (!session || session.user.role !== 'SUPER_ADMIN') {
+  if (
+    !session ||
+    ![Role.SUPER_ADMIN, Role.SCHOOL_ADMIN].includes(session.user.role)
+  ) {
     return null;
   }
 

@@ -1,11 +1,26 @@
 'use client';
 
+import {
+  AlertCircle,
+  Bell,
+  BookOpen,
+  Calendar,
+  CheckCircle,
+  ClipboardList,
+  Clock,
+  Eye,
+  FileText,
+  MessageSquare,
+  Plus,
+  TrendingUp,
+  Trophy,
+  Users,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Badge } from '../ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { Separator } from '../ui/separator';
 import {
   Select,
   SelectContent,
@@ -14,24 +29,6 @@ import {
   SelectValue,
 } from '../ui/select';
 import { StatsCard } from './StatsCard';
-import {
-  Users,
-  BookOpen,
-  ClipboardList,
-  Trophy,
-  Calendar,
-  Clock,
-  TrendingUp,
-  AlertCircle,
-  Plus,
-  Eye,
-  Edit,
-  MessageSquare,
-  Bell,
-  CheckCircle,
-  XCircle,
-  FileText,
-} from 'lucide-react';
 
 interface TeacherStats {
   totalStudents: number;
@@ -106,18 +103,18 @@ export function TeacherDashboardOverview() {
             0
           ) || 0;
         const classAverageScore = subjectsData.summary?.averageScore || 0;
-        const attendanceRate = Math.floor(Math.random() * 10) + 90; // Mock attendance
+        const attendanceRate = 0; // TODO: Replace with actual attendance API
 
         setStats({
           totalStudents,
           totalClasses,
-          activeExams: 3, // Mock - would come from exams API
+          activeExams: 0, // TODO: Replace with actual exams API
           pendingTasks,
           classAverageScore,
           attendanceRate,
         });
       } else {
-        // Fallback to mock data if API fails
+        // Fallback to empty data if API fails
         setStats({
           totalStudents: 0,
           totalClasses: 0,
@@ -129,7 +126,7 @@ export function TeacherDashboardOverview() {
       }
     } catch (error) {
       console.error('Error fetching teacher stats:', error);
-      // Fallback to mock data
+      // Fallback to empty data
       setStats({
         totalStudents: 0,
         totalClasses: 0,
@@ -142,93 +139,36 @@ export function TeacherDashboardOverview() {
   };
 
   const fetchTodaySchedule = async () => {
-    // Mock data - replace with actual API call
-    setTodaySchedule([
-      {
-        id: '1',
-        type: 'lesson',
-        title: 'Algebra - Quadratic Equations',
-        class: 'SS 2A',
-        subject: 'Mathematics',
-        time: '09:00 AM',
-        status: 'upcoming',
-      },
-      {
-        id: '2',
-        type: 'exam',
-        title: 'Physics CBT Test',
-        class: 'SS 1B',
-        subject: 'Physics',
-        time: '11:00 AM',
-        status: 'ongoing',
-      },
-      {
-        id: '3',
-        type: 'assignment',
-        title: 'Mathematics Assignment Due',
-        class: 'SS 2A',
-        subject: 'Mathematics',
-        time: '02:00 PM',
-        status: 'upcoming',
-      },
-    ]);
+    try {
+      // TODO: Replace with actual API call to fetch today's schedule
+      // For now, set empty array
+      setTodaySchedule([]);
+    } catch (error) {
+      console.error("Error fetching today's schedule:", error);
+      setTodaySchedule([]);
+    }
   };
 
   const fetchPendingTasks = async () => {
-    // Mock data - replace with actual API call
-    setPendingTasks([
-      {
-        id: '1',
-        type: 'grading',
-        title: 'Grade Physics Test - SS 1B',
-        description: '25 students awaiting grades',
-        dueDate: 'Today',
-        priority: 'high',
-      },
-      {
-        id: '2',
-        type: 'lesson_plan',
-        title: 'Prepare Calculus Lesson Plan',
-        description: 'For next week&apos;s classes',
-        dueDate: 'Tomorrow',
-        priority: 'medium',
-      },
-      {
-        id: '3',
-        type: 'assignment_review',
-        title: 'Review Mathematics Assignments',
-        description: '12 assignments submitted',
-        dueDate: 'In 2 days',
-        priority: 'medium',
-      },
-    ]);
+    try {
+      // TODO: Replace with actual API call to fetch pending tasks
+      // For now, set empty array
+      setPendingTasks([]);
+    } catch (error) {
+      console.error('Error fetching pending tasks:', error);
+      setPendingTasks([]);
+    }
   };
 
   const fetchRecentActivity = async () => {
-    // Mock data - replace with actual API call
-    setRecentActivity([
-      {
-        id: '1',
-        studentName: 'John Doe',
-        action: 'Submitted assignment',
-        subject: 'Mathematics',
-        time: '5 minutes ago',
-      },
-      {
-        id: '2',
-        studentName: 'Jane Smith',
-        action: 'Completed exam',
-        subject: 'Physics',
-        time: '15 minutes ago',
-      },
-      {
-        id: '3',
-        studentName: 'Mike Johnson',
-        action: 'Asked question',
-        subject: 'Mathematics',
-        time: '1 hour ago',
-      },
-    ]);
+    try {
+      // TODO: Replace with actual API call to fetch recent activity
+      // For now, set empty array
+      setRecentActivity([]);
+    } catch (error) {
+      console.error('Error fetching recent activity:', error);
+      setRecentActivity([]);
+    }
   };
 
   const getStatusBadge = (status: string) => {

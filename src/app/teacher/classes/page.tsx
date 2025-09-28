@@ -1,13 +1,10 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { TeacherDashboardLayout } from '../../../components/teacher/TeacherDashboardLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -15,25 +12,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
 import {
-  Users,
-  BookOpen,
-  Calendar,
-  Clock,
-  TrendingUp,
-  Search,
-  Filter,
-  Eye,
-  Edit,
-  MessageSquare,
   BarChart3,
+  BookOpen,
   ChevronDown,
   ChevronRight,
-  GraduationCap,
-  Trophy,
   ClipboardList,
+  Edit,
+  Eye,
+  Filter,
+  GraduationCap,
+  MessageSquare,
+  Search,
+  Trophy,
 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { TeacherDashboardLayout } from '../../../components/teacher/TeacherDashboardLayout';
 
 interface ClassInfo {
   id: string;
@@ -111,33 +107,14 @@ export default function TeacherClasses() {
   };
 
   const fetchClassStudents = async (classId: string) => {
-    // Mock data - replace with actual API call
-    setClassStudents([
-      {
-        id: '1',
-        name: 'John Doe',
-        regNumber: 'SS1A/001',
-        lastSeen: '2 hours ago',
-        currentGrade: 85,
-        attendance: 95,
-      },
-      {
-        id: '2',
-        name: 'Jane Smith',
-        regNumber: 'SS1A/002',
-        lastSeen: '1 day ago',
-        currentGrade: 92,
-        attendance: 98,
-      },
-      {
-        id: '3',
-        name: 'Mike Johnson',
-        regNumber: 'SS1A/003',
-        lastSeen: '5 hours ago',
-        currentGrade: 78,
-        attendance: 89,
-      },
-    ]);
+    try {
+      // TODO: Replace with actual API call to fetch class students
+      // For now, set empty array
+      setClassStudents([]);
+    } catch (error) {
+      console.error('Error fetching class students:', error);
+      setClassStudents([]);
+    }
   };
 
   const filteredClasses = classes.filter(cls => {

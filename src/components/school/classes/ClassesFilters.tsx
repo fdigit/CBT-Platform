@@ -1,8 +1,11 @@
 'use client';
 
-import { Input } from '../../ui/input';
-import { Button } from '../../ui/button';
+import { ChevronDown, Filter, Search, X } from 'lucide-react';
+import { useState } from 'react';
 import { Badge } from '../../ui/badge';
+import { Button } from '../../ui/button';
+import { Card, CardContent } from '../../ui/card';
+import { Input } from '../../ui/input';
 import {
   Select,
   SelectContent,
@@ -10,9 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../ui/select';
-import { Card, CardContent } from '../../ui/card';
-import { Search, Filter, X, ChevronDown } from 'lucide-react';
-import { useState } from 'react';
 // Define types locally instead of importing from page
 interface ClassesFilters {
   search: string;
@@ -144,7 +144,7 @@ export function ClassesFilters({ filters, onChange }: ClassesFiltersProps) {
                   <SelectValue placeholder="Select year" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Years</SelectItem>
+                  <SelectItem value="all">All Years</SelectItem>
                   {ACADEMIC_YEARS.map(year => (
                     <SelectItem key={year} value={year}>
                       {year}
@@ -165,7 +165,7 @@ export function ClassesFilters({ filters, onChange }: ClassesFiltersProps) {
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Statuses</SelectItem>
+                  <SelectItem value="all">All Statuses</SelectItem>
                   {STATUSES.map(status => (
                     <SelectItem key={status.value} value={status.value}>
                       <span

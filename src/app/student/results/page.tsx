@@ -1,8 +1,6 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState, Suspense } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -10,50 +8,55 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  LineChart,
+  Award,
+  BarChart3,
+  Download,
+  FileText,
+  Target,
+  TrendingUp,
+} from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
   Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell,
 } from 'recharts';
 import {
-  Download,
-  TrendingUp,
-  Target,
-  Award,
-  Calendar,
-  BarChart3,
-  FileText,
-} from 'lucide-react';
-import { useToast } from '../../../hooks/use-toast';
-import {
-  StudentDashboardLayout,
   ResultsTable,
   StatsCard,
+  StudentDashboardLayout,
 } from '../../../components/student';
+import { useToast } from '../../../hooks/use-toast';
+import {
+  generateAllResultsPDF,
+  generateResultPDF,
+} from '../../../lib/pdf-generator';
 
 interface Result {
   id: string;
   examTitle: string;
   subject: string;
   score: number;
-  totalPoints: number;
+  totalMarks: number;
   percentage: number;
   grade: string;
-  date: string;
-  duration: number;
-  status: 'passed' | 'failed';
+  passed: boolean;
+  teacherRemark: string;
+  examDate: string;
+  gradedAt: string;
+  teacher: string;
 }
 
 interface PerformanceData {
@@ -104,9 +107,9 @@ function ResultsContent() {
     try {
       const response = await fetch('/api/student/results');
       if (response.ok) {
-        const resultsData = await response.json();
-        setResults(resultsData);
-        processChartData(resultsData);
+        const data = await response.json();
+        setResults(data.results || []);
+        processChartData(data.results || []);
       } else {
         toast({
           title: 'Error',
@@ -131,7 +134,7 @@ function ResultsContent() {
       {};
 
     resultsData.forEach(result => {
-      const month = new Date(result.date).toLocaleDateString('en-US', {
+      const month = new Date(result.examDate).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',
       });
@@ -185,8 +188,11 @@ function ResultsContent() {
     });
 
     const gradeColors = {
+      'A+': '#10b981',
       A: '#10b981',
+      'B+': '#3b82f6',
       B: '#3b82f6',
+      'C+': '#f59e0b',
       C: '#f59e0b',
       D: '#ef4444',
       F: '#dc2626',
@@ -201,12 +207,35 @@ function ResultsContent() {
     setGradeDistribution(gradeChart);
   };
 
-  const handleDownloadPDF = (resultId: string) => {
-    // TODO: Implement PDF download
-    toast({
-      title: 'Download',
-      description: 'PDF download will be implemented soon',
-    });
+  const handleDownloadPDF = async (resultId: string) => {
+    if (!session?.user?.name) return;
+
+    try {
+      if (resultId === 'all') {
+        // Download all results
+        await generateAllResultsPDF(results, session.user.name);
+        toast({
+          title: 'Success',
+          description: 'Complete results PDF downloaded successfully',
+        });
+      } else {
+        // Download individual result
+        const result = results.find(r => r.id === resultId);
+        if (result) {
+          await generateResultPDF(result, session.user.name);
+          toast({
+            title: 'Success',
+            description: 'Result PDF downloaded successfully',
+          });
+        }
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to generate PDF',
+        variant: 'destructive',
+      });
+    }
   };
 
   const handleViewDetails = (resultId: string) => {
@@ -220,7 +249,7 @@ function ResultsContent() {
       results.reduce((sum, r) => sum + r.percentage, 0) / results.length
     );
     const highest = Math.max(...results.map(r => r.percentage));
-    const passed = results.filter(r => r.status === 'passed').length;
+    const passed = results.filter(r => r.passed).length;
 
     return { avg, highest, passed };
   };

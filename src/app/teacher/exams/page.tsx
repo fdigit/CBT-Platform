@@ -1,9 +1,7 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { TeacherDashboardLayout } from '../../../components/teacher/TeacherDashboardLayout';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -11,8 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -21,25 +17,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useToast } from '../../../hooks/use-toast';
 import {
+  AlertCircle,
+  BarChart3,
+  BookOpen,
+  Calendar,
+  CheckCircle,
+  Clock,
+  Edit,
+  Eye,
+  Filter,
+  GraduationCap,
   Plus,
   Search,
-  Filter,
-  Eye,
-  Edit,
-  Trash2,
   Send,
-  Clock,
+  Trash2,
   Users,
-  CheckCircle,
   XCircle,
-  AlertCircle,
-  Calendar,
-  BookOpen,
-  GraduationCap,
-  BarChart3,
 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { TeacherDashboardLayout } from '../../../components/teacher/TeacherDashboardLayout';
+import { useToast } from '../../../hooks/use-toast';
 
 interface Exam {
   id: string;
@@ -347,7 +347,10 @@ export default function TeacherExams() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">My Exams</h1>
-            <p className="text-gray-600">Create and manage your examinations</p>
+            <p className="text-gray-600">
+              Create and manage your examinations. Click "Results" to view exam
+              results.
+            </p>
           </div>
           <Button
             onClick={() => router.push('/teacher/exams/create')}

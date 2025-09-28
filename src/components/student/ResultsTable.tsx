@@ -1,8 +1,9 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
+import { Download, Eye, TrendingDown, TrendingUp } from 'lucide-react';
 import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import {
   Table,
   TableBody,
@@ -11,19 +12,20 @@ import {
   TableHeader,
   TableRow,
 } from '../ui/table';
-import { Download, Eye, TrendingUp, TrendingDown } from 'lucide-react';
 
 interface Result {
   id: string;
   examTitle: string;
   subject: string;
   score: number;
-  totalPoints: number;
+  totalMarks: number;
   percentage: number;
   grade: string;
-  date: string;
-  duration: number;
-  status: 'passed' | 'failed';
+  examDate: string;
+  gradedAt: string;
+  teacherRemark: string;
+  teacher: string;
+  passed: boolean;
 }
 
 interface ResultsTableProps {
@@ -45,10 +47,10 @@ export function ResultsTable({
 }: ResultsTableProps) {
   const displayResults = limit ? results.slice(0, limit) : results;
 
-  const getGradeBadge = (grade: string, status: 'passed' | 'failed') => {
+  const getGradeBadge = (grade: string, passed: boolean) => {
     const baseClasses = 'font-medium';
 
-    if (status === 'passed') {
+    if (passed) {
       return (
         <Badge className={`bg-green-100 text-green-800 ${baseClasses}`}>
           {grade}
@@ -118,7 +120,7 @@ export function ResultsTable({
                 <TableCell>{result.subject}</TableCell>
                 <TableCell>
                   <span className="font-mono">
-                    {result.score}/{result.totalPoints}
+                    {result.score}/{result.totalMarks}
                   </span>
                 </TableCell>
                 <TableCell>
@@ -135,10 +137,10 @@ export function ResultsTable({
                   </div>
                 </TableCell>
                 <TableCell>
-                  {getGradeBadge(result.grade, result.status)}
+                  {getGradeBadge(result.grade, result.passed)}
                 </TableCell>
                 <TableCell className="text-sm text-gray-500">
-                  {new Date(result.date).toLocaleDateString()}
+                  {new Date(result.examDate).toLocaleDateString()}
                 </TableCell>
                 {showActions && (
                   <TableCell className="text-right">

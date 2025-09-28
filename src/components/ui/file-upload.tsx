@@ -1,21 +1,20 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
-import { Button } from './button';
-import { Progress } from './progress';
-import { cn } from '../../lib/utils';
 import {
-  Upload,
-  X,
+  CheckCircle,
+  File,
   FileText,
   Image,
-  Video,
   Music,
-  File,
-  AlertCircle,
-  CheckCircle,
+  Upload,
+  Video,
+  X,
 } from 'lucide-react';
+import { useCallback, useRef, useState } from 'react';
 import { useToast } from '../../hooks/use-toast';
+import { cn } from '../../lib/utils';
+import { Button } from './button';
+import { Progress } from './progress';
 
 export interface UploadedFile {
   id?: string;
@@ -24,6 +23,8 @@ export interface UploadedFile {
   size: number;
   type: string;
   uploadedAt?: string;
+  uploaded?: boolean;
+  existing?: boolean;
 }
 
 interface FileUploadProps {
@@ -199,6 +200,7 @@ export function FileUpload({
               result.resource?.uploadedAt ||
               result.file?.uploadedAt ||
               result.uploadedAt,
+            uploaded: true,
           };
 
           uploadedFiles.push(uploadedFile);

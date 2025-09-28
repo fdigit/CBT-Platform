@@ -1,6 +1,21 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { Teacher } from '@/types/models';
+import {
+  AlertCircle,
+  AlertTriangle,
+  CheckCircle,
+  Download,
+  FileSpreadsheet,
+  FileText,
+  RotateCcw,
+  Upload,
+} from 'lucide-react';
+import { useCallback, useState } from 'react';
+import { useToast } from '../../../hooks/use-toast';
+import { Badge } from '../../ui/badge';
+import { Button } from '../../ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import {
   Dialog,
   DialogContent,
@@ -8,20 +23,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../../ui/dialog';
-import { Button } from '../../ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
-import { Badge } from '../../ui/badge';
-import { Progress } from '../../ui/progress';
 import { Label } from '../../ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '../../ui/table';
+import { Progress } from '../../ui/progress';
 import {
   Select,
   SelectContent,
@@ -30,20 +33,14 @@ import {
   SelectValue,
 } from '../../ui/select';
 import {
-  Upload,
-  Download,
-  FileSpreadsheet,
-  AlertCircle,
-  CheckCircle,
-  X,
-  FileText,
-  Users,
-  Eye,
-  AlertTriangle,
-  RotateCcw,
-} from 'lucide-react';
-import { useToast } from '../../../hooks/use-toast';
-import { Teacher } from '@/types/models';
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../../ui/table';
+import { Tabs, TabsContent } from '../../ui/tabs';
 
 interface BulkUploadModalProps {
   isOpen: boolean;
@@ -589,7 +586,9 @@ export function BulkUploadModal({
                           <SelectValue placeholder="Select column" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">-- Select Column --</SelectItem>
+                          <SelectItem value="none">
+                            -- Select Column --
+                          </SelectItem>
                           {headers.map(header => (
                             <SelectItem key={header} value={header}>
                               {header}

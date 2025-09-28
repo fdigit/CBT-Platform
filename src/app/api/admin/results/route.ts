@@ -1,5 +1,6 @@
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { Role } from '@/types/models';
 import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -7,22 +8,17 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session || session.user.role !== 'STUDENT') {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    if (!session || !session.user) {
+      return NextResponse.json(
+        { message: 'Authentication required' },
+        { status: 401 }
+      );
     }
 
-    // Get student profile
-    const student = await prisma.student.findUnique({
-      where: { userId: session.user.id },
-      include: {
-        class: { select: { name: true, section: true } },
-      },
-    });
-
-    if (!student) {
+    if (![Role.SUPER_ADMIN, Role.SCHOOL_ADMIN].includes(session.user.role)) {
       return NextResponse.json(
-        { message: 'Student profile not found' },
-        { status: 404 }
+        { message: 'Insufficient permissions' },
+        { status: 403 }
       );
     }
 
@@ -30,20 +26,50 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '50');
     const search = searchParams.get('search');
+    const classId = searchParams.get('classId');
     const subjectId = searchParams.get('subjectId');
-    const examId = searchParams.get('examId');
+    const teacherId = searchParams.get('teacherId');
+    const examType = searchParams.get('examType');
     const dateFrom = searchParams.get('dateFrom');
     const dateTo = searchParams.get('dateTo');
     const grade = searchParams.get('grade');
 
-    // Build where clause
-    const whereClause: any = {
-      studentId: student.id,
-    };
+    // Build where clause based on user role
+    const whereClause: any = {};
 
-    if (search) {
+    if (session.user.role === Role.SCHOOL_ADMIN) {
       whereClause.exam = {
-        title: { contains: search, mode: 'insensitive' },
+        schoolId: session.user.schoolId,
+      };
+    }
+
+    // Add filters
+    if (search) {
+      whereClause.OR = [
+        {
+          student: {
+            user: {
+              name: { contains: search, mode: 'insensitive' },
+            },
+          },
+        },
+        {
+          student: {
+            regNumber: { contains: search, mode: 'insensitive' },
+          },
+        },
+        {
+          exam: {
+            title: { contains: search, mode: 'insensitive' },
+          },
+        },
+      ];
+    }
+
+    if (classId) {
+      whereClause.student = {
+        ...whereClause.student,
+        classId: classId,
       };
     }
 
@@ -54,10 +80,10 @@ export async function GET(request: NextRequest) {
       };
     }
 
-    if (examId) {
+    if (teacherId) {
       whereClause.exam = {
         ...whereClause.exam,
-        id: examId,
+        teacherId: teacherId,
       };
     }
 
@@ -76,6 +102,12 @@ export async function GET(request: NextRequest) {
       prisma.result.findMany({
         where: whereClause,
         include: {
+          student: {
+            include: {
+              user: { select: { name: true, email: true } },
+              class: { select: { name: true, section: true } },
+            },
+          },
           exam: {
             include: {
               subject: { select: { name: true, code: true } },
@@ -84,6 +116,7 @@ export async function GET(request: NextRequest) {
                   user: { select: { name: true } },
                 },
               },
+              class: { select: { name: true, section: true } },
             },
           },
         },
@@ -106,18 +139,23 @@ export async function GET(request: NextRequest) {
 
       return {
         id: result.id,
-        examTitle: result.exam.title,
+        studentName: result.student.user.name,
+        admissionNumber: result.student.regNumber,
+        class: result.student.class
+          ? `${result.student.class.name} ${result.student.class.section || ''}`
+          : 'N/A',
         subject: result.exam.subject?.name || 'General',
+        examTitle: result.exam.title,
         score: result.score,
         totalMarks: result.exam.totalMarks || 0,
         percentage: Math.round(percentage * 100) / 100,
         grade,
         passed,
-        teacherRemark: '', // TODO: Add teacher remarks functionality
+        teacher: result.exam.teacher?.user.name || 'N/A',
         examDate: result.exam.startTime,
         gradedAt: result.gradedAt,
         examId: result.exam.id,
-        teacher: result.exam.teacher?.user.name || 'N/A',
+        studentId: result.student.id,
       };
     });
 
@@ -136,7 +174,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error fetching student results:', error);
+    console.error('Error fetching admin results:', error);
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 }

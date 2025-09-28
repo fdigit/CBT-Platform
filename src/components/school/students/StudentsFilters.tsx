@@ -1,9 +1,20 @@
 'use client';
 
-import { Input } from '../../ui/input';
-import { Button } from '../../ui/button';
+import { format } from 'date-fns';
+import {
+  Calendar as CalendarIcon,
+  ChevronDown,
+  Filter,
+  Search,
+  X,
+} from 'lucide-react';
+import { useState } from 'react';
 import { Badge } from '../../ui/badge';
+import { Button } from '../../ui/button';
 import { Calendar } from '../../ui/calendar';
+import { Card, CardContent } from '../../ui/card';
+import { Input } from '../../ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '../../ui/popover';
 import {
   Select,
   SelectContent,
@@ -11,17 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../ui/select';
-import { Popover, PopoverContent, PopoverTrigger } from '../../ui/popover';
-import { Card, CardContent } from '../../ui/card';
-import {
-  Search,
-  Filter,
-  X,
-  Calendar as CalendarIcon,
-  ChevronDown,
-} from 'lucide-react';
-import { useState } from 'react';
-import { format } from 'date-fns';
 // Define the filters type locally since it's not exported from the page
 interface StudentsFilters {
   search: string;
@@ -249,7 +249,7 @@ export function StudentsFilters({ filters, onChange }: StudentsFiltersProps) {
                   <SelectValue placeholder="Select year" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Years</SelectItem>
+                  <SelectItem value="all">All Years</SelectItem>
                   {ACADEMIC_YEARS.map(year => (
                     <SelectItem key={year} value={year}>
                       {year}
@@ -270,7 +270,7 @@ export function StudentsFilters({ filters, onChange }: StudentsFiltersProps) {
                   <SelectValue placeholder="Select class" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Classes</SelectItem>
+                  <SelectItem value="all">All Classes</SelectItem>
                   {CLASSES.map(cls => (
                     <SelectItem key={cls} value={cls}>
                       {cls}
@@ -291,7 +291,7 @@ export function StudentsFilters({ filters, onChange }: StudentsFiltersProps) {
                   <SelectValue placeholder="Select section" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Sections</SelectItem>
+                  <SelectItem value="all">All Sections</SelectItem>
                   {SECTIONS.map(section => (
                     <SelectItem key={section} value={section}>
                       {section}
@@ -312,7 +312,7 @@ export function StudentsFilters({ filters, onChange }: StudentsFiltersProps) {
                   <SelectValue placeholder="Select gender" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Genders</SelectItem>
+                  <SelectItem value="all">All Genders</SelectItem>
                   {GENDERS.map(gender => (
                     <SelectItem key={gender.value} value={gender.value}>
                       {gender.label}
@@ -333,7 +333,7 @@ export function StudentsFilters({ filters, onChange }: StudentsFiltersProps) {
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Statuses</SelectItem>
+                  <SelectItem value="all">All Statuses</SelectItem>
                   {STATUSES.map(status => (
                     <SelectItem key={status.value} value={status.value}>
                       <span

@@ -1,14 +1,17 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { TeacherDashboardLayout } from '../../../components/teacher/TeacherDashboardLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -17,15 +20,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
   Table,
   TableBody,
   TableCell,
@@ -33,25 +27,27 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  Users,
-  Search,
-  Filter,
-  Eye,
-  MessageSquare,
+  AlertTriangle,
+  Award,
   BarChart3,
   Calendar,
-  TrendingUp,
-  TrendingDown,
   CheckCircle,
-  XCircle,
-  Clock,
-  Award,
-  AlertTriangle,
-  Phone,
+  Eye,
+  Filter,
   Mail,
-  MapPin,
+  MessageSquare,
+  Phone,
+  Search,
+  TrendingDown,
+  TrendingUp,
+  Users,
 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { TeacherDashboardLayout } from '../../../components/teacher/TeacherDashboardLayout';
 
 interface StudentInfo {
   id: string;
@@ -132,190 +128,25 @@ export default function TeacherStudents() {
   }, [session, status, router]);
 
   const fetchStudents = async () => {
-    // Mock data - replace with actual API call
-    setStudents([
-      {
-        id: '1',
-        name: 'John Doe',
-        regNumber: 'SS2A/001',
-        email: 'john.doe@student.com',
-        phone: '0801234567',
-        class: 'SS 2A',
-        subjects: ['Mathematics', 'Physics'],
-        status: 'active',
-        currentGPA: 3.8,
-        averageScore: 85.5,
-        totalExams: 12,
-        completedAssignments: 18,
-        pendingAssignments: 2,
-        attendanceRate: 95.2,
-        presentDays: 89,
-        absentDays: 4,
-        lateDays: 1,
-        parentName: 'Jane Doe',
-        parentPhone: '0807654321',
-        parentEmail: 'jane.doe@parent.com',
-        lastLogin: '2 hours ago',
-        lastExamTaken: '1 day ago',
-        recentGrades: [
-          {
-            subject: 'Mathematics',
-            score: 88,
-            date: '2024-01-20',
-            type: 'exam',
-          },
-          {
-            subject: 'Physics',
-            score: 82,
-            date: '2024-01-18',
-            type: 'assignment',
-          },
-          {
-            subject: 'Mathematics',
-            score: 90,
-            date: '2024-01-15',
-            type: 'quiz',
-          },
-        ],
-      },
-      {
-        id: '2',
-        name: 'Jane Smith',
-        regNumber: 'SS2A/002',
-        email: 'jane.smith@student.com',
-        class: 'SS 2A',
-        subjects: ['Mathematics', 'Physics'],
-        status: 'active',
-        currentGPA: 4.0,
-        averageScore: 92.3,
-        totalExams: 12,
-        completedAssignments: 20,
-        pendingAssignments: 0,
-        attendanceRate: 98.1,
-        presentDays: 92,
-        absentDays: 1,
-        lateDays: 1,
-        parentName: 'Robert Smith',
-        parentPhone: '0809876543',
-        parentEmail: 'robert.smith@parent.com',
-        lastLogin: '30 minutes ago',
-        lastExamTaken: '3 hours ago',
-        recentGrades: [
-          {
-            subject: 'Mathematics',
-            score: 95,
-            date: '2024-01-20',
-            type: 'exam',
-          },
-          {
-            subject: 'Physics',
-            score: 89,
-            date: '2024-01-18',
-            type: 'assignment',
-          },
-          {
-            subject: 'Mathematics',
-            score: 93,
-            date: '2024-01-15',
-            type: 'quiz',
-          },
-        ],
-      },
-      {
-        id: '3',
-        name: 'Mike Johnson',
-        regNumber: 'SS1B/001',
-        email: 'mike.johnson@student.com',
-        class: 'SS 1B',
-        subjects: ['Physics'],
-        status: 'active',
-        currentGPA: 3.2,
-        averageScore: 76.8,
-        totalExams: 10,
-        completedAssignments: 14,
-        pendingAssignments: 3,
-        attendanceRate: 87.5,
-        presentDays: 75,
-        absentDays: 8,
-        lateDays: 3,
-        parentName: 'Lisa Johnson',
-        parentPhone: '0803456789',
-        parentEmail: 'lisa.johnson@parent.com',
-        lastLogin: '1 day ago',
-        lastExamTaken: '2 days ago',
-        recentGrades: [
-          { subject: 'Physics', score: 78, date: '2024-01-19', type: 'exam' },
-          {
-            subject: 'Physics',
-            score: 75,
-            date: '2024-01-17',
-            type: 'assignment',
-          },
-          { subject: 'Physics', score: 80, date: '2024-01-14', type: 'quiz' },
-        ],
-      },
-      {
-        id: '4',
-        name: 'Sarah Wilson',
-        regNumber: 'SS1B/002',
-        email: 'sarah.wilson@student.com',
-        class: 'SS 1B',
-        subjects: ['Physics'],
-        status: 'active',
-        currentGPA: 3.9,
-        averageScore: 89.2,
-        totalExams: 10,
-        completedAssignments: 16,
-        pendingAssignments: 1,
-        attendanceRate: 96.7,
-        presentDays: 88,
-        absentDays: 2,
-        lateDays: 1,
-        parentName: 'David Wilson',
-        parentPhone: '0805432109',
-        parentEmail: 'david.wilson@parent.com',
-        lastLogin: '4 hours ago',
-        lastExamTaken: '1 day ago',
-        recentGrades: [
-          { subject: 'Physics', score: 92, date: '2024-01-19', type: 'exam' },
-          {
-            subject: 'Physics',
-            score: 87,
-            date: '2024-01-17',
-            type: 'assignment',
-          },
-          { subject: 'Physics', score: 91, date: '2024-01-14', type: 'quiz' },
-        ],
-      },
-    ]);
+    try {
+      // TODO: Replace with actual API call to fetch students
+      // For now, set empty array
+      setStudents([]);
+    } catch (error) {
+      console.error('Error fetching students:', error);
+      setStudents([]);
+    }
   };
 
   const fetchAttendanceRecords = async () => {
-    // Mock data - replace with actual API call
-    setAttendanceRecords([
-      {
-        id: '1',
-        studentId: '1',
-        date: '2024-01-22',
-        status: 'present',
-        subject: 'Mathematics',
-      },
-      {
-        id: '2',
-        studentId: '2',
-        date: '2024-01-22',
-        status: 'present',
-        subject: 'Mathematics',
-      },
-      {
-        id: '3',
-        studentId: '3',
-        date: '2024-01-22',
-        status: 'late',
-        subject: 'Physics',
-        notes: 'Arrived 10 minutes late',
-      },
-    ]);
+    try {
+      // TODO: Replace with actual API call to fetch attendance records
+      // For now, set empty array
+      setAttendanceRecords([]);
+    } catch (error) {
+      console.error('Error fetching attendance records:', error);
+      setAttendanceRecords([]);
+    }
   };
 
   const filteredStudents = students.filter(student => {

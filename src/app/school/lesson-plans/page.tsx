@@ -1,13 +1,34 @@
 'use client';
 
+import {
+  AlertTriangle,
+  BarChart3,
+  Calendar,
+  CheckCircle,
+  Clock,
+  Download,
+  Eye,
+  FileText,
+  MessageSquare,
+  Search,
+  User,
+} from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Card, CardContent } from '../../../components/ui/card';
-import { Button } from '../../../components/ui/button';
+import { SchoolDashboardLayout } from '../../../components/school';
 import { Badge } from '../../../components/ui/badge';
+import { Button } from '../../../components/ui/button';
+import { Card, CardContent } from '../../../components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../../../components/ui/dialog';
 import { Input } from '../../../components/ui/input';
-import { Textarea } from '../../../components/ui/textarea';
 import { Label } from '../../../components/ui/label';
 import {
   Select,
@@ -17,20 +38,6 @@ import {
   SelectValue,
 } from '../../../components/ui/select';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '../../../components/ui/dialog';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '../../../components/ui/tabs';
-import {
   Table,
   TableBody,
   TableCell,
@@ -39,55 +46,69 @@ import {
   TableRow,
 } from '../../../components/ui/table';
 import {
-  FileText,
-  Search,
-  Eye,
-  CheckCircle,
-  Clock,
-  Calendar,
-  User,
-  AlertTriangle,
-  MessageSquare,
-  Download,
-  BarChart3,
-} from 'lucide-react';
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '../../../components/ui/tabs';
+import { Textarea } from '../../../components/ui/textarea';
 import { useToast } from '../../../hooks/use-toast';
-import { SchoolDashboardLayout } from '../../../components/school';
 
 interface LessonPlan {
   id: string;
   title: string;
-  subject: string;
-  class: string;
-  topic: string;
+  topic?: string;
   duration: number;
   objectives: string[];
   materials: string[];
   activities: string[];
-  assessment: string;
+  assessment?: string;
   homework?: string;
   notes?: string;
-  teacherName: string;
-  teacherId: string;
-  status: 'draft' | 'published' | 'archived';
-  reviewStatus: 'pending' | 'approved' | 'rejected' | 'needs_revision';
+  status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+  reviewStatus: 'PENDING' | 'APPROVED' | 'REJECTED' | 'NEEDS_REVISION';
   reviewNotes?: string;
-  reviewedBy?: string;
   reviewedAt?: string;
   createdAt: string;
   updatedAt: string;
   scheduledDate?: string;
-  resources: {
+  teacher: {
+    id: string;
+    employeeId: string;
+    user: {
+      id: string;
+      name: string;
+      email: string;
+    };
+  };
+  class?: {
     id: string;
     name: string;
-    type: 'pdf' | 'video' | 'image' | 'document';
-    url: string;
-    size: string;
+    section?: string;
+  };
+  subject?: {
+    id: string;
+    name: string;
+    code?: string;
+  };
+  reviewer?: {
+    id: string;
+    name: string;
+  };
+  resources: {
+    id: string;
+    fileName: string;
+    originalName: string;
+    filePath: string;
+    fileSize: number;
+    mimeType: string;
+    resourceType: string;
+    uploadedAt: string;
   }[];
 }
 
 interface ReviewForm {
-  status: 'approved' | 'rejected' | 'needs_revision';
+  status: 'APPROVED' | 'REJECTED' | 'NEEDS_REVISION';
   notes: string;
 }
 
@@ -108,7 +129,7 @@ export default function SchoolLessonPlans() {
   const [loading, setLoading] = useState(true);
 
   const [reviewForm, setReviewForm] = useState<ReviewForm>({
-    status: 'approved',
+    status: 'APPROVED',
     notes: '',
   });
 
@@ -126,188 +147,27 @@ export default function SchoolLessonPlans() {
   const fetchLessonPlans = async () => {
     try {
       setLoading(true);
-      // Mock data - replace with actual API call
-      setLessonPlans([
-        {
-          id: '1',
-          title: 'Introduction to Quadratic Equations',
-          subject: 'Mathematics',
-          class: 'SS 2A',
-          topic: 'Algebra',
-          duration: 80,
-          teacherName: 'Mr. Johnson',
-          teacherId: 'teacher1',
-          objectives: [
-            'Define quadratic equations',
-            'Identify coefficients in quadratic equations',
-            'Solve simple quadratic equations',
-          ],
-          materials: [
-            'Whiteboard',
-            'Calculator',
-            'Textbook Chapter 5',
-            'Practice worksheets',
-          ],
-          activities: [
-            'Warm-up review of linear equations (10 mins)',
-            'Introduction to quadratic form (20 mins)',
-            'Guided practice examples (30 mins)',
-            'Independent practice (15 mins)',
-            'Wrap-up and homework assignment (5 mins)',
-          ],
-          assessment: 'Exit ticket with 3 quadratic equation problems',
-          homework: 'Complete exercises 5.1-5.10 in textbook',
-          resources: [
-            {
-              id: '1',
-              name: 'Quadratic Equations Slides.pdf',
-              type: 'pdf',
-              url: '/resources/quadratic-slides.pdf',
-              size: '2.3 MB',
-            },
-          ],
-          status: 'published',
-          reviewStatus: 'pending',
-          createdAt: '2024-01-15',
-          updatedAt: '2024-01-16',
-          scheduledDate: '2024-01-20',
-        },
-        {
-          id: '2',
-          title: "Newton's Laws of Motion",
-          subject: 'Physics',
-          class: 'SS 1B',
-          topic: 'Mechanics',
-          duration: 60,
-          teacherName: 'Mrs. Davis',
-          teacherId: 'teacher2',
-          objectives: [
-            "State Newton's three laws of motion",
-            "Apply Newton's laws to real-world scenarios",
-            'Calculate force, mass, and acceleration',
-          ],
-          materials: [
-            'Physics lab equipment',
-            'Demonstration cart',
-            'Weights and springs',
-            'Stopwatch',
-          ],
-          activities: [
-            'Review previous lesson (5 mins)',
-            'Demonstration of inertia (15 mins)',
-            'Interactive experiments (25 mins)',
-            'Problem-solving session (10 mins)',
-            'Summary and questions (5 mins)',
-          ],
-          assessment: 'Lab report on motion experiments',
-          homework: 'Read Chapter 3 and answer review questions',
-          resources: [
-            {
-              id: '2',
-              name: 'Newton Laws Demo Video.mp4',
-              type: 'video',
-              url: '/resources/newton-demo.mp4',
-              size: '45.2 MB',
-            },
-          ],
-          status: 'published',
-          reviewStatus: 'approved',
-          reviewedBy: 'Dr. Smith',
-          reviewedAt: '2024-01-18T10:00:00Z',
-          createdAt: '2024-01-14',
-          updatedAt: '2024-01-17',
-          scheduledDate: '2024-01-22',
-        },
-        {
-          id: '3',
-          title: 'Cell Division and Mitosis',
-          subject: 'Biology',
-          class: 'SS 2B',
-          topic: 'Cell Biology',
-          duration: 70,
-          teacherName: 'Dr. Williams',
-          teacherId: 'teacher3',
-          objectives: [
-            'Explain the process of cell division',
-            'Identify stages of mitosis',
-            'Compare mitosis and meiosis',
-          ],
-          materials: [
-            'Microscopes',
-            'Prepared slides',
-            'Cell division models',
-            'Worksheets',
-          ],
-          activities: [
-            'Review cell structure (10 mins)',
-            'Microscope observation (25 mins)',
-            'Model demonstration (20 mins)',
-            'Group discussion (10 mins)',
-            'Summary and assessment (5 mins)',
-          ],
-          assessment: 'Diagram labeling and short answer questions',
-          homework: 'Complete cell division worksheet',
-          notes: 'Ensure all microscopes are working before class',
-          resources: [],
-          status: 'published',
-          reviewStatus: 'needs_revision',
-          reviewNotes:
-            'Please add more specific learning outcomes and include safety procedures for microscope use.',
-          reviewedBy: 'Dr. Smith',
-          reviewedAt: '2024-01-19T14:30:00Z',
-          createdAt: '2024-01-16',
-          updatedAt: '2024-01-17',
-          scheduledDate: '2024-01-25',
-        },
-        {
-          id: '4',
-          title: "Shakespeare's Romeo and Juliet",
-          subject: 'English',
-          class: 'SS 1A',
-          topic: 'Literature',
-          duration: 90,
-          teacherName: 'Ms. Thompson',
-          teacherId: 'teacher4',
-          objectives: [
-            'Analyze character development in Romeo and Juliet',
-            'Identify themes of love and conflict',
-            'Understand Shakespearean language and context',
-          ],
-          materials: [
-            'Romeo and Juliet text',
-            'Audio recording',
-            'Character analysis worksheets',
-            'Projector for video clips',
-          ],
-          activities: [
-            'Reading Act 2, Scene 2 (25 mins)',
-            'Character analysis discussion (30 mins)',
-            'Video clip analysis (20 mins)',
-            'Creative writing exercise (10 mins)',
-            'Wrap-up and preview (5 mins)',
-          ],
-          assessment: 'Character analysis essay assignment',
-          homework: 'Read Act 3 and complete character map',
-          resources: [
-            {
-              id: '3',
-              name: 'Romeo and Juliet Study Guide.pdf',
-              type: 'pdf',
-              url: '/resources/romeo-juliet-guide.pdf',
-              size: '1.8 MB',
-            },
-          ],
-          status: 'published',
-          reviewStatus: 'rejected',
-          reviewNotes:
-            'The lesson plan lacks clear assessment criteria and does not align with curriculum standards. Please revise to include specific learning objectives and rubrics.',
-          reviewedBy: 'Prof. Anderson',
-          reviewedAt: '2024-01-20T09:15:00Z',
-          createdAt: '2024-01-18',
-          updatedAt: '2024-01-19',
-          scheduledDate: '2024-01-28',
-        },
-      ]);
+
+      const params = new URLSearchParams({
+        page: '1',
+        limit: '50',
+        ...Object.fromEntries(
+          Object.entries({
+            search: searchQuery,
+            status: filterStatus,
+            teacherId: filterTeacher,
+            classId: 'all',
+            subjectId: filterSubject,
+          }).filter(([_, v]) => v && v !== 'all')
+        ),
+      });
+
+      const response = await fetch(`/api/admin/lesson-plans?${params}`);
+      if (!response.ok) throw new Error('Failed to fetch lesson plans');
+
+      const data = await response.json();
+      console.log('Fetched lesson plans:', data.lessonPlans);
+      setLessonPlans(data.lessonPlans || []);
     } catch (error) {
       toast({
         title: 'Error',
@@ -321,15 +181,15 @@ export default function SchoolLessonPlans() {
 
   const getReviewStatusBadge = (reviewStatus: string) => {
     switch (reviewStatus) {
-      case 'approved':
+      case 'APPROVED':
         return (
           <Badge variant="default" className="bg-green-600">
             Approved
           </Badge>
         );
-      case 'rejected':
+      case 'REJECTED':
         return <Badge variant="destructive">Rejected</Badge>;
-      case 'needs_revision':
+      case 'NEEDS_REVISION':
         return (
           <Badge
             variant="outline"
@@ -338,7 +198,7 @@ export default function SchoolLessonPlans() {
             Needs Revision
           </Badge>
         );
-      case 'pending':
+      case 'PENDING':
         return (
           <Badge variant="outline" className="text-blue-600 border-blue-600">
             Pending Review
@@ -351,13 +211,13 @@ export default function SchoolLessonPlans() {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'published':
+      case 'PUBLISHED':
         return (
           <Badge variant="default" className="bg-green-600">
             Published
           </Badge>
         );
-      case 'draft':
+      case 'DRAFT':
         return (
           <Badge
             variant="outline"
@@ -366,7 +226,7 @@ export default function SchoolLessonPlans() {
             Draft
           </Badge>
         );
-      case 'archived':
+      case 'ARCHIVED':
         return <Badge variant="secondary">Archived</Badge>;
       default:
         return <Badge variant="outline">Unknown</Badge>;
@@ -376,25 +236,28 @@ export default function SchoolLessonPlans() {
   const filteredLessonPlans = lessonPlans.filter(lesson => {
     const matchesSearch =
       lesson.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      lesson.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      lesson.teacherName.toLowerCase().includes(searchQuery.toLowerCase());
+      lesson.subject?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      false ||
+      lesson.teacher.user.name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
     const matchesStatus =
       filterStatus === 'all' || lesson.reviewStatus === filterStatus;
     const matchesSubject =
-      filterSubject === 'all' || lesson.subject === filterSubject;
+      filterSubject === 'all' || lesson.subject?.name === filterSubject;
     const matchesTeacher =
-      filterTeacher === 'all' || lesson.teacherId === filterTeacher;
+      filterTeacher === 'all' || lesson.teacher.id === filterTeacher;
 
     // Tab filtering
     let matchesTab = true;
     if (activeTab === 'pending') {
-      matchesTab = lesson.reviewStatus === 'pending';
+      matchesTab = lesson.reviewStatus === 'PENDING';
     } else if (activeTab === 'approved') {
-      matchesTab = lesson.reviewStatus === 'approved';
+      matchesTab = lesson.reviewStatus === 'APPROVED';
     } else if (activeTab === 'needs_action') {
       matchesTab =
-        lesson.reviewStatus === 'rejected' ||
-        lesson.reviewStatus === 'needs_revision';
+        lesson.reviewStatus === 'REJECTED' ||
+        lesson.reviewStatus === 'NEEDS_REVISION';
     }
 
     return (
@@ -408,13 +271,20 @@ export default function SchoolLessonPlans() {
 
   const handleReview = async (lessonId: string) => {
     try {
-      // Mock review - replace with actual API call
+      const response = await fetch(`/api/admin/lesson-plans/${lessonId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(reviewForm),
+      });
+
+      if (!response.ok) throw new Error('Failed to review lesson plan');
+
       toast({
         title: 'Success',
         description: 'Lesson plan reviewed successfully',
       });
       setIsReviewModalOpen(false);
-      setReviewForm({ status: 'approved', notes: '' });
+      setReviewForm({ status: 'APPROVED', notes: '' });
       // Refresh lesson plans
       fetchLessonPlans();
     } catch (error) {
@@ -429,13 +299,13 @@ export default function SchoolLessonPlans() {
   const getTabCount = (tabName: string) => {
     switch (tabName) {
       case 'pending':
-        return lessonPlans.filter(l => l.reviewStatus === 'pending').length;
+        return lessonPlans.filter(l => l.reviewStatus === 'PENDING').length;
       case 'approved':
-        return lessonPlans.filter(l => l.reviewStatus === 'approved').length;
+        return lessonPlans.filter(l => l.reviewStatus === 'APPROVED').length;
       case 'needs_action':
         return lessonPlans.filter(
           l =>
-            l.reviewStatus === 'rejected' || l.reviewStatus === 'needs_revision'
+            l.reviewStatus === 'REJECTED' || l.reviewStatus === 'NEEDS_REVISION'
         ).length;
       default:
         return lessonPlans.length;
@@ -624,11 +494,17 @@ export default function SchoolLessonPlans() {
                         <TableCell>
                           <div className="flex items-center space-x-2">
                             <User className="h-4 w-4 text-gray-400" />
-                            <span>{lesson.teacherName}</span>
+                            <span>{lesson.teacher.user.name}</span>
                           </div>
                         </TableCell>
-                        <TableCell>{lesson.subject}</TableCell>
-                        <TableCell>{lesson.class}</TableCell>
+                        <TableCell>
+                          {lesson.subject?.name || 'Not assigned'}
+                        </TableCell>
+                        <TableCell>
+                          {lesson.class
+                            ? `${lesson.class.name}${lesson.class.section ? ` ${lesson.class.section}` : ''}`
+                            : 'Not assigned'}
+                        </TableCell>
                         <TableCell>
                           {lesson.scheduledDate ? (
                             <div className="flex items-center space-x-2">
@@ -649,13 +525,18 @@ export default function SchoolLessonPlans() {
                               variant="outline"
                               size="sm"
                               onClick={() => {
+                                console.log('Selected lesson:', lesson);
+                                console.log(
+                                  'Lesson resources:',
+                                  lesson.resources
+                                );
                                 setSelectedLesson(lesson);
                                 setIsViewModalOpen(true);
                               }}
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
-                            {lesson.reviewStatus === 'pending' && (
+                            {lesson.reviewStatus === 'PENDING' && (
                               <Button
                                 size="sm"
                                 onClick={() => {
@@ -700,8 +581,9 @@ export default function SchoolLessonPlans() {
                 <DialogHeader>
                   <DialogTitle>{selectedLesson.title}</DialogTitle>
                   <DialogDescription>
-                    {selectedLesson.subject} • {selectedLesson.class} •{' '}
-                    {selectedLesson.teacherName}
+                    {selectedLesson.subject?.name || 'No Subject'} •{' '}
+                    {selectedLesson.class?.name || 'No Class'} •{' '}
+                    {selectedLesson.teacher?.user?.name || 'Unknown Teacher'}
                   </DialogDescription>
                 </DialogHeader>
 
@@ -823,7 +705,7 @@ export default function SchoolLessonPlans() {
                   )}
 
                   {/* Review Information */}
-                  {selectedLesson.reviewStatus !== 'pending' && (
+                  {selectedLesson.reviewStatus !== 'PENDING' && (
                     <div>
                       <Label className="text-sm font-medium">
                         Review Information
@@ -833,13 +715,13 @@ export default function SchoolLessonPlans() {
                           <span className="text-sm text-gray-600">Status:</span>
                           {getReviewStatusBadge(selectedLesson.reviewStatus)}
                         </div>
-                        {selectedLesson.reviewedBy && (
+                        {selectedLesson.reviewer && (
                           <div className="flex items-center justify-between mb-2">
                             <span className="text-sm text-gray-600">
                               Reviewed by:
                             </span>
                             <span className="text-sm font-medium">
-                              {selectedLesson.reviewedBy}
+                              {selectedLesson.reviewer.name}
                             </span>
                           </div>
                         )}
@@ -870,30 +752,128 @@ export default function SchoolLessonPlans() {
                   )}
 
                   {/* Resources */}
-                  {selectedLesson.resources.length > 0 && (
+                  {selectedLesson.resources &&
+                  selectedLesson.resources.length > 0 ? (
                     <div>
-                      <Label className="text-sm font-medium">Resources</Label>
-                      <div className="mt-2 space-y-2">
+                      <Label className="text-sm font-medium mb-4 block">
+                        Lesson Resources ({selectedLesson.resources.length})
+                      </Label>
+                      <div className="space-y-3">
                         {selectedLesson.resources.map(resource => (
                           <div
                             key={resource.id}
-                            className="flex items-center justify-between p-2 border rounded"
+                            className="border rounded-lg p-4"
                           >
-                            <div className="flex items-center space-x-2">
-                              <FileText className="h-4 w-4 text-gray-500" />
-                              <span className="text-sm font-medium">
-                                {resource.name}
-                              </span>
-                              <span className="text-xs text-gray-500">
-                                ({resource.size})
-                              </span>
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-3">
+                                <div className="flex-shrink-0">
+                                  {resource.mimeType.includes('pdf') ? (
+                                    <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                      <span className="text-red-600 font-bold text-sm">
+                                        PDF
+                                      </span>
+                                    </div>
+                                  ) : resource.mimeType.includes('word') ||
+                                    resource.mimeType.includes('document') ? (
+                                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                      <span className="text-blue-600 font-bold text-sm">
+                                        DOC
+                                      </span>
+                                    </div>
+                                  ) : resource.mimeType.includes('image/') ? (
+                                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                      <span className="text-green-600 font-bold text-sm">
+                                        IMG
+                                      </span>
+                                    </div>
+                                  ) : resource.mimeType.includes(
+                                      'presentation'
+                                    ) ? (
+                                    <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                                      <span className="text-orange-600 font-bold text-sm">
+                                        PPT
+                                      </span>
+                                    </div>
+                                  ) : resource.mimeType.includes(
+                                      'spreadsheet'
+                                    ) ? (
+                                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                      <span className="text-purple-600 font-bold text-sm">
+                                        XLS
+                                      </span>
+                                    </div>
+                                  ) : (
+                                    <FileText className="h-5 w-5 text-gray-500" />
+                                  )}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-medium text-sm text-gray-900 truncate">
+                                    {resource.originalName}
+                                  </p>
+                                  <p className="text-xs text-gray-500">
+                                    {Math.round(resource.fileSize / 1024)} KB •{' '}
+                                    {resource.mimeType}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    // For PDFs and images, open in new tab
+                                    if (
+                                      resource.mimeType.includes('pdf') ||
+                                      resource.mimeType.startsWith('image/')
+                                    ) {
+                                      window.open(resource.filePath, '_blank');
+                                    } else {
+                                      // For other file types, trigger download with proper handling
+                                      const downloadUrl = `/api/lesson-plans/${selectedLesson.id}/resources/${resource.id}/download`;
+                                      const a = document.createElement('a');
+                                      a.href = downloadUrl;
+                                      a.download = resource.originalName;
+                                      a.click();
+                                    }
+                                  }}
+                                >
+                                  <Eye className="h-4 w-4 mr-1" />
+                                  {resource.mimeType.includes('pdf') ||
+                                  resource.mimeType.startsWith('image/')
+                                    ? 'View'
+                                    : 'Open'}
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    // Use the proper download endpoint for better file handling
+                                    const downloadUrl = `/api/lesson-plans/${selectedLesson.id}/resources/${resource.id}/download`;
+                                    const a = document.createElement('a');
+                                    a.href = downloadUrl;
+                                    a.download = resource.originalName;
+                                    a.click();
+                                  }}
+                                >
+                                  <Download className="h-4 w-4 mr-1" />
+                                  Download
+                                </Button>
+                              </div>
                             </div>
-                            <Button variant="outline" size="sm">
-                              <Download className="h-4 w-4 mr-1" />
-                              Download
-                            </Button>
                           </div>
                         ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <Label className="text-sm font-medium mb-4 block">
+                        Lesson Resources
+                      </Label>
+                      <div className="text-center py-4 text-gray-500">
+                        <FileText className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                        <p className="text-sm">
+                          No resources attached to this lesson plan
+                        </p>
                       </div>
                     </div>
                   )}
@@ -906,7 +886,7 @@ export default function SchoolLessonPlans() {
                   >
                     Close
                   </Button>
-                  {selectedLesson.reviewStatus === 'pending' && (
+                  {selectedLesson.reviewStatus === 'PENDING' && (
                     <Button
                       onClick={() => {
                         setIsViewModalOpen(false);
@@ -932,7 +912,7 @@ export default function SchoolLessonPlans() {
                   <DialogTitle>Review Lesson Plan</DialogTitle>
                   <DialogDescription>
                     Provide feedback for &quot;{selectedLesson.title}&quot; by{' '}
-                    {selectedLesson.teacherName}
+                    {selectedLesson.teacher.user.name}
                   </DialogDescription>
                 </DialogHeader>
 
@@ -949,11 +929,11 @@ export default function SchoolLessonPlans() {
                         <SelectValue placeholder="Select review decision" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="approved">Approve</SelectItem>
-                        <SelectItem value="needs_revision">
+                        <SelectItem value="APPROVED">Approve</SelectItem>
+                        <SelectItem value="NEEDS_REVISION">
                           Needs Revision
                         </SelectItem>
-                        <SelectItem value="rejected">Reject</SelectItem>
+                        <SelectItem value="REJECTED">Reject</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -970,16 +950,16 @@ export default function SchoolLessonPlans() {
                         }))
                       }
                       placeholder={
-                        reviewForm.status === 'approved'
+                        reviewForm.status === 'APPROVED'
                           ? 'Optional: Add any positive feedback or suggestions...'
                           : 'Please provide specific feedback and suggestions for improvement...'
                       }
                       rows={6}
-                      required={reviewForm.status !== 'approved'}
+                      required={reviewForm.status !== 'APPROVED'}
                     />
                   </div>
 
-                  {reviewForm.status !== 'approved' && (
+                  {reviewForm.status !== 'APPROVED' && (
                     <div className="p-3 bg-yellow-50 rounded-lg">
                       <div className="flex items-center space-x-2 text-sm">
                         <AlertTriangle className="h-4 w-4 text-yellow-600" />
@@ -1002,7 +982,7 @@ export default function SchoolLessonPlans() {
                   <Button
                     onClick={() => handleReview(selectedLesson.id)}
                     disabled={
-                      reviewForm.status !== 'approved' &&
+                      reviewForm.status !== 'APPROVED' &&
                       !reviewForm.notes.trim()
                     }
                   >

@@ -1,24 +1,7 @@
 'use client';
 
+import { School, User } from 'lucide-react';
 import { useState } from 'react';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../ui/select';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '../ui/dialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,8 +12,25 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '../ui/alert-dialog';
+import { Button } from '../ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../ui/dialog';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
 import { Textarea } from '../ui/textarea';
-import { User, School } from 'lucide-react';
 
 export interface User {
   id: string;
@@ -150,7 +150,7 @@ export function EditUserModal({
                 <SelectValue placeholder="Select school" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">No School</SelectItem>
+                <SelectItem value="none">No School</SelectItem>
                 {schools.map(school => (
                   <SelectItem key={school.id} value={school.id}>
                     <div className="flex items-center space-x-2">

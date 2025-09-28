@@ -1,22 +1,9 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { TeacherDashboardLayout } from '../../../components/teacher/TeacherDashboardLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -26,33 +13,38 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Label } from '@/components/ui/label';
 import { FileUpload, UploadedFile } from '@/components/ui/file-upload';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  AlertCircle,
+  BarChart3,
+  BookOpen,
+  CheckCircle,
   ClipboardList,
+  Edit,
+  Eye,
+  FileText,
+  Filter,
+  MessageSquare,
+  Package,
   Plus,
   Search,
-  Filter,
-  Eye,
-  Edit,
-  Download,
-  Upload,
-  Calendar,
-  Clock,
-  Users,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  FileText,
-  Send,
-  Trash2,
-  BarChart3,
-  MessageSquare,
-  BookOpen,
   StickyNote,
-  Package,
 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { TeacherDashboardLayout } from '../../../components/teacher/TeacherDashboardLayout';
 
 interface Assignment {
   id: string;
@@ -201,56 +193,14 @@ export default function TeacherAssignments() {
   };
 
   const fetchSubmissions = async () => {
-    // Mock data - replace with actual API call
-    setSubmissions([
-      {
-        id: '1',
-        assignmentId: '1',
-        studentId: '1',
-        studentName: 'John Doe',
-        submittedAt: '2024-01-24T10:30:00Z',
-        status: 'graded',
-        score: 45,
-        feedback: 'Good work! Minor error in problem 3.',
-        attachments: [
-          {
-            id: '1',
-            name: 'John_Quadratic_Solutions.pdf',
-            url: '/submissions/john-quadratic.pdf',
-          },
-        ],
-      },
-      {
-        id: '2',
-        assignmentId: '1',
-        studentId: '2',
-        studentName: 'Jane Smith',
-        submittedAt: '2024-01-23T15:45:00Z',
-        status: 'submitted',
-        attachments: [
-          {
-            id: '2',
-            name: 'Jane_Math_Assignment.pdf',
-            url: '/submissions/jane-math.pdf',
-          },
-        ],
-      },
-      {
-        id: '3',
-        assignmentId: '2',
-        studentId: '3',
-        studentName: 'Mike Johnson',
-        submittedAt: '2024-01-27T09:15:00Z',
-        status: 'late',
-        attachments: [
-          {
-            id: '3',
-            name: 'Mike_Lab_Report.docx',
-            url: '/submissions/mike-lab-report.docx',
-          },
-        ],
-      },
-    ]);
+    try {
+      // TODO: Replace with actual API call to fetch submissions
+      // For now, set empty array
+      setSubmissions([]);
+    } catch (error) {
+      console.error('Error fetching submissions:', error);
+      setSubmissions([]);
+    }
   };
 
   const filteredAssignments = assignments.filter(assignment => {

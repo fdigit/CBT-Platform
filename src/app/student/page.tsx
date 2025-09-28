@@ -26,6 +26,7 @@ import {
   StudentDashboardLayout,
 } from '../../components/student';
 import { useToast } from '../../hooks/use-toast';
+import { generateResultPDF } from '../../lib/pdf-generator';
 
 interface Exam {
   id: string;
@@ -49,12 +50,14 @@ interface Result {
   examTitle: string;
   subject: string;
   score: number;
-  totalPoints: number;
+  totalMarks: number;
   percentage: number;
   grade: string;
-  date: string;
-  duration: number;
-  status: 'passed' | 'failed';
+  examDate: string;
+  gradedAt: string;
+  teacherRemark: string;
+  teacher: string;
+  passed: boolean;
 }
 
 export default function StudentDashboard() {
@@ -251,12 +254,23 @@ export default function StudentDashboard() {
             onViewDetails={resultId =>
               router.push(`/student/results/${resultId}`)
             }
-            onDownloadPDF={resultId => {
-              // TODO: Implement PDF download
-              toast({
-                title: 'Download',
-                description: 'PDF download will be implemented soon',
-              });
+            onDownloadPDF={async resultId => {
+              const result = recentResults.find(r => r.id === resultId);
+              if (result && session?.user?.name) {
+                try {
+                  await generateResultPDF(result, session.user.name);
+                  toast({
+                    title: 'Success',
+                    description: 'Result PDF downloaded successfully',
+                  });
+                } catch (error) {
+                  toast({
+                    title: 'Error',
+                    description: 'Failed to generate PDF',
+                    variant: 'destructive',
+                  });
+                }
+              }
             }}
           />
         )}

@@ -1,24 +1,24 @@
 'use client';
 
-import { useState } from 'react';
+import {
+  BarChart3,
+  BookOpen,
+  ChevronLeft,
+  ChevronRight,
+  CreditCard,
+  LayoutDashboard,
+  Menu,
+  School,
+  Settings,
+  Users,
+  X,
+} from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
 import { Separator } from '../ui/separator';
-import {
-  LayoutDashboard,
-  School,
-  BookOpen,
-  Users,
-  CreditCard,
-  BarChart3,
-  Settings,
-  Menu,
-  X,
-  ChevronLeft,
-  ChevronRight,
-} from 'lucide-react';
 
 interface SidebarProps {
   className?: string;
@@ -39,6 +39,11 @@ const navigationItems = [
     name: 'Exams',
     href: '/admin/exams',
     icon: BookOpen,
+  },
+  {
+    name: 'Results',
+    href: '/admin/results',
+    icon: BarChart3,
   },
   {
     name: 'Users',

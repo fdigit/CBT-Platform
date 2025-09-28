@@ -1,9 +1,27 @@
 'use client';
 
+import {
+  ArrowLeft,
+  Award,
+  BarChart3,
+  Calendar,
+  CheckCircle,
+  Download,
+  Eye,
+  FileText,
+  RotateCcw,
+  Search,
+  Timer,
+  TrendingUp,
+  Users,
+  XCircle,
+} from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { TeacherDashboardLayout } from '../../../../../components/teacher/TeacherDashboardLayout';
+import { Badge } from '../../../../../components/ui/badge';
+import { Button } from '../../../../../components/ui/button';
 import {
   Card,
   CardContent,
@@ -11,8 +29,14 @@ import {
   CardHeader,
   CardTitle,
 } from '../../../../../components/ui/card';
-import { Button } from '../../../../../components/ui/button';
-import { Badge } from '../../../../../components/ui/badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '../../../../../components/ui/dialog';
 import { Input } from '../../../../../components/ui/input';
 import {
   Select,
@@ -22,12 +46,6 @@ import {
   SelectValue,
 } from '../../../../../components/ui/select';
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '../../../../../components/ui/tabs';
-import {
   Table,
   TableBody,
   TableCell,
@@ -35,35 +53,7 @@ import {
   TableHeader,
   TableRow,
 } from '../../../../../components/ui/table';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '../../../../../components/ui/dialog';
 import { useToast } from '../../../../../hooks/use-toast';
-import {
-  ArrowLeft,
-  Download,
-  Search,
-  Filter,
-  Users,
-  TrendingUp,
-  TrendingDown,
-  CheckCircle,
-  XCircle,
-  Clock,
-  Award,
-  BarChart3,
-  Eye,
-  FileText,
-  Calendar,
-  Timer,
-  Target,
-  RotateCcw,
-} from 'lucide-react';
 
 interface ExamResult {
   id: string;
@@ -345,6 +335,14 @@ export default function ExamResultsPage({
             </div>
           </div>
           <div className="flex space-x-2">
+            <Button
+              variant="outline"
+              onClick={() => router.push('/teacher/exams')}
+              className="flex items-center"
+            >
+              <BarChart3 className="h-4 w-4 mr-2" />
+              View All Results
+            </Button>
             <Button
               onClick={handleResetAttempts}
               variant="destructive"

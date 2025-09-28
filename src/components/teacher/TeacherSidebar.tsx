@@ -1,32 +1,30 @@
 'use client';
 
-import { useState } from 'react';
+import {
+  BarChart3,
+  BookOpen,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronRight as ChevronRightSmall,
+  ClipboardList,
+  FileText,
+  GraduationCap,
+  Layers,
+  LayoutDashboard,
+  Menu,
+  MessageCircle,
+  Settings,
+  Trophy,
+  Users,
+  X,
+} from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
 import { Separator } from '../ui/separator';
-import {
-  LayoutDashboard,
-  BookOpen,
-  Users,
-  GraduationCap,
-  FileText,
-  ClipboardList,
-  Trophy,
-  BarChart3,
-  MessageCircle,
-  Settings,
-  Menu,
-  X,
-  ChevronLeft,
-  ChevronRight,
-  School,
-  Layers,
-  Calendar,
-  ChevronDown,
-  ChevronRight as ChevronRightSmall,
-} from 'lucide-react';
 
 interface TeacherSidebarProps {
   className?: string;
@@ -51,8 +49,8 @@ const navigationItems = [
     icon: BookOpen,
   },
   {
-    name: 'Lesson Plans & Notes',
-    href: '/teacher/lessons',
+    name: 'Lesson Plans',
+    href: '/teacher/lesson-plans',
     icon: FileText,
   },
   {
@@ -213,18 +211,9 @@ export function TeacherSidebar({ className }: TeacherSidebarProps) {
                   {item.expandable && isExpanded && !isCollapsed && (
                     <div className="ml-8 mt-1 space-y-1">
                       {/* These would be dynamically populated with teacher's classes */}
-                      <Link
-                        href="/teacher/classes/ss1-a"
-                        className="block px-3 py-1 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded"
-                      >
-                        SS 1A - Mathematics
-                      </Link>
-                      <Link
-                        href="/teacher/classes/ss2-b"
-                        className="block px-3 py-1 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded"
-                      >
-                        SS 2B - Physics
-                      </Link>
+                      <div className="px-3 py-1 text-sm text-gray-500">
+                        No classes assigned
+                      </div>
                     </div>
                   )}
                 </div>

@@ -1,7 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Calendar, Filter, Search, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
+import { Card, CardContent } from '../ui/card';
 import { Input } from '../ui/input';
 import {
   Select,
@@ -10,9 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
-import { Card, CardContent } from '../ui/card';
-import { Search, Filter, X, Calendar } from 'lucide-react';
-import { cn } from '../../lib/utils';
 
 interface ExamFiltersProps {
   onFiltersChange: (filters: ExamFilters) => void;
@@ -125,7 +125,7 @@ export function ExamFilters({
                     <SelectValue placeholder="All Statuses" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Statuses</SelectItem>
+                    <SelectItem value="all">All Statuses</SelectItem>
                     <SelectItem value="DRAFT">Draft</SelectItem>
                     <SelectItem value="SCHEDULED">Scheduled</SelectItem>
                     <SelectItem value="ACTIVE">Active</SelectItem>
@@ -148,7 +148,7 @@ export function ExamFilters({
                     <SelectValue placeholder="All Types" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Types</SelectItem>
+                    <SelectItem value="all">All Types</SelectItem>
                     <SelectItem value="OBJECTIVE">Objective</SelectItem>
                     <SelectItem value="THEORY">Theory</SelectItem>
                     <SelectItem value="CBT">CBT</SelectItem>
@@ -170,7 +170,7 @@ export function ExamFilters({
                     <SelectValue placeholder="All Schools" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Schools</SelectItem>
+                    <SelectItem value="all">All Schools</SelectItem>
                     {schools.map(school => (
                       <SelectItem key={school.id} value={school.id}>
                         {school.name}
