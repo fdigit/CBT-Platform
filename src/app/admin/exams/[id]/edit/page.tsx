@@ -37,7 +37,7 @@ interface Exam {
   duration: number;
   shuffle: boolean;
   negativeMarking: boolean;
-  isLive: boolean;
+  is_live: boolean;
   maxAttempts: number;
   questions: Question[];
 }
@@ -60,14 +60,14 @@ export default function EditExamPage() {
     duration: 60,
     shuffle: false,
     negativeMarking: false,
-    isLive: false,
+    is_live: false,
     maxAttempts: 1,
   });
 
   useEffect(() => {
     if (status === 'loading') return;
 
-    if (!session || session.user.role !== 'SCHOOL_ADMIN') {
+    if (!session || session.user.role !== 'SUPER_ADMIN') {
       router.push('/auth/signin');
       return;
     }
@@ -84,9 +84,6 @@ export default function EditExamPage() {
         setQuestions(examData.questions || []);
 
         // Format dates for input fields
-        console.log('Exam data received:', examData);
-        console.log('Max attempts from API:', examData.maxAttempts);
-
         setExamData({
           title: examData.title,
           description: examData.description || '',
@@ -95,12 +92,7 @@ export default function EditExamPage() {
           duration: examData.duration,
           shuffle: examData.shuffle,
           negativeMarking: examData.negativeMarking,
-          isLive: examData.isLive || false,
-          maxAttempts: examData.maxAttempts || 1,
-        });
-
-        console.log('Exam data set:', {
-          title: examData.title,
+          is_live: examData.is_live || false,
           maxAttempts: examData.maxAttempts || 1,
         });
       } else {
@@ -109,7 +101,7 @@ export default function EditExamPage() {
           description: 'Failed to fetch exam details',
           variant: 'destructive',
         });
-        router.push('/school/exams');
+        router.push('/admin/exams');
       }
     } catch (error) {
       toast({
@@ -139,30 +131,52 @@ export default function EditExamPage() {
 
   const addQuestion = () => {
     const newQuestion: Question = {
-      id: Date.now().toString(),
+      id: `temp_${Date.now()}`,
       text: '',
       type: 'MCQ',
-      options: ['', '', '', ''],
+      options: ['', ''],
       correctAnswer: '',
       points: 1,
     };
-    setQuestions([...questions, newQuestion]);
+    setQuestions(prev => [...prev, newQuestion]);
   };
 
-  const updateQuestion = (id: string, field: keyof Question, value: any) => {
-    setQuestions(
-      questions.map(q => (q.id === id ? { ...q, [field]: value } : q))
+  const removeQuestion = (questionId: string) => {
+    setQuestions(prev => prev.filter(q => q.id !== questionId));
+  };
+
+  const updateQuestion = (
+    questionId: string,
+    field: keyof Question,
+    value: any
+  ) => {
+    setQuestions(prev =>
+      prev.map(q => (q.id === questionId ? { ...q, [field]: value } : q))
     );
   };
 
-  const removeQuestion = (id: string) => {
-    setQuestions(questions.filter(q => q.id !== id));
+  const addOption = (questionId: string) => {
+    setQuestions(prev =>
+      prev.map(q =>
+        q.id === questionId
+          ? {
+              ...q,
+              options: [...(q.options || []), ''],
+            }
+          : q
+      )
+    );
   };
 
-  const addOption = (questionId: string) => {
-    setQuestions(
-      questions.map(q =>
-        q.id === questionId ? { ...q, options: [...(q.options || []), ''] } : q
+  const removeOption = (questionId: string, optionIndex: number) => {
+    setQuestions(prev =>
+      prev.map(q =>
+        q.id === questionId
+          ? {
+              ...q,
+              options: q.options?.filter((_, idx) => idx !== optionIndex),
+            }
+          : q
       )
     );
   };
@@ -172,27 +186,14 @@ export default function EditExamPage() {
     optionIndex: number,
     value: string
   ) => {
-    setQuestions(
-      questions.map(q =>
+    setQuestions(prev =>
+      prev.map(q =>
         q.id === questionId
           ? {
               ...q,
               options: q.options?.map((opt, idx) =>
                 idx === optionIndex ? value : opt
               ),
-            }
-          : q
-      )
-    );
-  };
-
-  const removeOption = (questionId: string, optionIndex: number) => {
-    setQuestions(
-      questions.map(q =>
-        q.id === questionId
-          ? {
-              ...q,
-              options: q.options?.filter((_, idx) => idx !== optionIndex),
             }
           : q
       )
@@ -221,7 +222,7 @@ export default function EditExamPage() {
           title: 'Success',
           description: 'Exam updated successfully!',
         });
-        router.push('/school/exams');
+        router.push('/admin/exams');
       } else {
         const error = await response.json();
         toast({
@@ -262,7 +263,7 @@ export default function EditExamPage() {
           title: 'Success',
           description: 'Exam deleted successfully!',
         });
-        router.push('/school/exams');
+        router.push('/admin/exams');
       } else {
         const error = await response.json();
         toast({
@@ -302,7 +303,7 @@ export default function EditExamPage() {
             <div className="flex items-center">
               <Button
                 variant="outline"
-                onClick={() => router.push('/school/exams')}
+                onClick={() => router.push('/admin/exams')}
                 className="mr-4"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
@@ -318,7 +319,7 @@ export default function EditExamPage() {
             <div className="flex space-x-2">
               <Button
                 variant="outline"
-                onClick={() => router.push(`/school/exams/${examId}`)}
+                onClick={() => router.push(`/exams/${examId}`)}
               >
                 <Eye className="h-4 w-4 mr-2" />
                 Preview
@@ -383,9 +384,6 @@ export default function EditExamPage() {
                     max="10"
                     required
                   />
-                  <p className="text-xs text-gray-500">
-                    Current value: {examData.maxAttempts}
-                  </p>
                 </div>
               </div>
 
@@ -449,14 +447,14 @@ export default function EditExamPage() {
                 </div>
                 <div className="flex items-center space-x-2">
                   <Switch
-                    id="isLive"
-                    checked={examData.isLive}
+                    id="is_live"
+                    checked={examData.is_live}
                     onCheckedChange={checked =>
-                      handleSwitchChange('isLive', checked)
+                      handleSwitchChange('is_live', checked)
                     }
                   />
                   <Label
-                    htmlFor="isLive"
+                    htmlFor="is_live"
                     className="text-green-600 font-medium"
                   >
                     Make Live (Override Schedule)
@@ -464,7 +462,7 @@ export default function EditExamPage() {
                 </div>
               </div>
 
-              {examData.isLive && (
+              {examData.is_live && (
                 <div className="bg-green-50 border border-green-200 rounded-md p-4">
                   <p className="text-green-800 text-sm">
                     <strong>Live Mode:</strong> Students can take this exam
@@ -587,76 +585,65 @@ export default function EditExamPage() {
                               Add Option
                             </Button>
                           </div>
-                          {question.options?.map((option, optionIndex) => (
-                            <div
-                              key={optionIndex}
-                              className="flex items-center space-x-2"
-                            >
-                              <Input
-                                value={option}
-                                onChange={e =>
-                                  updateOption(
-                                    question.id,
-                                    optionIndex,
-                                    e.target.value
-                                  )
-                                }
-                                placeholder={`Option ${optionIndex + 1}`}
-                              />
-                              <Button
-                                type="button"
-                                variant="destructive"
-                                size="sm"
-                                onClick={() =>
-                                  removeOption(question.id, optionIndex)
-                                }
+                          <div className="space-y-2">
+                            {question.options?.map((option, optIndex) => (
+                              <div
+                                key={optIndex}
+                                className="flex items-center space-x-2"
                               >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          ))}
+                                <Input
+                                  value={option}
+                                  onChange={e =>
+                                    updateOption(
+                                      question.id,
+                                      optIndex,
+                                      e.target.value
+                                    )
+                                  }
+                                  placeholder={`Option ${optIndex + 1}`}
+                                />
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() =>
+                                    removeOption(question.id, optIndex)
+                                  }
+                                  disabled={question.options!.length <= 2}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Correct Answer *</Label>
+                            <select
+                              value={question.correctAnswer || ''}
+                              onChange={e =>
+                                updateQuestion(
+                                  question.id,
+                                  'correctAnswer',
+                                  e.target.value
+                                )
+                              }
+                              className="w-full p-2 border border-gray-300 rounded-md"
+                            >
+                              <option value="">Select correct answer</option>
+                              {question.options?.map((option, optIndex) => (
+                                <option key={optIndex} value={option}>
+                                  {option}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
                         </div>
                       )}
 
-                      {/* Correct Answer */}
-                      <div className="space-y-2">
-                        <Label>Correct Answer *</Label>
-                        {question.type === 'MCQ' ? (
-                          <select
-                            value={question.correctAnswer}
-                            onChange={e =>
-                              updateQuestion(
-                                question.id,
-                                'correctAnswer',
-                                e.target.value
-                              )
-                            }
-                            className="w-full p-2 border border-gray-300 rounded-md"
-                          >
-                            <option value="">Select correct option</option>
-                            {question.options?.map((option, index) => (
-                              <option key={index} value={option}>
-                                {option}
-                              </option>
-                            ))}
-                          </select>
-                        ) : question.type === 'TRUE_FALSE' ? (
-                          <select
-                            value={question.correctAnswer}
-                            onChange={e =>
-                              updateQuestion(
-                                question.id,
-                                'correctAnswer',
-                                e.target.value
-                              )
-                            }
-                            className="w-full p-2 border border-gray-300 rounded-md"
-                          >
-                            <option value="">Select correct answer</option>
-                            <option value="True">True</option>
-                            <option value="False">False</option>
-                          </select>
-                        ) : (
+                      {/* Essay questions */}
+                      {question.type === 'ESSAY' && (
+                        <div className="space-y-2">
+                          <Label>Sample Answer (Optional)</Label>
                           <Textarea
                             value={question.correctAnswer || ''}
                             onChange={e =>
@@ -666,11 +653,11 @@ export default function EditExamPage() {
                                 e.target.value
                               )
                             }
-                            placeholder="Expected answer or grading criteria..."
+                            placeholder="Provide a sample answer or marking criteria..."
                             rows={3}
                           />
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 ))
@@ -678,15 +665,8 @@ export default function EditExamPage() {
             </CardContent>
           </Card>
 
-          {/* Submit */}
-          <div className="flex justify-end space-x-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => router.push('/school/exams')}
-            >
-              Cancel
-            </Button>
+          {/* Save Button */}
+          <div className="flex justify-end">
             <Button
               onClick={handleSave}
               disabled={loading || questions.length === 0}

@@ -1,9 +1,25 @@
 'use client';
 
+import {
+  AlertCircle,
+  BookOpen,
+  CheckCircle,
+  Clock,
+  Edit,
+  Eye,
+  GraduationCap,
+  Plus,
+  Send,
+  Trash2,
+  Users,
+  XCircle,
+} from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { SchoolDashboardLayout } from '../../../components/school/SchoolDashboardLayout';
+import { Badge } from '../../../components/ui/badge';
+import { Button } from '../../../components/ui/button';
 import {
   Card,
   CardContent,
@@ -11,23 +27,7 @@ import {
   CardHeader,
   CardTitle,
 } from '../../../components/ui/card';
-import { Button } from '../../../components/ui/button';
-import { Badge } from '../../../components/ui/badge';
 import { useToast } from '../../../hooks/use-toast';
-import {
-  Plus,
-  Eye,
-  Edit,
-  Trash2,
-  Users,
-  Clock,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  Send,
-  BookOpen,
-  GraduationCap,
-} from 'lucide-react';
 
 interface Exam {
   id: string;
@@ -38,6 +38,7 @@ interface Exam {
   duration: number;
   shuffle: boolean;
   negativeMarking: boolean;
+  maxAttempts: number;
   status: string;
   dynamicStatus: string;
   createdAt: string;
@@ -499,7 +500,7 @@ export default function ExamsPage() {
                         View
                       </Button>
 
-                      {exam.status === 'PENDING_APPROVAL' && (
+                      {exam.status === 'PENDING_APPROVAL' ? (
                         <>
                           <Button
                             variant="default"
@@ -534,6 +535,17 @@ export default function ExamsPage() {
                             Reject
                           </Button>
                         </>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            router.push(`/school/exams/${exam.id}/edit`)
+                          }
+                        >
+                          <Edit className="h-4 w-4 mr-1" />
+                          Edit
+                        </Button>
                       )}
 
                       {['DRAFT', 'REJECTED'].includes(exam.status) && (

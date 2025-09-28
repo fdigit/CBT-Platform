@@ -36,6 +36,7 @@ export const examSchema = z.object({
   allowPreview: z.boolean().default(false),
   showResultsImmediately: z.boolean().default(false),
   maxAttempts: z.number().min(1).default(1),
+  isLive: z.boolean().default(false),
   subjectId: z.string().optional(),
   classId: z.string().optional(),
 });

@@ -1,8 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import {
+  ArrowLeft,
+  Calendar,
+  Clock,
+  Edit,
+  Settings,
+  Users,
+} from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import { useRouter, useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { Badge } from '../../../../components/ui/badge';
+import { Button } from '../../../../components/ui/button';
 import {
   Card,
   CardContent,
@@ -10,16 +20,6 @@ import {
   CardHeader,
   CardTitle,
 } from '../../../../components/ui/card';
-import { Button } from '../../../../components/ui/button';
-import { Badge } from '../../../../components/ui/badge';
-import {
-  ArrowLeft,
-  Edit,
-  Users,
-  Clock,
-  Calendar,
-  Settings,
-} from 'lucide-react';
 import { useToast } from '../../../../hooks/use-toast';
 
 interface Question {
@@ -40,6 +40,7 @@ interface Exam {
   duration: number;
   shuffle: boolean;
   negativeMarking: boolean;
+  maxAttempts: number;
   createdAt: string;
   questions: Question[];
   _count: {
@@ -238,6 +239,16 @@ export default function ExamViewPage() {
                       <p className="text-sm font-medium">Questions</p>
                       <p className="text-sm text-gray-600">
                         {exam.questions.length} questions
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Settings className="h-4 w-4 text-gray-500" />
+                    <div>
+                      <p className="text-sm font-medium">Max Attempts</p>
+                      <p className="text-sm text-gray-600">
+                        {exam.maxAttempts} attempt
+                        {exam.maxAttempts !== 1 ? 's' : ''}
                       </p>
                     </div>
                   </div>

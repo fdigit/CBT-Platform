@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { getServerSession } from 'next-auth';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(
   request: NextRequest,
@@ -80,6 +80,80 @@ export async function POST(
       attempt => attempt.status === 'IN_PROGRESS'
     );
     if (activeAttempt) {
+      const totalDuration = exam.duration * 60 * 1000; // Convert minutes to milliseconds
+      const timeSpent =
+        now.getTime() - new Date(activeAttempt.startedAt).getTime();
+      const remaining = totalDuration - timeSpent;
+
+      console.log('Resuming attempt - Time calculation:', {
+        examId,
+        duration: exam.duration,
+        totalDuration,
+        startedAt: activeAttempt.startedAt,
+        timeSpent,
+        remaining,
+        remainingMinutes: Math.floor(remaining / (60 * 1000)),
+      });
+
+      // If time has expired, auto-submit the attempt
+      if (remaining <= 0) {
+        console.log('Time expired, auto-submitting attempt:', activeAttempt.id);
+
+        // Auto-submit the expired attempt
+        await prisma.examAttempt.update({
+          where: { id: activeAttempt.id },
+          data: {
+            status: 'SUBMITTED',
+            submittedAt: now,
+            timeSpent: totalDuration, // Set to full duration
+          },
+        });
+
+        // Create exam result (auto-grade)
+        const answers = await prisma.answer.findMany({
+          where: { attemptId: activeAttempt.id },
+          include: { question: true },
+        });
+
+        let totalScore = 0;
+        answers.forEach(answer => {
+          let pointsAwarded = 0;
+          let isCorrect = false;
+
+          if (
+            answer.question.type === 'MCQ' ||
+            answer.question.type === 'TRUE_FALSE'
+          ) {
+            // Auto-grade objective questions
+            isCorrect = answer.response === answer.question.correctAnswer;
+            pointsAwarded = isCorrect ? answer.question.points : 0;
+            totalScore += pointsAwarded;
+          }
+
+          // Score calculated and added to totalScore
+        });
+
+        // Create result
+        await prisma.result.create({
+          data: {
+            examId,
+            studentId: student.id,
+            score: totalScore,
+          },
+        });
+
+        return NextResponse.json(
+          {
+            error:
+              'Your previous attempt has been automatically submitted due to time expiry.',
+            timeExpired: true,
+            message:
+              'Please start a new attempt if you have remaining attempts.',
+          },
+          { status: 400 }
+        );
+      }
+
       // Resume existing attempt - allow regardless of exam live status
       const questions = exam.shuffle
         ? [...exam.questions].sort(() => Math.random() - 0.5)
@@ -104,12 +178,16 @@ export async function POST(
           correctAnswer: undefined, // Don't send correct answers to client
           explanation: undefined,
         })),
-        timeRemaining: Math.max(0, endTime.getTime() - now.getTime()),
+        timeRemaining: Math.max(0, remaining),
       });
     }
 
-    // Check attempt limits
-    if (existingAttempts.length >= exam.maxAttempts) {
+    // Check attempt limits - only count SUBMITTED attempts, not all attempts
+    const submittedAttempts = existingAttempts.filter(
+      attempt => attempt.status === 'SUBMITTED'
+    );
+
+    if (submittedAttempts.length >= exam.maxAttempts) {
       return NextResponse.json(
         {
           error: `Maximum attempts (${exam.maxAttempts}) reached for this exam`,
@@ -226,7 +304,16 @@ export async function POST(
         correctAnswer: undefined, // Don't send correct answers to client
         explanation: undefined,
       })),
-      timeRemaining: Math.max(0, endTime.getTime() - now.getTime()),
+      timeRemaining: (() => {
+        const totalDuration = exam.duration * 60 * 1000;
+        console.log('New attempt - Time calculation:', {
+          examId,
+          duration: exam.duration,
+          totalDuration,
+          totalDurationMinutes: Math.floor(totalDuration / (60 * 1000)),
+        });
+        return totalDuration;
+      })(),
     });
   } catch (error) {
     console.error('Error starting exam:', error);

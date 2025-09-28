@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { examSchema } from '@/lib/validations';
+import { getServerSession } from 'next-auth';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   request: NextRequest,
@@ -31,7 +31,17 @@ export async function GET(
         id: examId,
         schoolId: schoolId,
       },
-      include: {
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        startTime: true,
+        endTime: true,
+        duration: true,
+        shuffle: true,
+        negativeMarking: true,
+        isLive: true,
+        maxAttempts: true,
         questions: {
           orderBy: {
             id: 'asc',
@@ -88,68 +98,25 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { exam, questions } = body;
+    console.log('PUT request body:', body);
+    const { exam } = body;
+
+    console.log('Exam data before validation:', exam);
 
     // Validate exam data
-    const validatedExam = examSchema.parse(exam);
+    let validatedExam;
+    try {
+      validatedExam = examSchema.parse(exam);
+      console.log('Validated exam data:', validatedExam);
+    } catch (validationError) {
+      console.error('Validation error:', validationError);
+      return NextResponse.json(
+        { message: 'Validation failed', error: validationError },
+        { status: 400 }
+      );
+    }
 
-    // Validate questions (handle both 'text' and 'question' field names)
-    const validatedQuestions = questions.map(
-      (q: {
-        text?: string;
-        question?: string;
-        type: string;
-        options?: string[];
-        correctAnswer?: string;
-        points?: number;
-        order?: number;
-        imageUrl?: string;
-        audioUrl?: string;
-        videoUrl?: string;
-        explanation?: string;
-        difficulty?: string;
-        tags?: string[];
-      }) => {
-        // Basic validation and field mapping
-        const questionForValidation = {
-          text: q.text || q.question || '',
-          type: q.type,
-          options: q.options || [],
-          correctAnswer: q.correctAnswer,
-          points: q.points || 1,
-          order: q.order,
-          imageUrl: q.imageUrl,
-          audioUrl: q.audioUrl,
-          videoUrl: q.videoUrl,
-          explanation: q.explanation,
-          difficulty: q.difficulty || 'MEDIUM',
-          tags: q.tags,
-        };
-
-        // Basic validation without using Zod schema to avoid null issues
-        if (
-          !questionForValidation.text ||
-          questionForValidation.text.length < 3
-        ) {
-          throw new Error('Question text must be at least 3 characters');
-        }
-
-        if (!questionForValidation.type) {
-          throw new Error('Question type is required');
-        }
-
-        return {
-          ...questionForValidation,
-          order: q.order,
-          imageUrl: q.imageUrl,
-          audioUrl: q.audioUrl,
-          videoUrl: q.videoUrl,
-          explanation: q.explanation,
-          difficulty: q.difficulty || 'MEDIUM',
-          tags: q.tags,
-        };
-      }
-    );
+    // Questions are not being updated in this endpoint
 
     // Check if exam exists and belongs to the school
     const existingExam = await prisma.exam.findFirst({
@@ -163,85 +130,53 @@ export async function PUT(
       return NextResponse.json({ message: 'Exam not found' }, { status: 404 });
     }
 
-    // Update exam and questions in a transaction
-    const result = await prisma.$transaction(async tx => {
-      // Update exam
-      const updatedExam = await tx.exam.update({
-        where: { id: examId },
-        data: {
-          title: validatedExam.title,
-          description: validatedExam.description,
-          startTime: new Date(validatedExam.startTime),
-          endTime: new Date(validatedExam.endTime),
-          duration: validatedExam.duration,
-          shuffle: validatedExam.shuffle,
-          negativeMarking: validatedExam.negativeMarking,
-          totalMarks: validatedExam.totalMarks,
-          passingMarks: validatedExam.passingMarks,
-          allowPreview: validatedExam.allowPreview,
-          showResultsImmediately: validatedExam.showResultsImmediately,
-          maxAttempts: validatedExam.maxAttempts,
-          subjectId:
-            validatedExam.subjectId === 'general'
-              ? null
-              : validatedExam.subjectId,
-          classId:
-            validatedExam.classId === 'all' ? null : validatedExam.classId,
-        },
-      });
+    // Update exam and questions in a transaction with increased timeout
+    console.log('Starting database transaction...');
+    let result;
+    try {
+      result = await prisma.$transaction(async tx => {
+        console.log('Inside transaction, updating exam...');
+        // Update exam
+        const updatedExam = await tx.exam.update({
+          where: { id: examId },
+          data: {
+            title: validatedExam.title,
+            description: validatedExam.description,
+            startTime: new Date(validatedExam.startTime),
+            endTime: new Date(validatedExam.endTime),
+            duration: validatedExam.duration,
+            shuffle: validatedExam.shuffle,
+            negativeMarking: validatedExam.negativeMarking,
+            totalMarks: validatedExam.totalMarks,
+            passingMarks: validatedExam.passingMarks,
+            allowPreview: validatedExam.allowPreview,
+            showResultsImmediately: validatedExam.showResultsImmediately,
+            maxAttempts: validatedExam.maxAttempts,
+            isLive: validatedExam.isLive,
+            subjectId:
+              validatedExam.subjectId === 'general'
+                ? null
+                : validatedExam.subjectId,
+            classId:
+              validatedExam.classId === 'all' ? null : validatedExam.classId,
+          },
+        });
 
-      // Delete existing questions
-      await tx.question.deleteMany({
-        where: { examId: examId },
+        // Only return the updated exam - no need to recreate questions
+        return { exam: updatedExam };
       });
-
-      // Create new questions
-      const createdQuestions = await Promise.all(
-        validatedQuestions.map(
-          (
-            question: {
-              text: string;
-              type: string;
-              options?: string[];
-              correctAnswer?: string;
-              points: number;
-              order?: number;
-              imageUrl?: string;
-              audioUrl?: string;
-              videoUrl?: string;
-              explanation?: string;
-              difficulty?: string;
-              tags?: string[];
-            },
-            index: number
-          ) =>
-            tx.question.create({
-              data: {
-                text: question.text,
-                type: question.type as any,
-                options: question.options || null,
-                correctAnswer: question.correctAnswer || null,
-                points: question.points,
-                order: question.order || index + 1,
-                imageUrl: question.imageUrl,
-                audioUrl: question.audioUrl,
-                videoUrl: question.videoUrl,
-                explanation: question.explanation,
-                difficulty: (question.difficulty || 'MEDIUM') as any,
-                tags: question.tags || null,
-                examId: examId,
-              },
-            })
-        )
+      console.log('Transaction completed successfully');
+    } catch (transactionError) {
+      console.error('Transaction error:', transactionError);
+      return NextResponse.json(
+        { message: 'Database transaction failed', error: transactionError },
+        { status: 500 }
       );
-
-      return { exam: updatedExam, questions: createdQuestions };
-    });
+    }
 
     return NextResponse.json({
       message: 'Exam updated successfully',
       exam: result.exam,
-      questionsCount: result.questions.length,
     });
   } catch (error) {
     console.error('Error updating exam:', error);

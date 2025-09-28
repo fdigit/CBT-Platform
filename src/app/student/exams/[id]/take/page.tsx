@@ -1,39 +1,36 @@
 'use client';
 
+import {
+  AlertTriangle,
+  BookOpen,
+  CheckCircle,
+  ChevronLeft,
+  ChevronRight,
+  Save,
+  Send,
+  Target,
+  Timer,
+} from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import { useRouter, useParams } from 'next/navigation';
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Badge } from '../../../../../components/ui/badge';
+import { Button } from '../../../../../components/ui/button';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from '../../../../../components/ui/card';
-import { Button } from '../../../../../components/ui/button';
-import { Badge } from '../../../../../components/ui/badge';
 import { Input } from '../../../../../components/ui/input';
-import { Textarea } from '../../../../../components/ui/textarea';
+import { Label } from '../../../../../components/ui/label';
+import { Progress } from '../../../../../components/ui/progress';
 import {
   RadioGroup,
   RadioGroupItem,
 } from '../../../../../components/ui/radio-group';
-import { Label } from '../../../../../components/ui/label';
-import { Progress } from '../../../../../components/ui/progress';
+import { Textarea } from '../../../../../components/ui/textarea';
 import { useToast } from '../../../../../hooks/use-toast';
-import {
-  Clock,
-  ChevronLeft,
-  ChevronRight,
-  Send,
-  AlertTriangle,
-  CheckCircle,
-  Save,
-  Eye,
-  EyeOff,
-  Timer,
-  Target,
-  BookOpen,
-} from 'lucide-react';
 
 interface Question {
   id: string;
@@ -235,12 +232,27 @@ export default function TakeExamPage() {
         });
       } else {
         const error = await response.json();
-        toast({
-          title: 'Error',
-          description: error.error || 'Failed to start exam',
-          variant: 'destructive',
-        });
-        router.push('/student/exams');
+        console.error('API Error Response:', error);
+        console.error('Response Status:', response.status);
+
+        if (error.timeExpired) {
+          toast({
+            title: 'Time Expired',
+            description:
+              error.error ||
+              'Your previous attempt has been automatically submitted.',
+            variant: 'destructive',
+          });
+          // Redirect to results or exam list
+          router.push('/student/exams');
+        } else {
+          toast({
+            title: 'Error',
+            description: error.error || 'Failed to start exam',
+            variant: 'destructive',
+          });
+          router.push('/student/exams');
+        }
       }
     } catch (error) {
       toast({
