@@ -61,3 +61,9 @@ temp/
 .parcel-cache/
 .eslintcache
 .vercel
+
+# Documentation with sensitive info
+*DEPLOYMENT*.md
+*STATUS*.md
+*FIXING*.md
+DATABASE_URL.txt
