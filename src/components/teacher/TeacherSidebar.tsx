@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  Award,
   BarChart3,
   BookOpen,
   ChevronDown,
@@ -62,6 +63,11 @@ const navigationItems = [
     name: 'Exams (CBT)',
     href: '/teacher/exams',
     icon: Trophy,
+  },
+  {
+    name: 'Academic Results',
+    href: '/teacher/academic-results',
+    icon: Award,
   },
   {
     name: 'Students',

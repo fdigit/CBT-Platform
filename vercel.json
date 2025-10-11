@@ -1,4 +1,5 @@
 {
+  "name": "cbt-platform",
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
   "installCommand": "npm ci",

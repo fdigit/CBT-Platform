@@ -108,8 +108,16 @@ export default function TeacherAssignments() {
   const [selectedAssignment, setSelectedAssignment] =
     useState<Assignment | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isGradeModalOpen, setIsGradeModalOpen] = useState(false);
+  const [selectedSubmission, setSelectedSubmission] =
+    useState<Submission | null>(null);
+  const [gradeForm, setGradeForm] = useState({ score: 0, feedback: '' });
   const [activeTab, setActiveTab] = useState('assignments');
+  const [editingAssignment, setEditingAssignment] = useState<Assignment | null>(
+    null
+  );
 
   // New assignment form state
   const [newAssignment, setNewAssignment] = useState({
@@ -143,9 +151,15 @@ export default function TeacherAssignments() {
     }
 
     fetchAssignments();
-    fetchSubmissions();
     fetchTeacherData();
   }, [session, status, router]);
+
+  // Fetch submissions when assignments are loaded
+  useEffect(() => {
+    if (assignments.length > 0) {
+      fetchSubmissions();
+    }
+  }, [assignments]);
 
   const fetchTeacherData = async () => {
     try {
@@ -194,9 +208,41 @@ export default function TeacherAssignments() {
 
   const fetchSubmissions = async () => {
     try {
-      // TODO: Replace with actual API call to fetch submissions
-      // For now, set empty array
-      setSubmissions([]);
+      // Fetch all submissions for teacher's assignments
+      const allSubmissions: Submission[] = [];
+
+      for (const assignment of assignments) {
+        const response = await fetch(
+          `/api/teacher/assignments/${assignment.id}/submissions`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          const formattedSubmissions = data.submissions.map((sub: any) => ({
+            id: sub.id,
+            assignmentId: assignment.id,
+            studentId: sub.student.id,
+            studentName: sub.student.user.name,
+            studentAvatar: sub.student.avatar,
+            submittedAt: sub.submittedAt,
+            status: sub.status.toLowerCase() as
+              | 'submitted'
+              | 'graded'
+              | 'late'
+              | 'missing',
+            score: sub.score,
+            feedback: sub.feedback,
+            attachments: sub.attachments.map((att: any) => ({
+              id: att.id,
+              name: att.originalName,
+              url: att.filePath,
+            })),
+          }));
+          allSubmissions.push(...formattedSubmissions);
+        }
+      }
+
+      setSubmissions(allSubmissions);
+      console.log('Fetched submissions:', allSubmissions.length);
     } catch (error) {
       console.error('Error fetching submissions:', error);
       setSubmissions([]);
@@ -419,6 +465,128 @@ export default function TeacherAssignments() {
 
   const getSubmissionsForAssignment = (assignmentId: string) => {
     return submissions.filter(sub => sub.assignmentId === assignmentId);
+  };
+
+  const handleGradeSubmission = async () => {
+    if (!selectedSubmission || !selectedAssignment) return;
+
+    try {
+      const response = await fetch(
+        `/api/teacher/assignments/${selectedAssignment.id}/submissions/${selectedSubmission.id}/grade`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            score: gradeForm.score,
+            feedback: gradeForm.feedback,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to grade submission');
+      }
+
+      alert('Submission graded successfully!');
+      setIsGradeModalOpen(false);
+      setGradeForm({ score: 0, feedback: '' });
+      setSelectedSubmission(null);
+
+      // Refresh submissions
+      await fetchSubmissions();
+    } catch (error) {
+      console.error('Error grading submission:', error);
+      alert(
+        'Failed to grade submission: ' +
+          (error instanceof Error ? error.message : 'Unknown error')
+      );
+    }
+  };
+
+  const handleEditAssignment = (assignment: Assignment) => {
+    setEditingAssignment(assignment);
+    const classId =
+      typeof assignment.class === 'object' && assignment.class
+        ? assignment.class.name
+        : assignment.class || 'all';
+    const subjectId =
+      typeof assignment.subject === 'object' && assignment.subject
+        ? (assignment.subject as any).id || 'general'
+        : 'general';
+
+    setNewAssignment({
+      title: assignment.title,
+      subject: subjectId,
+      class: classId,
+      description: assignment.description || '',
+      instructions: assignment.instructions || '',
+      dueDate: assignment.dueDate || '',
+      type: assignment.type,
+      maxScore: assignment.maxScore,
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateAssignment = async () => {
+    if (!editingAssignment) return;
+
+    try {
+      const response = await fetch(
+        `/api/teacher/assignments/${editingAssignment.id}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            title: newAssignment.title,
+            description: newAssignment.description,
+            instructions: newAssignment.instructions,
+            type: newAssignment.type.toUpperCase(),
+            dueDate: newAssignment.dueDate || null,
+            maxScore: newAssignment.maxScore,
+            classId: newAssignment.class === 'all' ? null : newAssignment.class,
+            subjectId:
+              newAssignment.subject === 'general'
+                ? null
+                : newAssignment.subject,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to update assignment');
+      }
+
+      alert('Assignment updated successfully!');
+      setIsEditModalOpen(false);
+      setEditingAssignment(null);
+
+      // Reset form
+      setNewAssignment({
+        title: '',
+        subject: 'general',
+        class: 'all',
+        description: '',
+        instructions: '',
+        dueDate: '',
+        type: 'assignment',
+        maxScore: 100,
+      });
+
+      // Refresh assignments
+      await fetchAssignments();
+    } catch (error) {
+      console.error('Error updating assignment:', error);
+      alert(
+        'Failed to update assignment: ' +
+          (error instanceof Error ? error.message : 'Unknown error')
+      );
+    }
   };
 
   if (status === 'loading') {
@@ -941,7 +1109,11 @@ export default function TeacherAssignments() {
                           <Eye className="h-4 w-4 mr-1" />
                           View
                         </Button>
-                        <Button variant="outline" size="sm">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEditAssignment(assignment)}
+                        >
                           <Edit className="h-4 w-4 mr-1" />
                           Edit
                         </Button>
@@ -1034,7 +1206,22 @@ export default function TeacherAssignments() {
                             View
                           </Button>
                           {submission.status !== 'graded' && (
-                            <Button size="sm">
+                            <Button
+                              size="sm"
+                              onClick={() => {
+                                setSelectedSubmission(submission);
+                                setSelectedAssignment(
+                                  assignments.find(
+                                    a => a.id === submission.assignmentId
+                                  ) || null
+                                );
+                                setGradeForm({
+                                  score: submission.score || 0,
+                                  feedback: submission.feedback || '',
+                                });
+                                setIsGradeModalOpen(true);
+                              }}
+                            >
                               <Edit className="h-4 w-4 mr-1" />
                               Grade
                             </Button>
@@ -1069,6 +1256,445 @@ export default function TeacherAssignments() {
             )}
           </TabsContent>
         </Tabs>
+
+        {/* Grade Submission Modal */}
+        <Dialog open={isGradeModalOpen} onOpenChange={setIsGradeModalOpen}>
+          <DialogContent className="max-w-2xl">
+            {selectedSubmission && selectedAssignment && (
+              <>
+                <DialogHeader>
+                  <DialogTitle>Grade Submission</DialogTitle>
+                  <DialogDescription>
+                    Grade submission from {selectedSubmission.studentName} for "
+                    {selectedAssignment.title}"
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="space-y-4">
+                  <div>
+                    <Label className="text-sm font-medium">Submitted At:</Label>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {new Date(
+                        selectedSubmission.submittedAt
+                      ).toLocaleString()}
+                    </p>
+                  </div>
+
+                  {selectedSubmission.attachments.length > 0 && (
+                    <div>
+                      <Label className="text-sm font-medium">
+                        Submitted Files:
+                      </Label>
+                      <div className="mt-2 space-y-2">
+                        {selectedSubmission.attachments.map(att => (
+                          <div
+                            key={att.id}
+                            className="flex items-center justify-between p-2 border rounded"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <FileText className="h-4 w-4 text-gray-500" />
+                              <span className="text-sm font-medium">
+                                {att.name}
+                              </span>
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => window.open(att.url, '_blank')}
+                            >
+                              View
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="space-y-2">
+                    <Label htmlFor="score">
+                      Score (Max: {selectedAssignment.maxScore})
+                    </Label>
+                    <Input
+                      id="score"
+                      type="number"
+                      min="0"
+                      max={selectedAssignment.maxScore}
+                      value={gradeForm.score}
+                      onChange={e =>
+                        setGradeForm(prev => ({
+                          ...prev,
+                          score: parseFloat(e.target.value) || 0,
+                        }))
+                      }
+                      placeholder={`Enter score (0-${selectedAssignment.maxScore})`}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="feedback">Feedback</Label>
+                    <Textarea
+                      id="feedback"
+                      value={gradeForm.feedback}
+                      onChange={e =>
+                        setGradeForm(prev => ({
+                          ...prev,
+                          feedback: e.target.value,
+                        }))
+                      }
+                      placeholder="Provide feedback to the student..."
+                      rows={4}
+                    />
+                  </div>
+                </div>
+
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsGradeModalOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button onClick={handleGradeSubmission}>Submit Grade</Button>
+                </DialogFooter>
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Assignment Modal */}
+        <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit Assignment/Note</DialogTitle>
+              <DialogDescription>
+                Update the assignment details below.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-title">Title</Label>
+                  <Input
+                    id="edit-title"
+                    value={newAssignment.title}
+                    onChange={e =>
+                      setNewAssignment(prev => ({
+                        ...prev,
+                        title: e.target.value,
+                      }))
+                    }
+                    placeholder="Enter title"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-type">Type</Label>
+                  <Select
+                    value={newAssignment.type}
+                    onValueChange={(value: any) =>
+                      setNewAssignment(prev => ({ ...prev, type: value }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="assignment">Assignment</SelectItem>
+                      <SelectItem value="note">Note</SelectItem>
+                      <SelectItem value="resource">Resource</SelectItem>
+                      <SelectItem value="homework">Homework</SelectItem>
+                      <SelectItem value="project">Project</SelectItem>
+                      <SelectItem value="quiz">Quiz</SelectItem>
+                      <SelectItem value="test">Test</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {['assignment', 'homework', 'project', 'quiz', 'test'].includes(
+                newAssignment.type
+              ) && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-dueDate">Due Date</Label>
+                    <Input
+                      id="edit-dueDate"
+                      type="date"
+                      value={newAssignment.dueDate}
+                      onChange={e =>
+                        setNewAssignment(prev => ({
+                          ...prev,
+                          dueDate: e.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-maxScore">Max Score</Label>
+                    <Input
+                      id="edit-maxScore"
+                      type="number"
+                      value={newAssignment.maxScore}
+                      onChange={e =>
+                        setNewAssignment(prev => ({
+                          ...prev,
+                          maxScore: parseInt(e.target.value) || 100,
+                        }))
+                      }
+                      placeholder="100"
+                    />
+                  </div>
+                </>
+              )}
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-description">Description</Label>
+                <Textarea
+                  id="edit-description"
+                  value={newAssignment.description}
+                  onChange={e =>
+                    setNewAssignment(prev => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
+                  placeholder="Brief description"
+                  rows={3}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-instructions">
+                  {newAssignment.type === 'note'
+                    ? 'Note Content'
+                    : 'Instructions'}
+                </Label>
+                <Textarea
+                  id="edit-instructions"
+                  value={newAssignment.instructions}
+                  onChange={e =>
+                    setNewAssignment(prev => ({
+                      ...prev,
+                      instructions: e.target.value,
+                    }))
+                  }
+                  placeholder="Detailed instructions"
+                  rows={4}
+                />
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsEditModalOpen(false);
+                  setEditingAssignment(null);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleUpdateAssignment}>
+                Update Assignment
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* View Assignment Details Modal */}
+        <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
+          <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
+            {selectedAssignment && (
+              <>
+                <DialogHeader>
+                  <DialogTitle className="flex items-center space-x-2">
+                    {getTypeIcon(selectedAssignment.type)}
+                    <span>{selectedAssignment.title}</span>
+                  </DialogTitle>
+                  <DialogDescription>
+                    {typeof selectedAssignment.subject === 'string'
+                      ? selectedAssignment.subject
+                      : selectedAssignment.subject?.name || 'General'}{' '}
+                    •{' '}
+                    {typeof selectedAssignment.class === 'string'
+                      ? selectedAssignment.class
+                      : selectedAssignment.class
+                        ? `${selectedAssignment.class.name}${selectedAssignment.class.section ? ` ${selectedAssignment.class.section}` : ''}`
+                        : 'All Classes'}
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="space-y-6">
+                  {/* Basic Info */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-sm font-medium">Type</Label>
+                      <div className="mt-1">
+                        {getTypeBadge(selectedAssignment.type)}
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium">Status</Label>
+                      <div className="mt-1">
+                        {getStatusBadge(selectedAssignment.status)}
+                      </div>
+                    </div>
+                    {selectedAssignment.dueDate && (
+                      <div>
+                        <Label className="text-sm font-medium">Due Date</Label>
+                        <p className="text-sm text-gray-600 mt-1">
+                          {selectedAssignment.dueDate}
+                        </p>
+                      </div>
+                    )}
+                    {[
+                      'assignment',
+                      'homework',
+                      'project',
+                      'quiz',
+                      'test',
+                    ].includes(selectedAssignment.type) && (
+                      <div>
+                        <Label className="text-sm font-medium">Max Score</Label>
+                        <p className="text-sm text-gray-600 mt-1">
+                          {selectedAssignment.maxScore} points
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Description */}
+                  {selectedAssignment.description && (
+                    <div>
+                      <Label className="text-sm font-medium">Description</Label>
+                      <p className="text-sm text-gray-600 mt-1">
+                        {selectedAssignment.description}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Instructions/Content */}
+                  {selectedAssignment.instructions && (
+                    <div>
+                      <Label className="text-sm font-medium">
+                        {selectedAssignment.type === 'note'
+                          ? 'Note Content'
+                          : 'Instructions'}
+                      </Label>
+                      <div className="text-sm text-gray-600 mt-1 whitespace-pre-line">
+                        {selectedAssignment.instructions}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Attachments */}
+                  {selectedAssignment.attachments.length > 0 && (
+                    <div>
+                      <Label className="text-sm font-medium">Attachments</Label>
+                      <div className="mt-2 space-y-2">
+                        {selectedAssignment.attachments.map(attachment => (
+                          <div
+                            key={attachment.id}
+                            className="flex items-center justify-between p-2 border rounded"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <FileText className="h-4 w-4 text-gray-500" />
+                              <span className="text-sm font-medium">
+                                {attachment.name}
+                              </span>
+                              <span className="text-xs text-gray-500">
+                                ({attachment.size})
+                              </span>
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() =>
+                                window.open(attachment.url, '_blank')
+                              }
+                            >
+                              View
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Submission Statistics */}
+                  {selectedAssignment.status === 'published' &&
+                    [
+                      'assignment',
+                      'homework',
+                      'project',
+                      'quiz',
+                      'test',
+                    ].includes(selectedAssignment.type) && (
+                      <div>
+                        <Label className="text-sm font-medium">
+                          Submission Statistics
+                        </Label>
+                        <div className="grid grid-cols-4 gap-4 mt-2">
+                          <div className="p-3 bg-blue-50 rounded text-center">
+                            <div className="font-bold text-blue-600 text-xl">
+                              {selectedAssignment.submissions.total}
+                            </div>
+                            <div className="text-sm text-blue-700">
+                              Total Students
+                            </div>
+                          </div>
+                          <div className="p-3 bg-green-50 rounded text-center">
+                            <div className="font-bold text-green-600 text-xl">
+                              {selectedAssignment.submissions.submitted}
+                            </div>
+                            <div className="text-sm text-green-700">
+                              Submitted
+                            </div>
+                          </div>
+                          <div className="p-3 bg-purple-50 rounded text-center">
+                            <div className="font-bold text-purple-600 text-xl">
+                              {selectedAssignment.submissions.graded}
+                            </div>
+                            <div className="text-sm text-purple-700">
+                              Graded
+                            </div>
+                          </div>
+                          <div className="p-3 bg-orange-50 rounded text-center">
+                            <div className="font-bold text-orange-600 text-xl">
+                              {selectedAssignment.submissions.pending}
+                            </div>
+                            <div className="text-sm text-orange-700">
+                              Pending
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                </div>
+
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsViewModalOpen(false)}
+                  >
+                    Close
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setIsViewModalOpen(false);
+                      handleEditAssignment(selectedAssignment);
+                    }}
+                  >
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit
+                  </Button>
+                </DialogFooter>
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </TeacherDashboardLayout>
   );

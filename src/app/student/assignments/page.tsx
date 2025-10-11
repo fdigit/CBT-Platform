@@ -1,18 +1,43 @@
 'use client';
 
+import {
+  AlertCircle,
+  AlertTriangle,
+  BookOpen,
+  Calendar as CalendarIcon,
+  CheckCircle,
+  ClipboardList,
+  Download,
+  Eye,
+  FileText,
+  Filter,
+  Package,
+  Search,
+  Send,
+  StickyNote,
+} from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { StudentDashboardLayout } from '../../../components/student';
+import { Badge } from '../../../components/ui/badge';
+import { Button } from '../../../components/ui/button';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from '../../../components/ui/card';
-import { Button } from '../../../components/ui/button';
-import { Badge } from '../../../components/ui/badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../../../components/ui/dialog';
+import { FileUpload, UploadedFile } from '../../../components/ui/file-upload';
 import { Input } from '../../../components/ui/input';
-import { Textarea } from '../../../components/ui/textarea';
 import { Label } from '../../../components/ui/label';
 import {
   Select,
@@ -22,41 +47,13 @@ import {
   SelectValue,
 } from '../../../components/ui/select';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '../../../components/ui/dialog';
-import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '../../../components/ui/tabs';
-import {
-  ClipboardList,
-  Search,
-  Filter,
-  Eye,
-  Download,
-  Upload,
-  Calendar,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  FileText,
-  StickyNote,
-  Package,
-  BookOpen,
-  Send,
-  AlertTriangle,
-  Calendar as CalendarIcon,
-} from 'lucide-react';
+import { Textarea } from '../../../components/ui/textarea';
 import { useToast } from '../../../hooks/use-toast';
-import { StudentDashboardLayout } from '../../../components/student';
-import { FileUpload, UploadedFile } from '../../../components/ui/file-upload';
 
 interface Assignment {
   id: string;
@@ -359,20 +356,59 @@ export default function StudentAssignments() {
 
   const handleSubmit = async (assignmentId: string) => {
     try {
-      // Mock submission - replace with actual API call
+      if (!submissionForm.textContent && submissionFiles.length === 0) {
+        toast({
+          title: 'Error',
+          description: 'Please provide either text content or file attachments',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      const response = await fetch(
+        `/api/student/assignments/${assignmentId}/submit`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            textContent: submissionForm.textContent,
+            attachments: submissionFiles.map(file => ({
+              fileName: file.id,
+              originalName: file.name,
+              filePath: file.url,
+              fileSize: file.size,
+              mimeType: file.type,
+            })),
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to submit assignment');
+      }
+
+      const data = await response.json();
+
       toast({
         title: 'Success',
-        description: 'Assignment submitted successfully',
+        description: data.message || 'Assignment submitted successfully',
       });
       setIsSubmissionModalOpen(false);
       setSubmissionForm({ textContent: '', files: [] });
       setSubmissionFiles([]);
-      // Refresh assignments
-      fetchAssignments();
+      // Refresh assignments to show updated submission status
+      await fetchAssignments();
     } catch (error) {
+      console.error('Error submitting assignment:', error);
       toast({
         title: 'Error',
-        description: 'Failed to submit assignment',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'Failed to submit assignment',
         variant: 'destructive',
       });
     }

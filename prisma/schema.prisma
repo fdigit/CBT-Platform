@@ -32,6 +32,7 @@ model User {
   notifications Notification[]
   reviewedLessonPlans LessonPlan[]
   approvedExams Exam[] @relation("ExamApprover")
+  approvedResults AcademicResult[] @relation("ResultApprover")
 }
 
 enum Role {
@@ -73,6 +74,9 @@ model School {
   subjects    Subject[]
   assignments Assignment[]
   lessonPlans LessonPlan[]
+  academicResults AcademicResult[] @relation("SchoolResults")
+  gradingScales GradingScale[] @relation("SchoolGradingScale")
+  termSessions TermSession[] @relation("SchoolTermSessions")
 }
 
 /// School Admin profile (links to User)
@@ -114,6 +118,7 @@ model Teacher {
   lessonPlans   LessonPlan[]
   gradedSubmissions AssignmentSubmission[]
   exams         Exam[]
+  academicResults AcademicResult[] @relation("TeacherResults")
 }
 
 /// Class model for organizing students and teachers
@@ -142,6 +147,7 @@ model Class {
   teachers    TeacherClass[]
   assignments Assignment[]
   lessonPlans LessonPlan[]
+  academicResults AcademicResult[] @relation("ClassResults")
   
   @@unique([schoolId, name, section, academicYear])
 }
@@ -175,6 +181,7 @@ model Student {
   results  Result[]
   examAttempts ExamAttempt[]
   submissions AssignmentSubmission[]
+  academicResults AcademicResult[] @relation("AcademicResults")
 }
 
 enum Gender {
@@ -465,6 +472,7 @@ model Subject {
   assignments   Assignment[]
   lessonPlans   LessonPlan[]
   exams         Exam[]
+  academicResults AcademicResult[] @relation("SubjectResults")
   
   @@unique([schoolId, name])
   @@unique([schoolId, code])
@@ -714,4 +722,121 @@ enum ResourceType {
   PRESENTATION
   SPREADSHEET
   OTHER
+}
+
+/// -----------------------------
+/// Academic Results Module
+/// -----------------------------
+
+/// Academic result for continuous assessment and exam scores
+/// This is separate from the Result model (which tracks CBT exam results)
+model AcademicResult {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  
+  // Relationships
+  studentId           String   @db.ObjectId
+  subjectId           String   @db.ObjectId
+  teacherId           String   @db.ObjectId
+  classId             String   @db.ObjectId
+  schoolId            String   @db.ObjectId
+  
+  // Academic Period
+  term                String   // "First Term", "Second Term", "Third Term"
+  session             String   // "2024/2025", "2023/2024"
+  
+  // Scores
+  caScore             Float?   @default(0) // Continuous Assessment (usually out of 40)
+  examScore           Float?   @default(0) // Exam score (usually out of 60)
+  totalScore          Float    // Auto-computed: caScore + examScore
+  
+  // Grading
+  actualGrade         String   // A*, A, B, C, D, E, F
+  targetedGrade       String?  // Optional: Grade student is aiming for
+  gradePoint          Float    // 5.0, 4.5, 4.0, etc.
+  remark              String?  // "Excellent", "Very Good", "Good", etc.
+  
+  // Metadata
+  scoresObtainable    Float    @default(100) // Usually 100
+  scoresObtained      Float    // Same as totalScore
+  average             Float?   // Class average for this subject
+  
+  // Status and Approval
+  status              ResultStatus @default(DRAFT)
+  submittedAt         DateTime?
+  approvedByAdmin     Boolean  @default(false)
+  approvedBy          String?  @db.ObjectId
+  approvedAt          DateTime?
+  
+  // Teacher Comments
+  teacherComment      String?
+  hodComment          String?  // Head of Department
+  principalComment    String?
+  
+  // Timestamps
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
+  // Relations
+  student             Student  @relation("AcademicResults", fields: [studentId], references: [id], onDelete: Cascade)
+  subject             Subject  @relation("SubjectResults", fields: [subjectId], references: [id], onDelete: Cascade)
+  teacher             Teacher  @relation("TeacherResults", fields: [teacherId], references: [id], onDelete: Cascade)
+  class               Class    @relation("ClassResults", fields: [classId], references: [id], onDelete: Cascade)
+  school              School   @relation("SchoolResults", fields: [schoolId], references: [id], onDelete: Cascade)
+  approver            User?    @relation("ResultApprover", fields: [approvedBy], references: [id], onDelete: SetNull)
+  
+  @@unique([studentId, subjectId, term, session])
+  @@index([schoolId, classId, term, session])
+  @@index([studentId, term, session])
+  @@index([teacherId, term, session])
+  @@index([status])
+}
+
+enum ResultStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+  PUBLISHED
+}
+
+/// Configurable grading scale per school
+model GradingScale {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  schoolId    String   @db.ObjectId
+  
+  minScore    Float    // Minimum percentage (e.g., 90)
+  maxScore    Float    // Maximum percentage (e.g., 100)
+  grade       String   // "A*", "A", "B", etc.
+  gradePoint  Float    // 5.0, 4.5, 4.0, etc.
+  remark      String   // "Excellent", "Very Good", etc.
+  
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  school      School   @relation("SchoolGradingScale", fields: [schoolId], references: [id], onDelete: Cascade)
+  
+  @@index([schoolId, isActive])
+}
+
+/// Academic terms and sessions management
+model TermSession {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  schoolId    String   @db.ObjectId
+  
+  term        String   // "First Term", "Second Term", "Third Term"
+  session     String   // "2024/2025"
+  startDate   DateTime
+  endDate     DateTime
+  
+  isCurrent   Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  school      School   @relation("SchoolTermSessions", fields: [schoolId], references: [id], onDelete: Cascade)
+  
+  @@unique([schoolId, term, session])
+  @@index([schoolId, isCurrent])
 }

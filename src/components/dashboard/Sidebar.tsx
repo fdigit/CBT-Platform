@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  Award,
   BarChart3,
   BookOpen,
   ChevronLeft,
@@ -39,6 +40,11 @@ const navigationItems = [
     name: 'Exams',
     href: '/admin/exams',
     icon: BookOpen,
+  },
+  {
+    name: 'Academic Results',
+    href: '/admin/academic-results',
+    icon: Award,
   },
   {
     name: 'Results',

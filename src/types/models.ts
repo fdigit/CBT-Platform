@@ -271,3 +271,211 @@ export interface Notification {
   createdAt: Date;
   user: User;
 }
+
+// ===================================
+// Academic Results Module Types
+// ===================================
+
+export enum ResultStatus {
+  DRAFT = 'DRAFT',
+  SUBMITTED = 'SUBMITTED',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+  PUBLISHED = 'PUBLISHED',
+}
+
+export interface AcademicResult {
+  id: string;
+  // Relationships
+  studentId: string;
+  subjectId: string;
+  teacherId: string;
+  classId: string;
+  schoolId: string;
+
+  // Academic Period
+  term: string; // "First Term", "Second Term", "Third Term"
+  session: string; // "2024/2025"
+
+  // Scores
+  caScore: number; // Continuous Assessment (usually out of 40)
+  examScore: number; // Exam score (usually out of 60)
+  totalScore: number; // Auto-computed: caScore + examScore
+
+  // Grading
+  actualGrade: string; // A*, A, B, C, D, E, F
+  targetedGrade?: string; // Optional: Grade student is aiming for
+  gradePoint: number; // 5.0, 4.5, 4.0, etc.
+  remark?: string; // "Excellent", "Very Good", "Good", etc.
+
+  // Metadata
+  scoresObtainable: number; // Usually 100
+  scoresObtained: number; // Same as totalScore
+  average?: number; // Class average for this subject
+
+  // Status and Approval
+  status: ResultStatus;
+  submittedAt?: Date;
+  approvedByAdmin: boolean;
+  approvedBy?: string;
+  approvedAt?: Date;
+
+  // Teacher Comments
+  teacherComment?: string;
+  hodComment?: string; // Head of Department
+  principalComment?: string;
+
+  // Timestamps
+  createdAt: Date;
+  updatedAt: Date;
+
+  // Relations (populated)
+  student?: Student;
+  subject?: Subject;
+  teacher?: Teacher;
+  class?: Class;
+  school?: School;
+  approver?: User;
+}
+
+export interface GradingScale {
+  id: string;
+  schoolId: string;
+  minScore: number; // Minimum percentage (e.g., 90)
+  maxScore: number; // Maximum percentage (e.g., 100)
+  grade: string; // "A*", "A", "B", etc.
+  gradePoint: number; // 5.0, 4.5, 4.0, etc.
+  remark: string; // "Excellent", "Very Good", etc.
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  school?: School;
+}
+
+export interface TermSession {
+  id: string;
+  schoolId: string;
+  term: string; // "First Term", "Second Term", "Third Term"
+  session: string; // "2024/2025"
+  startDate: Date;
+  endDate: Date;
+  isCurrent: boolean;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  school?: School;
+}
+
+export interface Class {
+  id: string;
+  name: string;
+  section?: string;
+  schoolId: string;
+  academicYear: string;
+  description?: string;
+  maxStudents: number;
+  room?: string;
+  status: 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Subject {
+  id: string;
+  name: string;
+  code?: string;
+  description?: string;
+  schoolId: string;
+  status: 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// ===================================
+// API Request/Response Types
+// ===================================
+
+export interface CreateAcademicResultRequest {
+  studentId: string;
+  subjectId: string;
+  classId: string;
+  term: string;
+  session: string;
+  caScore: number;
+  examScore: number;
+  teacherComment?: string;
+}
+
+export interface BulkUploadResultRequest {
+  classId: string;
+  subjectId: string;
+  term: string;
+  session: string;
+  results: {
+    studentRegNumber: string;
+    caScore: number;
+    examScore: number;
+    remarks?: string;
+  }[];
+}
+
+export interface AcademicResultsResponse {
+  results: AcademicResult[];
+  gpa?: number;
+  classAverage?: number;
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
+
+export interface GradingScaleConfig {
+  minScore: number;
+  maxScore: number;
+  grade: string;
+  gradePoint: number;
+  remark: string;
+}
+
+export interface GradeCalculationResult {
+  totalScore: number;
+  actualGrade: string;
+  gradePoint: number;
+  remark: string;
+  scoresObtained: number;
+  scoresObtainable: number;
+}
+
+export interface GPACalculation {
+  gpa: number;
+  totalGradePoints: number;
+  numberOfSubjects: number;
+  results: AcademicResult[];
+}
+
+export interface ResultApprovalRequest {
+  comment?: string;
+  hodComment?: string;
+  principalComment?: string;
+}
+
+export interface ResultsAnalytics {
+  totalResults: number;
+  pendingApproval: number;
+  approved: number;
+  rejected: number;
+  averageGPA: number;
+  topPerformers: {
+    studentId: string;
+    studentName: string;
+    gpa: number;
+  }[];
+  subjectPerformance: {
+    subjectId: string;
+    subjectName: string;
+    average: number;
+    passRate: number;
+  }[];
+}

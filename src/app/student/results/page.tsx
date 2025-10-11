@@ -1,5 +1,9 @@
 'use client';
 
+import {
+  AcademicResultsTable,
+  GPASummaryCard,
+} from '@/components/student/academic-results';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -8,6 +12,15 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { getOverallGradeFromGPA } from '@/lib/grading';
 import {
   Award,
   BarChart3,
@@ -84,7 +97,18 @@ function ResultsContent() {
   const examFilter = searchParams.get('exam');
 
   const [results, setResults] = useState<Result[]>([]);
+  const [academicResults, setAcademicResults] = useState<any[]>([]);
+  const [gpa, setGpa] = useState<number>(0);
+  const [totalGradePoints, setTotalGradePoints] = useState<number>(0);
+  const [numberOfSubjects, setNumberOfSubjects] = useState<number>(0);
+  const [classAverage, setClassAverage] = useState<number | null>(null);
+  const [availableTerms, setAvailableTerms] = useState<
+    Array<{ term: string; session: string }>
+  >([]);
+  const [selectedTerm, setSelectedTerm] = useState<string>('');
+  const [selectedSession, setSelectedSession] = useState<string>('');
   const [loading, setLoading] = useState(true);
+  const [loadingAcademic, setLoadingAcademic] = useState(false);
   const [performanceData, setPerformanceData] = useState<PerformanceData[]>([]);
   const [subjectData, setSubjectData] = useState<SubjectPerformance[]>([]);
   const [gradeDistribution, setGradeDistribution] = useState<
@@ -101,7 +125,14 @@ function ResultsContent() {
     }
 
     fetchResults();
+    fetchAcademicResults();
   }, [session, status, router]);
+
+  useEffect(() => {
+    if (selectedTerm && selectedSession) {
+      fetchAcademicResults();
+    }
+  }, [selectedTerm, selectedSession]);
 
   const fetchResults = async () => {
     try {
@@ -207,6 +238,88 @@ function ResultsContent() {
     setGradeDistribution(gradeChart);
   };
 
+  const fetchAcademicResults = async () => {
+    setLoadingAcademic(true);
+
+    try {
+      const params = new URLSearchParams();
+      if (selectedTerm) params.append('term', selectedTerm);
+      if (selectedSession) params.append('session', selectedSession);
+
+      const response = await fetch(
+        `/api/student/academic-results?${params.toString()}`
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setAcademicResults(data.results || []);
+        setGpa(data.gpa || 0);
+        setTotalGradePoints(data.totalGradePoints || 0);
+        setNumberOfSubjects(data.numberOfSubjects || 0);
+        setClassAverage(data.classAverage || null);
+        setAvailableTerms(data.availableTerms || []);
+
+        if (
+          !selectedTerm &&
+          data.availableTerms &&
+          data.availableTerms.length > 0
+        ) {
+          setSelectedTerm(data.availableTerms[0].term);
+          setSelectedSession(data.availableTerms[0].session);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching academic results:', error);
+    } finally {
+      setLoadingAcademic(false);
+    }
+  };
+
+  const handleDownloadResultSlip = async () => {
+    if (!selectedTerm || !selectedSession) {
+      toast({
+        title: 'Error',
+        description: 'Please select term and session',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `/api/student/academic-results/pdf?term=${selectedTerm}&session=${selectedSession}`
+      );
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Result_${selectedTerm}_${selectedSession}.pdf`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+
+        toast({
+          title: 'Success',
+          description: 'Result slip downloaded successfully',
+        });
+      } else {
+        const data = await response.json();
+        toast({
+          title: 'Error',
+          description: data.error || 'Failed to generate result slip',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'An error occurred while downloading result slip',
+        variant: 'destructive',
+      });
+    }
+  };
+
   const handleDownloadPDF = async (resultId: string) => {
     if (!session?.user?.name) return;
 
@@ -272,6 +385,8 @@ function ResultsContent() {
     ? results.filter(r => r.id === examFilter)
     : results;
 
+  const overallGrade = getOverallGradeFromGPA(gpa);
+
   return (
     <StudentDashboardLayout>
       <div className="space-y-6">
@@ -280,203 +395,325 @@ function ResultsContent() {
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Results</h1>
             <p className="text-gray-600 mt-2">
-              Track your exam performance and progress over time
+              Track your exam performance, academic results, and progress
             </p>
           </div>
-          <Button
-            onClick={() => handleDownloadPDF('all')}
-            className="flex items-center space-x-2"
-          >
-            <Download className="h-4 w-4" />
-            <span>Download Report</span>
-          </Button>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <StatsCard
-            title="Average Score"
-            value={`${stats.avg}%`}
-            description="Overall performance"
-            icon={Target}
-            trend={{ value: 5, isPositive: stats.avg >= 70 }}
-          />
-          <StatsCard
-            title="Highest Score"
-            value={`${stats.highest}%`}
-            description="Best performance"
-            icon={Award}
-          />
-          <StatsCard
-            title="Exams Passed"
-            value={stats.passed}
-            description={`Out of ${results.length} total`}
-            icon={TrendingUp}
-          />
-          <StatsCard
-            title="Total Exams"
-            value={results.length}
-            description="Completed exams"
-            icon={FileText}
-          />
-        </div>
+        <Tabs defaultValue="academic" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2 max-w-md">
+            <TabsTrigger value="academic">Academic Results</TabsTrigger>
+            <TabsTrigger value="exams">Exam Results (CBT)</TabsTrigger>
+          </TabsList>
 
-        {/* Charts */}
-        {results.length > 0 && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Performance Over Time */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <BarChart3 className="h-5 w-5" />
-                  <span>Performance Trend</span>
-                </CardTitle>
-                <CardDescription>
-                  Your score progression over the last 6 months
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={performanceData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis domain={[0, 100]} />
-                    <Tooltip />
-                    <Line
-                      type="monotone"
-                      dataKey="score"
-                      stroke="#2563eb"
-                      strokeWidth={2}
-                      name="Your Score"
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="average"
-                      stroke="#9ca3af"
-                      strokeDasharray="5 5"
-                      name="Class Average"
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
+          <TabsContent value="academic" className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex items-center space-x-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Term</label>
+                  <Select value={selectedTerm} onValueChange={setSelectedTerm}>
+                    <SelectTrigger className="w-40">
+                      <SelectValue placeholder="Select term" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from(new Set(availableTerms.map(t => t.term))).map(
+                        term => (
+                          <SelectItem key={term} value={term}>
+                            {term}
+                          </SelectItem>
+                        )
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            {/* Subject Performance */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Subject Performance</CardTitle>
-                <CardDescription>
-                  Average scores by subject area
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={subjectData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="subject" />
-                    <YAxis domain={[0, 100]} />
-                    <Tooltip />
-                    <Bar dataKey="average" fill="#2563eb" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            {/* Grade Distribution */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Grade Distribution</CardTitle>
-                <CardDescription>Breakdown of your exam grades</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={gradeDistribution}
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={80}
-                      dataKey="count"
-                      label={({ grade, count }) => `${grade}: ${count}`}
-                    >
-                      {gradeDistribution.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Session</label>
+                  <Select
+                    value={selectedSession}
+                    onValueChange={setSelectedSession}
+                  >
+                    <SelectTrigger className="w-40">
+                      <SelectValue placeholder="Select session" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from(
+                        new Set(availableTerms.map(t => t.session))
+                      ).map(session => (
+                        <SelectItem key={session} value={session}>
+                          {session}
+                        </SelectItem>
                       ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
 
-            {/* Monthly Progress */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Monthly Progress</CardTitle>
-                <CardDescription>Exams completed each month</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={performanceData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="score" fill="#10b981" name="Score %" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+              {selectedTerm &&
+                selectedSession &&
+                academicResults.length > 0 && (
+                  <Button
+                    onClick={handleDownloadResultSlip}
+                    className="gap-2"
+                    disabled={loadingAcademic}
+                  >
+                    <Download className="h-4 w-4" />
+                    Download Result Slip
+                  </Button>
+                )}
+            </div>
 
-        {/* Results Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>Detailed Results</span>
-              {examFilter && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => router.push('/student/results')}
-                >
-                  View All Results
-                </Button>
-              )}
-            </CardTitle>
-            <CardDescription>
-              {examFilter
-                ? 'Results filtered by selected exam'
-                : 'Complete history of your exam results'}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {filteredResults.length > 0 ? (
-              <ResultsTable
-                results={filteredResults}
-                onViewDetails={handleViewDetails}
-                onDownloadPDF={handleDownloadPDF}
-              />
+            {loadingAcademic ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                  <p className="mt-4 text-gray-600">Loading results...</p>
+                </div>
+              </div>
+            ) : academicResults.length > 0 ? (
+              <>
+                <GPASummaryCard
+                  gpa={gpa}
+                  totalGradePoints={totalGradePoints}
+                  numberOfSubjects={numberOfSubjects}
+                  overallGrade={overallGrade}
+                  classAverage={classAverage || undefined}
+                />
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Subject Results</CardTitle>
+                    <CardDescription>
+                      Your CA and Exam scores for {selectedTerm},{' '}
+                      {selectedSession}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <AcademicResultsTable results={academicResults} />
+                  </CardContent>
+                </Card>
+              </>
             ) : (
-              <div className="text-center py-12">
-                <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  No results available
-                </h3>
-                <p className="text-gray-600">
-                  Complete some exams to see your results here
-                </p>
-                <Button
-                  className="mt-4"
-                  onClick={() => router.push('/student/exams')}
-                >
-                  Browse Available Exams
-                </Button>
+              <Card>
+                <CardContent className="py-12">
+                  <div className="text-center">
+                    <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      No Results Available
+                    </h3>
+                    <p className="text-gray-600">
+                      {selectedTerm && selectedSession
+                        ? 'No published results for this term and session'
+                        : 'Select a term and session to view your results'}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          <TabsContent value="exams" className="space-y-6">
+            <div className="flex justify-end">
+              <Button
+                onClick={() => handleDownloadPDF('all')}
+                className="flex items-center space-x-2"
+              >
+                <Download className="h-4 w-4" />
+                <span>Download Report</span>
+              </Button>
+            </div>
+
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <StatsCard
+                title="Average Score"
+                value={`${stats.avg}%`}
+                description="Overall performance"
+                icon={Target}
+                trend={{ value: 5, isPositive: stats.avg >= 70 }}
+              />
+              <StatsCard
+                title="Highest Score"
+                value={`${stats.highest}%`}
+                description="Best performance"
+                icon={Award}
+              />
+              <StatsCard
+                title="Exams Passed"
+                value={stats.passed}
+                description={`Out of ${results.length} total`}
+                icon={TrendingUp}
+              />
+              <StatsCard
+                title="Total Exams"
+                value={results.length}
+                description="Completed exams"
+                icon={FileText}
+              />
+            </div>
+
+            {/* Charts */}
+            {results.length > 0 && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Performance Over Time */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <BarChart3 className="h-5 w-5" />
+                      <span>Performance Trend</span>
+                    </CardTitle>
+                    <CardDescription>
+                      Your score progression over the last 6 months
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <LineChart data={performanceData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="month" />
+                        <YAxis domain={[0, 100]} />
+                        <Tooltip />
+                        <Line
+                          type="monotone"
+                          dataKey="score"
+                          stroke="#2563eb"
+                          strokeWidth={2}
+                          name="Your Score"
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="average"
+                          stroke="#9ca3af"
+                          strokeDasharray="5 5"
+                          name="Class Average"
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+
+                {/* Subject Performance */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Subject Performance</CardTitle>
+                    <CardDescription>
+                      Average scores by subject area
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={subjectData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="subject" />
+                        <YAxis domain={[0, 100]} />
+                        <Tooltip />
+                        <Bar dataKey="average" fill="#2563eb" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+
+                {/* Grade Distribution */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Grade Distribution</CardTitle>
+                    <CardDescription>
+                      Breakdown of your exam grades
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <PieChart>
+                        <Pie
+                          data={gradeDistribution}
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={80}
+                          dataKey="count"
+                          label={({ grade, count }) => `${grade}: ${count}`}
+                        >
+                          {gradeDistribution.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+
+                {/* Monthly Progress */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Monthly Progress</CardTitle>
+                    <CardDescription>
+                      Exams completed each month
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={performanceData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="month" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar dataKey="score" fill="#10b981" name="Score %" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
               </div>
             )}
-          </CardContent>
-        </Card>
+
+            {/* Results Table */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Detailed Results</span>
+                  {examFilter && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => router.push('/student/results')}
+                    >
+                      View All Results
+                    </Button>
+                  )}
+                </CardTitle>
+                <CardDescription>
+                  {examFilter
+                    ? 'Results filtered by selected exam'
+                    : 'Complete history of your exam results'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {filteredResults.length > 0 ? (
+                  <ResultsTable
+                    results={filteredResults}
+                    onViewDetails={handleViewDetails}
+                    onDownloadPDF={handleDownloadPDF}
+                  />
+                ) : (
+                  <div className="text-center py-12">
+                    <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      No results available
+                    </h3>
+                    <p className="text-gray-600">
+                      Complete some exams to see your results here
+                    </p>
+                    <Button
+                      className="mt-4"
+                      onClick={() => router.push('/student/exams')}
+                    >
+                      Browse Available Exams
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </StudentDashboardLayout>
   );

@@ -1,29 +1,30 @@
 'use client';
 
-import { useState } from 'react';
+import {
+  Award,
+  BarChart3,
+  BookOpen,
+  ChevronLeft,
+  ChevronRight,
+  CreditCard,
+  FileText,
+  GraduationCap,
+  Layers,
+  LayoutDashboard,
+  Library,
+  Menu,
+  School,
+  Settings,
+  Trophy,
+  Users,
+  X,
+} from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
 import { Separator } from '../ui/separator';
-import {
-  LayoutDashboard,
-  Users,
-  GraduationCap,
-  BookOpen,
-  Trophy,
-  CreditCard,
-  BarChart3,
-  Settings,
-  Menu,
-  X,
-  ChevronLeft,
-  ChevronRight,
-  School,
-  Layers,
-  Library,
-  FileText,
-} from 'lucide-react';
 
 interface SchoolSidebarProps {
   className?: string;
@@ -64,6 +65,11 @@ const navigationItems = [
     name: 'Exams',
     href: '/school/exams',
     icon: BookOpen,
+  },
+  {
+    name: 'Academic Results',
+    href: '/admin/academic-results',
+    icon: Award,
   },
   {
     name: 'Results',
