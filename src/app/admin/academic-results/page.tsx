@@ -1,27 +1,27 @@
 'use client';
 
 import {
-    ResultsApprovalTable,
-    ResultsFilters,
+  ResultsApprovalTable,
+  ResultsFilters,
 } from '@/components/admin/academic-results';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { SchoolDashboardLayout } from '@/components/school/SchoolDashboardLayout';
 import { Button } from '@/components/ui/button';
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import {
-    CheckCircle,
-    FileText,
-    Send,
-    Settings,
-    TrendingUp,
-    XCircle,
+  CheckCircle,
+  FileText,
+  Send,
+  Settings,
+  TrendingUp,
+  XCircle,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -297,8 +297,12 @@ export default function AdminAcademicResultsPage() {
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                   <FileText className="h-6 w-6 md:h-8 md:w-8 text-gray-600" />
                   <div className="sm:ml-2 md:ml-4">
-                    <p className="text-xs md:text-sm font-medium text-gray-500">Total</p>
-                    <p className="text-xl md:text-2xl font-bold">{statistics.total}</p>
+                    <p className="text-xs md:text-sm font-medium text-gray-500">
+                      Total
+                    </p>
+                    <p className="text-xl md:text-2xl font-bold">
+                      {statistics.total}
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -312,7 +316,9 @@ export default function AdminAcademicResultsPage() {
                     <p className="text-xs md:text-sm font-medium text-gray-500">
                       Submitted
                     </p>
-                    <p className="text-xl md:text-2xl font-bold">{statistics.submitted}</p>
+                    <p className="text-xl md:text-2xl font-bold">
+                      {statistics.submitted}
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -326,7 +332,9 @@ export default function AdminAcademicResultsPage() {
                     <p className="text-xs md:text-sm font-medium text-gray-500">
                       Approved
                     </p>
-                    <p className="text-xl md:text-2xl font-bold">{statistics.approved}</p>
+                    <p className="text-xl md:text-2xl font-bold">
+                      {statistics.approved}
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -340,7 +348,9 @@ export default function AdminAcademicResultsPage() {
                     <p className="text-xs md:text-sm font-medium text-gray-500">
                       Rejected
                     </p>
-                    <p className="text-xl md:text-2xl font-bold">{statistics.rejected}</p>
+                    <p className="text-xl md:text-2xl font-bold">
+                      {statistics.rejected}
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -354,7 +364,9 @@ export default function AdminAcademicResultsPage() {
                     <p className="text-xs md:text-sm font-medium text-gray-500">
                       Published
                     </p>
-                    <p className="text-xl md:text-2xl font-bold">{statistics.published}</p>
+                    <p className="text-xl md:text-2xl font-bold">
+                      {statistics.published}
+                    </p>
                   </div>
                 </div>
               </CardContent>

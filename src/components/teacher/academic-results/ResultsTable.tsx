@@ -3,12 +3,12 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '@/components/ui/table';
 import { getGradeColor } from '@/lib/grading';
 import { Edit, Trash2 } from 'lucide-react';
@@ -93,65 +93,67 @@ export function ResultsTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-          {results.map(result => (
-            <TableRow key={result.id}>
-              <TableCell className="font-medium">
-                {result.studentName}
-              </TableCell>
-              <TableCell className="text-sm text-gray-600">
-                {result.regNumber}
-              </TableCell>
-              <TableCell className="text-center">
-                {result.caScore.toFixed(1)}
-              </TableCell>
-              <TableCell className="text-center">
-                {result.examScore.toFixed(1)}
-              </TableCell>
-              <TableCell className="text-center font-medium">
-                {result.totalScore.toFixed(1)}
-              </TableCell>
-              <TableCell className="text-center">
-                <Badge className={getGradeColor(result.actualGrade)}>
-                  {result.actualGrade}
-                </Badge>
-              </TableCell>
-              <TableCell className="text-center">
-                {result.gradePoint.toFixed(1)}
-              </TableCell>
-              <TableCell className="text-sm">{result.remark || '-'}</TableCell>
-              <TableCell>{getStatusBadge(result.status)}</TableCell>
-              {showActions && (
-                <TableCell className="text-right">
-                  <div className="flex justify-end space-x-2">
-                    {(result.status === 'DRAFT' ||
-                      result.status === 'REJECTED') && (
-                      <>
-                        {onEdit && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => onEdit(result)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                        )}
-                        {onDelete && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => onDelete(result.id)}
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </>
-                    )}
-                  </div>
+            {results.map(result => (
+              <TableRow key={result.id}>
+                <TableCell className="font-medium">
+                  {result.studentName}
                 </TableCell>
-              )}
-            </TableRow>
-          ))}
+                <TableCell className="text-sm text-gray-600">
+                  {result.regNumber}
+                </TableCell>
+                <TableCell className="text-center">
+                  {result.caScore.toFixed(1)}
+                </TableCell>
+                <TableCell className="text-center">
+                  {result.examScore.toFixed(1)}
+                </TableCell>
+                <TableCell className="text-center font-medium">
+                  {result.totalScore.toFixed(1)}
+                </TableCell>
+                <TableCell className="text-center">
+                  <Badge className={getGradeColor(result.actualGrade)}>
+                    {result.actualGrade}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-center">
+                  {result.gradePoint.toFixed(1)}
+                </TableCell>
+                <TableCell className="text-sm">
+                  {result.remark || '-'}
+                </TableCell>
+                <TableCell>{getStatusBadge(result.status)}</TableCell>
+                {showActions && (
+                  <TableCell className="text-right">
+                    <div className="flex justify-end space-x-2">
+                      {(result.status === 'DRAFT' ||
+                        result.status === 'REJECTED') && (
+                        <>
+                          {onEdit && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => onEdit(result)}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          )}
+                          {onDelete && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => onDelete(result.id)}
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </TableCell>
+                )}
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </div>

@@ -1,40 +1,40 @@
 'use client';
 
 import {
-    Activity,
-    AlertTriangle,
-    BarChart3,
-    BookOpen,
-    CreditCard,
-    Download,
-    RefreshCw,
-    School,
-    Users
+  Activity,
+  AlertTriangle,
+  BarChart3,
+  BookOpen,
+  CreditCard,
+  Download,
+  RefreshCw,
+  School,
+  Users,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { ReportsActivityTable } from '../../../components/admin/ReportsActivityTable';
 import {
-    ExamsPerSchoolChart,
-    RevenueAnalyticsChart,
-    SchoolPerformanceChart,
-    UserGrowthChart,
-    UserRoleDistributionChart,
+  ExamsPerSchoolChart,
+  RevenueAnalyticsChart,
+  SchoolPerformanceChart,
+  UserGrowthChart,
+  UserRoleDistributionChart,
 } from '../../../components/admin/ReportsCharts';
 import {
-    ReportsFilters,
-    type ReportsFilters as ReportsFiltersType,
+  ReportsFilters,
+  type ReportsFilters as ReportsFiltersType,
 } from '../../../components/admin/ReportsFilters';
 import { DashboardLayout } from '../../../components/dashboard/DashboardLayout';
 import { StatsCard } from '../../../components/dashboard/StatsCard';
 import { Alert, AlertDescription } from '../../../components/ui/alert';
 import { Button } from '../../../components/ui/button';
 import {
-    Tabs,
-    TabsContent,
-    TabsList,
-    TabsTrigger,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
 } from '../../../components/ui/tabs';
 import { useToast } from '../../../hooks/use-toast';
 
@@ -286,7 +286,7 @@ export default function ReportsPage() {
               />
               <span className="hidden sm:inline">Refresh</span>
             </Button>
-            <Button 
+            <Button
               size="sm"
               className="flex-1 sm:flex-none"
               onClick={() => handleExport('csv')}
@@ -361,21 +361,33 @@ export default function ReportsPage() {
         {/* Charts and Analytics */}
         <Tabs defaultValue="overview" className="space-y-4 md:space-y-6">
           <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
-            <TabsTrigger value="overview" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm py-2">
+            <TabsTrigger
+              value="overview"
+              className="flex items-center gap-1 md:gap-2 text-xs md:text-sm py-2"
+            >
               <BarChart3 className="h-3 w-3 md:h-4 md:w-4" />
               <span className="hidden sm:inline">Overview</span>
               <span className="sm:hidden">View</span>
             </TabsTrigger>
-            <TabsTrigger value="users" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm py-2">
+            <TabsTrigger
+              value="users"
+              className="flex items-center gap-1 md:gap-2 text-xs md:text-sm py-2"
+            >
               <Users className="h-3 w-3 md:h-4 md:w-4" />
               Users
             </TabsTrigger>
-            <TabsTrigger value="schools" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm py-2">
+            <TabsTrigger
+              value="schools"
+              className="flex items-center gap-1 md:gap-2 text-xs md:text-sm py-2"
+            >
               <School className="h-3 w-3 md:h-4 md:w-4" />
               <span className="hidden sm:inline">Schools</span>
               <span className="sm:hidden">Sch</span>
             </TabsTrigger>
-            <TabsTrigger value="activity" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm py-2">
+            <TabsTrigger
+              value="activity"
+              className="flex items-center gap-1 md:gap-2 text-xs md:text-sm py-2"
+            >
               <Activity className="h-3 w-3 md:h-4 md:w-4" />
               <span className="hidden sm:inline">Activity</span>
               <span className="sm:hidden">Act</span>

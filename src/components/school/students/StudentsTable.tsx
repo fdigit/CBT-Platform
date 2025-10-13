@@ -2,30 +2,30 @@
 
 import { Student } from '@/types/models';
 import {
-    ArrowUpDown,
-    ChevronLeft,
-    ChevronRight,
-    Edit,
-    Eye,
-    GraduationCap,
-    Mail,
-    MoreHorizontal,
-    Phone,
-    Trash2,
-    User,
-    UserCheck,
-    UserX
+  ArrowUpDown,
+  ChevronLeft,
+  ChevronRight,
+  Edit,
+  Eye,
+  GraduationCap,
+  Mail,
+  MoreHorizontal,
+  Phone,
+  Trash2,
+  User,
+  UserCheck,
+  UserX,
 } from 'lucide-react';
 import { useState } from 'react';
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from '../../ui/alert-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
 import { Badge } from '../../ui/badge';
@@ -33,19 +33,19 @@ import { Button } from '../../ui/button';
 import { Card, CardContent } from '../../ui/card';
 import { Checkbox } from '../../ui/checkbox';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from '../../ui/dropdown-menu';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '../../ui/table';
 
 // Extended student type with API response fields
@@ -97,7 +97,9 @@ export function StudentsTable({
     key: null,
     direction: 'asc',
   });
-  const [deleteStudent, setDeleteStudent] = useState<StudentWithDetails | null>(null);
+  const [deleteStudent, setDeleteStudent] = useState<StudentWithDetails | null>(
+    null
+  );
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleSort = (key: keyof StudentWithDetails) => {
@@ -124,7 +126,10 @@ export function StudentsTable({
     }
   };
 
-  const handleStudentAction = async (action: string, student: StudentWithDetails) => {
+  const handleStudentAction = async (
+    action: string,
+    student: StudentWithDetails
+  ) => {
     try {
       const response = await fetch(`/api/school/students/${student.id}`, {
         method: 'PUT',
@@ -301,7 +306,9 @@ export function StudentsTable({
                         <Avatar className="h-10 w-10">
                           <AvatarImage src={undefined} />
                           <AvatarFallback>
-                            {getInitials(student.name || student.user?.name || '')}
+                            {getInitials(
+                              student.name || student.user?.name || ''
+                            )}
                           </AvatarFallback>
                         </Avatar>
                       </TableCell>
@@ -323,10 +330,14 @@ export function StudentsTable({
                       <TableCell>
                         <div>
                           <div className="font-medium">
-                            {student.className || student.class || 'Not assigned'}
+                            {student.className ||
+                              student.class ||
+                              'Not assigned'}
                           </div>
                           <div className="text-sm text-gray-500">
-                            {student.classSection ? `Section ${student.classSection}` : 'No section'}
+                            {student.classSection
+                              ? `Section ${student.classSection}`
+                              : 'No section'}
                           </div>
                         </div>
                       </TableCell>
@@ -351,8 +362,14 @@ export function StudentsTable({
                         {getStatusBadge(student.status || 'ACTIVE')}
                       </TableCell>
                       <TableCell>
-                        <span className={getPerformanceColor(student.performanceScore)}>
-                          {student.performanceScore ? `${student.performanceScore}%` : 'N/A'}
+                        <span
+                          className={getPerformanceColor(
+                            student.performanceScore
+                          )}
+                        >
+                          {student.performanceScore
+                            ? `${student.performanceScore}%`
+                            : 'N/A'}
                         </span>
                       </TableCell>
                       <TableCell onClick={e => e.stopPropagation()}>
@@ -497,13 +514,24 @@ export function StudentsTable({
                         </div>
                       </div>
                       <div className="mt-2 flex items-center space-x-4 text-sm text-gray-500">
-                        <span>{student.className || student.class || 'Not assigned'}</span>
-                        <span>{student.classSection ? `Section ${student.classSection}` : 'No section'}</span>
+                        <span>
+                          {student.className || student.class || 'Not assigned'}
+                        </span>
+                        <span>
+                          {student.classSection
+                            ? `Section ${student.classSection}`
+                            : 'No section'}
+                        </span>
                         <span>{student.gender || 'Not specified'}</span>
                       </div>
                       <div className="mt-2">
-                        <span className={`text-sm font-medium ${getPerformanceColor(student.performanceScore)}`}>
-                          Performance: {student.performanceScore ? `${student.performanceScore}%` : 'N/A'}
+                        <span
+                          className={`text-sm font-medium ${getPerformanceColor(student.performanceScore)}`}
+                        >
+                          Performance:{' '}
+                          {student.performanceScore
+                            ? `${student.performanceScore}%`
+                            : 'N/A'}
                         </span>
                       </div>
                     </div>

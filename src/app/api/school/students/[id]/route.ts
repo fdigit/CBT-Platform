@@ -213,9 +213,13 @@ export async function PUT(
         where: { id },
         data: {
           gender: validatedData.gender,
-          classId: validatedData.classId === null ? null : validatedData.classId,
+          classId:
+            validatedData.classId === null ? null : validatedData.classId,
           parentPhone: validatedData.parentPhone || undefined,
-          parentEmail: validatedData.parentEmail && validatedData.parentEmail !== '' ? validatedData.parentEmail : undefined,
+          parentEmail:
+            validatedData.parentEmail && validatedData.parentEmail !== ''
+              ? validatedData.parentEmail
+              : undefined,
           dateOfBirth: validatedData.dateOfBirth || undefined,
           address: validatedData.address || undefined,
           status: validatedData.status,

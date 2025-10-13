@@ -5,14 +5,14 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import {
-    BulkActionModal,
-    DeleteUserModal,
-    EditUserModal,
-    ResetPasswordModal,
-    UserAnalytics,
-    UserFilters,
-    UserSummaryStats,
-    UserTable,
+  BulkActionModal,
+  DeleteUserModal,
+  EditUserModal,
+  ResetPasswordModal,
+  UserAnalytics,
+  UserFilters,
+  UserSummaryStats,
+  UserTable,
 } from '../../../components/admin';
 import { DashboardLayout } from '../../../components/dashboard/DashboardLayout';
 import { Button } from '../../../components/ui/button';
@@ -445,8 +445,8 @@ export default function UsersPage() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               className="flex-1 sm:flex-none"
               onClick={() => handleExport('csv')}
@@ -455,8 +455,8 @@ export default function UsersPage() {
               <span className="hidden sm:inline">Export CSV</span>
               <span className="sm:hidden">CSV</span>
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               className="flex-1 sm:flex-none"
               onClick={() => handleExport('json')}

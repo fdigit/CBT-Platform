@@ -1,35 +1,35 @@
 'use client';
 
 import {
-    BulkUploadModal,
-    ResultsEntryForm,
-    ResultsTable,
+  BulkUploadModal,
+  ResultsEntryForm,
+  ResultsTable,
 } from '@/components/teacher/academic-results';
 import { TeacherDashboardLayout } from '@/components/teacher/TeacherDashboardLayout';
 import { Button } from '@/components/ui/button';
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from '@/components/ui/card';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import {
-    BookOpen,
-    CheckCircle,
-    FileText,
-    PlusCircle,
-    Send,
-    Upload,
-    XCircle,
+  BookOpen,
+  CheckCircle,
+  FileText,
+  PlusCircle,
+  Send,
+  Upload,
+  XCircle,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -446,8 +446,12 @@ export default function TeacherAcademicResultsPage() {
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                     <FileText className="h-6 w-6 md:h-8 md:w-8 text-gray-600" />
                     <div className="sm:ml-2 md:ml-4">
-                      <p className="text-xs md:text-sm font-medium text-gray-500">Draft</p>
-                      <p className="text-xl md:text-2xl font-bold">{draftCount}</p>
+                      <p className="text-xs md:text-sm font-medium text-gray-500">
+                        Draft
+                      </p>
+                      <p className="text-xl md:text-2xl font-bold">
+                        {draftCount}
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -461,7 +465,9 @@ export default function TeacherAcademicResultsPage() {
                       <p className="text-xs md:text-sm font-medium text-gray-500">
                         Submitted
                       </p>
-                      <p className="text-xl md:text-2xl font-bold">{submittedCount}</p>
+                      <p className="text-xl md:text-2xl font-bold">
+                        {submittedCount}
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -475,7 +481,9 @@ export default function TeacherAcademicResultsPage() {
                       <p className="text-xs md:text-sm font-medium text-gray-500">
                         Approved
                       </p>
-                      <p className="text-xl md:text-2xl font-bold">{approvedCount}</p>
+                      <p className="text-xl md:text-2xl font-bold">
+                        {approvedCount}
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -489,7 +497,9 @@ export default function TeacherAcademicResultsPage() {
                       <p className="text-xs md:text-sm font-medium text-gray-500">
                         Published
                       </p>
-                      <p className="text-xl md:text-2xl font-bold">{publishedCount}</p>
+                      <p className="text-xl md:text-2xl font-bold">
+                        {publishedCount}
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -509,11 +519,13 @@ export default function TeacherAcademicResultsPage() {
                 onClick={() => setShowEntryForm(!showEntryForm)}
               >
                 <PlusCircle className="h-4 w-4 sm:mr-2" />
-                <span className="hidden sm:inline">{showEntryForm ? 'Hide Form' : 'Add Result'}</span>
+                <span className="hidden sm:inline">
+                  {showEntryForm ? 'Hide Form' : 'Add Result'}
+                </span>
                 <span className="sm:hidden">Add</span>
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="sm"
                 className="flex-1 sm:flex-none"
                 onClick={() => setShowBulkUpload(true)}

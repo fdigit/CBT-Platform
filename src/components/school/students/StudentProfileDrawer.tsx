@@ -3,18 +3,18 @@
 import { Student } from '@/types/models';
 import { format } from 'date-fns';
 import {
-    AlertCircle,
-    BookOpen,
-    Calendar,
-    Edit3,
-    Mail,
-    MapPin,
-    Phone,
-    Save,
-    TrendingUp,
-    Trophy,
-    User,
-    X
+  AlertCircle,
+  BookOpen,
+  Calendar,
+  Edit3,
+  Mail,
+  MapPin,
+  Phone,
+  Save,
+  TrendingUp,
+  Trophy,
+  User,
+  X,
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { useToast } from '../../../hooks/use-toast';
@@ -25,18 +25,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { Input } from '../../ui/input';
 import { Label } from '../../ui/label';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '../../ui/select';
 import {
-    Sheet,
-    SheetContent,
-    SheetDescription,
-    SheetHeader,
-    SheetTitle,
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
 } from '../../ui/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
 import { Textarea } from '../../ui/textarea';
@@ -97,7 +97,9 @@ export function StudentProfileDrawer({
   // Fetch available classes
   const fetchClasses = async () => {
     try {
-      const response = await fetch('/api/school/classes?limit=100&status=ACTIVE');
+      const response = await fetch(
+        '/api/school/classes?limit=100&status=ACTIVE'
+      );
       if (response.ok) {
         const data = await response.json();
         const classOptions = data.classes.map((cls: any) => ({
@@ -125,7 +127,7 @@ export function StudentProfileDrawer({
         // Extract classId from class object if it exists
         const formDataWithClassId = {
           ...details,
-          classId: details.class?.id || details.classId
+          classId: details.class?.id || details.classId,
         };
         console.log('Setting form data:', formDataWithClassId);
         setFormData(formDataWithClassId);
@@ -158,11 +160,11 @@ export function StudentProfileDrawer({
 
     try {
       setLoading(true);
-      
+
       // Prepare update data - API expects flat structure
       // Only send defined values, convert empty strings to undefined
       const updateData: any = {};
-      
+
       if (formData.name) updateData.name = formData.name;
       if (formData.email) updateData.email = formData.email;
       if (formData.gender) updateData.gender = formData.gender;
@@ -174,7 +176,7 @@ export function StudentProfileDrawer({
       }
       if (formData.address) updateData.address = formData.address;
       if (formData.status) updateData.status = formData.status;
-      
+
       // Handle classId - can be null to unassign
       if (formData.classId === 'unassigned' || formData.classId === null) {
         updateData.classId = null;
@@ -210,22 +212,28 @@ export function StudentProfileDrawer({
       } else {
         console.error('API error response:', responseData);
         console.error('Response status:', response.status);
-        
+
         // Show detailed validation errors if available
         if (responseData?.errors && Array.isArray(responseData.errors)) {
-          const errorDetails = responseData.errors.map((e: any) => `${e.path}: ${e.message}`).join(', ');
+          const errorDetails = responseData.errors
+            .map((e: any) => `${e.path}: ${e.message}`)
+            .join(', ');
           console.error('Validation errors:', errorDetails);
           throw new Error(`Validation error: ${errorDetails}`);
         }
-        
-        const errorMessage = responseData?.message || responseData?.error || 'Failed to update student';
+
+        const errorMessage =
+          responseData?.message ||
+          responseData?.error ||
+          'Failed to update student';
         throw new Error(errorMessage);
       }
     } catch (error) {
       console.error('Error updating student:', error);
       toast({
         title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to update student',
+        description:
+          error instanceof Error ? error.message : 'Failed to update student',
         variant: 'destructive',
       });
     } finally {
@@ -281,13 +289,20 @@ export function StudentProfileDrawer({
               <Avatar className="h-12 w-12">
                 <AvatarImage src={undefined} />
                 <AvatarFallback>
-                  {getInitials((displayStudent as any).name || displayStudent.user?.name || '')}
+                  {getInitials(
+                    (displayStudent as any).name ||
+                      displayStudent.user?.name ||
+                      ''
+                  )}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <SheetTitle>{(displayStudent as any).name || displayStudent.user?.name}</SheetTitle>
+                <SheetTitle>
+                  {(displayStudent as any).name || displayStudent.user?.name}
+                </SheetTitle>
                 <SheetDescription>
-                  {displayStudent.regNumber} • {(displayStudent as any).email || displayStudent.user?.email}
+                  {displayStudent.regNumber} •{' '}
+                  {(displayStudent as any).email || displayStudent.user?.email}
                 </SheetDescription>
               </div>
             </div>
@@ -351,7 +366,10 @@ export function StudentProfileDrawer({
                       ) : (
                         <div className="flex items-center space-x-2">
                           <User className="h-4 w-4 text-gray-400" />
-                          <span>{(displayStudent as any).name || displayStudent.user?.name}</span>
+                          <span>
+                            {(displayStudent as any).name ||
+                              displayStudent.user?.name}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -373,7 +391,10 @@ export function StudentProfileDrawer({
                       ) : (
                         <div className="flex items-center space-x-2">
                           <Mail className="h-4 w-4 text-gray-400" />
-                          <span>{(displayStudent as any).email || displayStudent.user?.email}</span>
+                          <span>
+                            {(displayStudent as any).email ||
+                              displayStudent.user?.email}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -401,7 +422,9 @@ export function StudentProfileDrawer({
                       ) : (
                         <div className="flex items-center space-x-2">
                           <User className="h-4 w-4 text-gray-400" />
-                          <span>{(displayStudent as any).gender || 'Not specified'}</span>
+                          <span>
+                            {(displayStudent as any).gender || 'Not specified'}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -423,7 +446,10 @@ export function StudentProfileDrawer({
                       ) : (
                         <div className="flex items-center space-x-2">
                           <Calendar className="h-4 w-4 text-gray-400" />
-                          <span>{(displayStudent as any).dateOfBirth || 'Not specified'}</span>
+                          <span>
+                            {(displayStudent as any).dateOfBirth ||
+                              'Not specified'}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -444,7 +470,10 @@ export function StudentProfileDrawer({
                       ) : (
                         <div className="flex items-center space-x-2">
                           <Phone className="h-4 w-4 text-gray-400" />
-                          <span>{(displayStudent as any).parentPhone || 'Not specified'}</span>
+                          <span>
+                            {(displayStudent as any).parentPhone ||
+                              'Not specified'}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -466,7 +495,10 @@ export function StudentProfileDrawer({
                       ) : (
                         <div className="flex items-center space-x-2">
                           <Mail className="h-4 w-4 text-gray-400" />
-                          <span>{(displayStudent as any).parentEmail || 'Not specified'}</span>
+                          <span>
+                            {(displayStudent as any).parentEmail ||
+                              'Not specified'}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -478,13 +510,17 @@ export function StudentProfileDrawer({
                       <Textarea
                         id="address"
                         value={formData.address || ''}
-                        onChange={e => setFormData({ ...formData, address: e.target.value })}
+                        onChange={e =>
+                          setFormData({ ...formData, address: e.target.value })
+                        }
                         rows={3}
                       />
                     ) : (
                       <div className="flex items-start space-x-2">
                         <MapPin className="h-4 w-4 text-gray-400 mt-0.5" />
-                        <span>{(displayStudent as any).address || 'Not specified'}</span>
+                        <span>
+                          {(displayStudent as any).address || 'Not specified'}
+                        </span>
                       </div>
                     )}
                   </div>
@@ -507,7 +543,8 @@ export function StudentProfileDrawer({
                           onValueChange={value =>
                             setFormData({
                               ...formData,
-                              classId: value === 'unassigned' ? undefined : value,
+                              classId:
+                                value === 'unassigned' ? undefined : value,
                             })
                           }
                         >
@@ -563,7 +600,11 @@ export function StudentProfileDrawer({
                           </SelectContent>
                         </Select>
                       ) : (
-                        <span>{getStatusBadge((displayStudent as any).status || 'ACTIVE')}</span>
+                        <span>
+                          {getStatusBadge(
+                            (displayStudent as any).status || 'ACTIVE'
+                          )}
+                        </span>
                       )}
                     </div>
                   </div>

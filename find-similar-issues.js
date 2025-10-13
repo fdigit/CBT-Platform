@@ -15,8 +15,8 @@ const problematicPatterns = [
     pattern: /await response\.json\(\)/,
     name: 'Unprotected response.json() call',
     severity: 'High',
-    suggestion: 'Wrap in try-catch to handle parsing errors'
-  }
+    suggestion: 'Wrap in try-catch to handle parsing errors',
+  },
 ];
 
 const componentsDir = path.join(__dirname, 'src', 'components');
@@ -28,7 +28,7 @@ function scanFile(filePath) {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
     const issues = [];
-    
+
     problematicPatterns.forEach(({ pattern, name, severity, suggestion }) => {
       const lines = content.split('\n');
       lines.forEach((line, index) => {
@@ -37,20 +37,20 @@ function scanFile(filePath) {
           const contextStart = Math.max(0, index - 5);
           const contextEnd = Math.min(lines.length, index + 5);
           const context = lines.slice(contextStart, contextEnd).join('\n');
-          
+
           if (!context.includes('try') || !context.includes('catch')) {
             issues.push({
               line: index + 1,
               name,
               severity,
               suggestion,
-              code: line.trim()
+              code: line.trim(),
             });
           }
         }
       });
     });
-    
+
     if (issues.length > 0) {
       filesWithIssues.push({ filePath, issues });
     }
@@ -62,13 +62,16 @@ function scanFile(filePath) {
 function scanDirectory(dir) {
   try {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
-    
+
     entries.forEach(entry => {
       const fullPath = path.join(dir, entry.name);
-      
+
       if (entry.isDirectory()) {
         scanDirectory(fullPath);
-      } else if (entry.isFile() && (entry.name.endsWith('.tsx') || entry.name.endsWith('.ts'))) {
+      } else if (
+        entry.isFile() &&
+        (entry.name.endsWith('.tsx') || entry.name.endsWith('.ts'))
+      ) {
         scanFile(fullPath);
       }
     });
@@ -88,7 +91,9 @@ console.log(`Found ${filesWithIssues.length} files with potential issues`);
 console.log('=================================================\n');
 
 if (filesWithIssues.length === 0) {
-  console.log('✅ No issues found! All response.json() calls appear to be protected.\n');
+  console.log(
+    '✅ No issues found! All response.json() calls appear to be protected.\n'
+  );
 } else {
   filesWithIssues.slice(0, 10).forEach(({ filePath, issues }) => {
     const relativePath = path.relative(__dirname, filePath);
@@ -99,11 +104,11 @@ if (filesWithIssues.length === 0) {
       console.log(`   💡 ${suggestion}\n`);
     });
   });
-  
+
   if (filesWithIssues.length > 10) {
     console.log(`... and ${filesWithIssues.length - 10} more files\n`);
   }
-  
+
   console.log('=================================================');
   console.log('Recommended Action:');
   console.log('=================================================\n');
@@ -126,4 +131,3 @@ if (filesWithIssues.length === 0) {
 console.log('Note: This is a simple heuristic scan.');
 console.log('Some files may already have proper error handling.');
 console.log('Review each file individually before making changes.\n');
-

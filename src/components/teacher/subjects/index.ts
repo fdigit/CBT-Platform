@@ -11,4 +11,3 @@ export { SubjectsLoadingSkeleton } from './SubjectsLoadingSkeleton';
 export { SubjectsTableView } from './SubjectsTableView';
 export { ViewModeSwitcher } from './ViewModeSwitcher';
 export type { ViewMode } from './ViewModeSwitcher';
-

@@ -2,12 +2,12 @@
 
 import { Badge } from '@/components/ui/badge';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '@/components/ui/table';
 import { getGradeColor } from '@/lib/grading';
 
@@ -64,46 +64,48 @@ export function AcademicResultsTable({ results }: AcademicResultsTableProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-          {results.map(result => (
-            <TableRow key={result.id}>
-              <TableCell className="font-medium">
-                {result.subject}
-                {result.subjectCode && (
-                  <span className="text-sm text-gray-500 ml-2">
-                    ({result.subjectCode})
-                  </span>
+            {results.map(result => (
+              <TableRow key={result.id}>
+                <TableCell className="font-medium">
+                  {result.subject}
+                  {result.subjectCode && (
+                    <span className="text-sm text-gray-500 ml-2">
+                      ({result.subjectCode})
+                    </span>
+                  )}
+                </TableCell>
+                <TableCell className="text-center">
+                  {result.caScore.toFixed(1)}
+                </TableCell>
+                <TableCell className="text-center">
+                  {result.examScore.toFixed(1)}
+                </TableCell>
+                <TableCell className="text-center font-medium">
+                  {result.totalScore.toFixed(1)}
+                </TableCell>
+                <TableCell className="text-center">
+                  <Badge className={getGradeColor(result.actualGrade)}>
+                    {result.actualGrade}
+                  </Badge>
+                </TableCell>
+                {results.some(r => r.targetedGrade) && (
+                  <TableCell className="text-center text-sm text-gray-600">
+                    {result.targetedGrade || '-'}
+                  </TableCell>
                 )}
-              </TableCell>
-              <TableCell className="text-center">
-                {result.caScore.toFixed(1)}
-              </TableCell>
-              <TableCell className="text-center">
-                {result.examScore.toFixed(1)}
-              </TableCell>
-              <TableCell className="text-center font-medium">
-                {result.totalScore.toFixed(1)}
-              </TableCell>
-              <TableCell className="text-center">
-                <Badge className={getGradeColor(result.actualGrade)}>
-                  {result.actualGrade}
-                </Badge>
-              </TableCell>
-              {results.some(r => r.targetedGrade) && (
-                <TableCell className="text-center text-sm text-gray-600">
-                  {result.targetedGrade || '-'}
+                <TableCell className="text-center font-medium">
+                  {result.gradePoint.toFixed(1)}
                 </TableCell>
-              )}
-              <TableCell className="text-center font-medium">
-                {result.gradePoint.toFixed(1)}
-              </TableCell>
-              <TableCell className="text-sm">{result.remark || '-'}</TableCell>
-              {results.some(r => r.average) && (
-                <TableCell className="text-center text-sm text-gray-600">
-                  {result.average?.toFixed(1) || '-'}
+                <TableCell className="text-sm">
+                  {result.remark || '-'}
                 </TableCell>
-              )}
-            </TableRow>
-          ))}
+                {results.some(r => r.average) && (
+                  <TableCell className="text-center text-sm text-gray-600">
+                    {result.average?.toFixed(1) || '-'}
+                  </TableCell>
+                )}
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </div>
@@ -121,7 +123,9 @@ export function AcademicResultsTable({ results }: AcademicResultsTableProps) {
                   {result.subject}
                 </h3>
                 {result.subjectCode && (
-                  <p className="text-xs text-gray-500">({result.subjectCode})</p>
+                  <p className="text-xs text-gray-500">
+                    ({result.subjectCode})
+                  </p>
                 )}
               </div>
               <Badge className={getGradeColor(result.actualGrade)}>

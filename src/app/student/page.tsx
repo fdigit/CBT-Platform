@@ -2,28 +2,28 @@
 
 import { Badge } from '@/components/ui/badge';
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from '@/components/ui/card';
 import {
-    AlertCircle,
-    BookOpen,
-    Calendar,
-    CheckCircle,
-    Clock,
-    Target,
+  AlertCircle,
+  BookOpen,
+  Calendar,
+  CheckCircle,
+  Clock,
+  Target,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import {
-    ExamCard,
-    ResultsTable,
-    StatsCard,
-    StudentDashboardLayout,
+  ExamCard,
+  ResultsTable,
+  StatsCard,
+  StudentDashboardLayout,
 } from '../../components/student';
 import { useToast } from '../../hooks/use-toast';
 import { generateResultPDF } from '../../lib/pdf-generator';
@@ -115,12 +115,13 @@ export default function StudentDashboard() {
       } else {
         console.error('Failed to fetch results:', resultsResponse.status);
       }
-      
+
       // Only show error if all requests failed
       if (!statsResponse.ok && !examsResponse.ok && !resultsResponse.ok) {
         toast({
           title: 'Warning',
-          description: 'Some data could not be loaded. Please refresh the page.',
+          description:
+            'Some data could not be loaded. Please refresh the page.',
           variant: 'destructive',
         });
       }
@@ -129,7 +130,8 @@ export default function StudentDashboard() {
       // Only show error for network failures, not for empty data
       toast({
         title: 'Error',
-        description: 'Network error. Please check your connection and try again.',
+        description:
+          'Network error. Please check your connection and try again.',
         variant: 'destructive',
       });
     } finally {
@@ -192,7 +194,10 @@ export default function StudentDashboard() {
                   Welcome back, {session?.user.name || 'Student'}!
                 </h1>
                 <p className="text-blue-100 text-sm sm:text-base">
-                  Student ID: {session?.user.studentProfile?.regNumber || session?.user.studentProfile?.regNo || 'Loading...'}
+                  Student ID:{' '}
+                  {session?.user.studentProfile?.regNumber ||
+                    session?.user.studentProfile?.regNo ||
+                    'Loading...'}
                 </p>
                 <p className="text-blue-100 text-xs sm:text-sm mt-1">
                   Ready to continue your learning journey?
@@ -295,7 +300,9 @@ export default function StudentDashboard() {
         {/* Available Exams Grid */}
         <Card>
           <CardHeader className="p-4 md:p-6">
-            <CardTitle className="text-lg md:text-xl">Available Exams</CardTitle>
+            <CardTitle className="text-lg md:text-xl">
+              Available Exams
+            </CardTitle>
             <CardDescription className="text-sm">
               Your assigned exams and their current status
             </CardDescription>

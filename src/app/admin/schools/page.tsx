@@ -6,8 +6,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { DashboardLayout } from '../../../components/dashboard/DashboardLayout';
 import { Pagination } from '../../../components/dashboard/Pagination';
 import {
-    SchoolFilters,
-    type SchoolFilters as SchoolFiltersType,
+  SchoolFilters,
+  type SchoolFilters as SchoolFiltersType,
 } from '../../../components/dashboard/SchoolFilters';
 import { SchoolManagementTable } from '../../../components/dashboard/SchoolManagementTable';
 import { SchoolsSummary } from '../../../components/dashboard/SchoolsSummary';

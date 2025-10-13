@@ -2,62 +2,62 @@
 
 import { Role } from '@/lib/auth';
 import {
-    Award,
-    BarChart3,
-    BookOpen,
-    Download,
-    FileText,
-    Filter,
-    Search,
-    Target,
-    Users,
+  Award,
+  BarChart3,
+  BookOpen,
+  Download,
+  FileText,
+  Filter,
+  Search,
+  Target,
+  Users,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import {
-    Bar,
-    BarChart,
-    CartesianGrid,
-    Cell,
-    Pie,
-    PieChart as RechartsPieChart,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis,
-    YAxis,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Pie,
+  PieChart as RechartsPieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from 'recharts';
 import { DashboardLayout } from '../../../components/dashboard';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from '../../../components/ui/card';
 import { Input } from '../../../components/ui/input';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '../../../components/ui/select';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '../../../components/ui/table';
 import {
-    Tabs,
-    TabsContent,
-    TabsList,
-    TabsTrigger,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
 } from '../../../components/ui/tabs';
 
 interface Result {
@@ -267,8 +267,8 @@ export default function AdminResultsPage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               className="flex-1 sm:flex-none"
               onClick={() => handleExport('pdf')}
@@ -277,8 +277,8 @@ export default function AdminResultsPage() {
               <span className="hidden sm:inline">Export PDF</span>
               <span className="sm:hidden">PDF</span>
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               className="flex-1 sm:flex-none"
               onClick={() => handleExport('excel')}
@@ -287,8 +287,8 @@ export default function AdminResultsPage() {
               <span className="hidden sm:inline">Excel</span>
               <span className="sm:hidden">XLS</span>
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               className="flex-1 sm:flex-none"
               onClick={() => handleExport('csv')}

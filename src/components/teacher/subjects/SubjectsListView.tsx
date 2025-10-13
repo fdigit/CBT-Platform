@@ -4,12 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-    BookOpen,
-    Eye,
-    FileText,
-    Users,
-} from 'lucide-react';
+import { BookOpen, Eye, FileText, Users } from 'lucide-react';
 import { SubjectActionMenu, SubjectWithDetails } from './SubjectActionMenu';
 
 interface SubjectsListViewProps {
@@ -177,4 +172,3 @@ export function SubjectsListView({
     </div>
   );
 }
-

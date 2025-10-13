@@ -15,12 +15,15 @@ export function ViewModeSwitcher({
   viewMode,
   onViewModeChange,
 }: ViewModeSwitcherProps) {
-  const viewModes: { mode: ViewMode; icon: typeof LayoutGrid; label: string }[] =
-    [
-      { mode: 'cards', icon: LayoutGrid, label: 'Cards View' },
-      { mode: 'table', icon: Table2, label: 'Table View' },
-      { mode: 'list', icon: List, label: 'List View' },
-    ];
+  const viewModes: {
+    mode: ViewMode;
+    icon: typeof LayoutGrid;
+    label: string;
+  }[] = [
+    { mode: 'cards', icon: LayoutGrid, label: 'Cards View' },
+    { mode: 'table', icon: Table2, label: 'Table View' },
+    { mode: 'list', icon: List, label: 'List View' },
+  ];
 
   return (
     <div className="flex items-center space-x-1 bg-gray-100 p-1 rounded-lg">
@@ -45,4 +48,3 @@ export function ViewModeSwitcher({
     </div>
   );
 }
-

@@ -1,19 +1,19 @@
 'use client';
 
 import type {
-    SubjectsFilters,
-    SubjectWithDetails,
-    ViewMode,
+  SubjectsFilters,
+  SubjectWithDetails,
+  ViewMode,
 } from '@/components/teacher/subjects';
 import {
-    BatchActionsBar,
-    SubjectAnalyticsTab,
-    SubjectsCardsView,
-    SubjectsFiltersBar,
-    SubjectsListView,
-    SubjectsLoadingSkeleton,
-    SubjectsTableView,
-    ViewModeSwitcher,
+  BatchActionsBar,
+  SubjectAnalyticsTab,
+  SubjectsCardsView,
+  SubjectsFiltersBar,
+  SubjectsListView,
+  SubjectsLoadingSkeleton,
+  SubjectsTableView,
+  ViewModeSwitcher,
 } from '@/components/teacher/subjects';
 import { TeacherDashboardLayout } from '@/components/teacher/TeacherDashboardLayout';
 import { Button } from '@/components/ui/button';
@@ -253,7 +253,14 @@ export default function TeacherSubjects() {
               />
               Refresh
             </Button>
-            <Button onClick={() => toast({ title: 'Coming Soon', description: 'Resource management coming soon!' })}>
+            <Button
+              onClick={() =>
+                toast({
+                  title: 'Coming Soon',
+                  description: 'Resource management coming soon!',
+                })
+              }
+            >
               <Plus className="h-4 w-4 mr-2" />
               Add Resource
             </Button>
@@ -268,7 +275,10 @@ export default function TeacherSubjects() {
                 <BookOpen className="h-4 w-4 mr-2" />
                 Overview
               </TabsTrigger>
-              <TabsTrigger value="performance" className="flex-1 sm:flex-initial">
+              <TabsTrigger
+                value="performance"
+                className="flex-1 sm:flex-initial"
+              >
                 Performance
               </TabsTrigger>
               <TabsTrigger value="resources" className="flex-1 sm:flex-initial">
@@ -360,7 +370,8 @@ export default function TeacherSubjects() {
                 Resources Coming Soon
               </h3>
               <p className="mt-2 text-sm text-gray-500">
-                Subject resources and materials management will be available soon.
+                Subject resources and materials management will be available
+                soon.
               </p>
             </div>
           </TabsContent>

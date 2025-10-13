@@ -3,37 +3,37 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import {
-    AlertCircle,
-    BarChart3,
-    BookOpen,
-    Calendar,
-    CheckCircle,
-    Clock,
-    Edit,
-    Eye,
-    Filter,
-    GraduationCap,
-    Plus,
-    Search,
-    Send,
-    Trash2,
-    Users,
-    XCircle,
+  AlertCircle,
+  BarChart3,
+  BookOpen,
+  Calendar,
+  CheckCircle,
+  Clock,
+  Edit,
+  Eye,
+  Filter,
+  GraduationCap,
+  Plus,
+  Search,
+  Send,
+  Trash2,
+  Users,
+  XCircle,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -346,7 +346,9 @@ export default function TeacherExams() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">My Exams</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+              My Exams
+            </h1>
             <p className="text-sm sm:text-base text-gray-600">
               Create and manage your examinations. Click "Results" to view exam
               results.
@@ -477,7 +479,9 @@ export default function TeacherExams() {
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-2 mb-2">
-                          <CardTitle className="text-lg md:text-xl break-words">{exam.title}</CardTitle>
+                          <CardTitle className="text-lg md:text-xl break-words">
+                            {exam.title}
+                          </CardTitle>
                           {getStatusBadge(exam.status, exam.dynamicStatus)}
                         </div>
                         {exam.description && (
@@ -503,7 +507,9 @@ export default function TeacherExams() {
                       <div className="flex flex-wrap gap-x-4 gap-y-2">
                         <div className="flex items-center">
                           <BookOpen className="h-4 w-4 mr-1 flex-shrink-0" />
-                          <span className="truncate">{exam.subject?.name || 'General'}</span>
+                          <span className="truncate">
+                            {exam.subject?.name || 'General'}
+                          </span>
                         </div>
                         <div className="flex items-center">
                           <GraduationCap className="h-4 w-4 mr-1 flex-shrink-0" />
@@ -545,7 +551,9 @@ export default function TeacherExams() {
                           className="bg-purple-600 hover:bg-purple-700"
                         >
                           <BarChart3 className="h-4 w-4 sm:mr-1" />
-                          <span className="hidden sm:inline">Results ({exam.studentsAttempted})</span>
+                          <span className="hidden sm:inline">
+                            Results ({exam.studentsAttempted})
+                          </span>
                           <span className="sm:hidden">Results</span>
                         </Button>
                       )}

@@ -1,13 +1,13 @@
 'use client';
 
 import {
-    AlertCircle,
-    BarChart3,
-    CheckCircle,
-    Clock,
-    Download,
-    List,
-    RefreshCw,
+  AlertCircle,
+  BarChart3,
+  CheckCircle,
+  Clock,
+  Download,
+  List,
+  RefreshCw,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -16,17 +16,17 @@ import { DashboardLayout } from '../../../components/dashboard/DashboardLayout';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from '../../../components/ui/card';
 import {
-    Tabs,
-    TabsContent,
-    TabsList,
-    TabsTrigger,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
 } from '../../../components/ui/tabs';
 
 interface ExamData {
@@ -79,7 +79,9 @@ const ExamSummaryStats = ({ stats }: { stats: SummaryStats }) => (
   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 md:gap-4">
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-4 md:p-6">
-        <CardTitle className="text-xs md:text-sm font-medium">Total Exams</CardTitle>
+        <CardTitle className="text-xs md:text-sm font-medium">
+          Total Exams
+        </CardTitle>
         <BarChart3 className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent className="p-4 md:p-6 pt-0">
@@ -99,7 +101,9 @@ const ExamSummaryStats = ({ stats }: { stats: SummaryStats }) => (
     </Card>
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-4 md:p-6">
-        <CardTitle className="text-xs md:text-sm font-medium">Scheduled</CardTitle>
+        <CardTitle className="text-xs md:text-sm font-medium">
+          Scheduled
+        </CardTitle>
         <Clock className="h-3 w-3 md:h-4 md:w-4 text-blue-600" />
       </CardHeader>
       <CardContent className="p-4 md:p-6 pt-0">
@@ -121,7 +125,9 @@ const ExamSummaryStats = ({ stats }: { stats: SummaryStats }) => (
     </Card>
     <Card className="col-span-2 sm:col-span-1">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-4 md:p-6">
-        <CardTitle className="text-xs md:text-sm font-medium">Pending</CardTitle>
+        <CardTitle className="text-xs md:text-sm font-medium">
+          Pending
+        </CardTitle>
         <AlertCircle className="h-3 w-3 md:h-4 md:w-4 text-orange-600" />
       </CardHeader>
       <CardContent className="p-4 md:p-6 pt-0">
@@ -159,7 +165,9 @@ const ExamFilters = ({
     <Card>
       <CardHeader className="p-4 md:p-6">
         <CardTitle className="text-base md:text-lg">Filters</CardTitle>
-        <CardDescription className="text-xs md:text-sm">Filter exams by various criteria</CardDescription>
+        <CardDescription className="text-xs md:text-sm">
+          Filter exams by various criteria
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 p-4 md:p-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -546,9 +554,9 @@ export default function ExamsPage() {
               />
               <span className="hidden sm:inline">Refresh</span>
             </Button>
-            <Button 
+            <Button
               size="sm"
-              onClick={handleExport} 
+              onClick={handleExport}
               className="flex-1 sm:flex-none"
             >
               <Download className="h-4 w-4 sm:mr-2" />
@@ -563,12 +571,18 @@ export default function ExamsPage() {
         {/* Main Content with Tabs */}
         <Tabs defaultValue="exams" className="space-y-4 md:space-y-6">
           <TabsList className="grid w-full grid-cols-2 h-auto">
-            <TabsTrigger value="exams" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm py-2">
+            <TabsTrigger
+              value="exams"
+              className="flex items-center gap-1 md:gap-2 text-xs md:text-sm py-2"
+            >
               <List className="h-3 w-3 md:h-4 md:w-4" />
               <span className="hidden sm:inline">Exam Management</span>
               <span className="sm:hidden">Exams</span>
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm py-2">
+            <TabsTrigger
+              value="analytics"
+              className="flex items-center gap-1 md:gap-2 text-xs md:text-sm py-2"
+            >
               <BarChart3 className="h-3 w-3 md:h-4 md:w-4" />
               <span className="hidden sm:inline">Analytics & Insights</span>
               <span className="sm:hidden">Analytics</span>

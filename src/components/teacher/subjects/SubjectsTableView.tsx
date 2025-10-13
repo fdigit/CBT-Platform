@@ -5,19 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '@/components/ui/table';
-import {
-    ArrowUpDown,
-    BookOpen,
-    ChevronDown,
-    ChevronRight,
-} from 'lucide-react';
+import { ArrowUpDown, BookOpen, ChevronDown, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { SubjectActionMenu, SubjectWithDetails } from './SubjectActionMenu';
 
@@ -256,10 +251,15 @@ export function SubjectsTableView({
                       {subject.code}
                     </TableCell>
                     <TableCell className="text-center">
-                      <Badge variant="outline">{subject.totalClasses || 0}</Badge>
+                      <Badge variant="outline">
+                        {subject.totalClasses || 0}
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-center">
-                      <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                      <Badge
+                        variant="outline"
+                        className="bg-blue-50 text-blue-700"
+                      >
                         {subject.totalStudents || 0}
                       </Badge>
                     </TableCell>
@@ -276,7 +276,10 @@ export function SubjectsTableView({
                       {getStatusBadge(subject.status || 'ACTIVE')}
                     </TableCell>
                     <TableCell>
-                      <SubjectActionMenu subject={subject} onAction={onAction} />
+                      <SubjectActionMenu
+                        subject={subject}
+                        onAction={onAction}
+                      />
                     </TableCell>
                   </TableRow>
 
@@ -365,4 +368,3 @@ export function SubjectsTableView({
     </Card>
   );
 }
-

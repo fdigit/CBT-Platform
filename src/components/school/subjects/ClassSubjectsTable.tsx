@@ -1,26 +1,26 @@
 'use client';
 
+import { MoreHorizontal, School, Search, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import { useToast } from '../../../hooks/use-toast';
+import { Badge } from '../../ui/badge';
 import { Button } from '../../ui/button';
 import { Card } from '../../ui/card';
-import { Input } from '../../ui/input';
-import { Badge } from '../../ui/badge';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '../../ui/table';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
 } from '../../ui/dropdown-menu';
-import { Search, MoreHorizontal, Trash2, School } from 'lucide-react';
-import { useToast } from '../../../hooks/use-toast';
+import { Input } from '../../ui/input';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '../../ui/table';
 
 interface ClassSubjectAssignment {
   id: string;
@@ -44,16 +44,27 @@ interface ClassSubjectAssignment {
   createdAt: string;
 }
 
+interface PaginationMeta {
+  page: number;
+  limit: number;
+  totalCount: number;
+  totalPages: number;
+}
+
 interface ClassSubjectsTableProps {
   assignments: ClassSubjectAssignment[];
   loading: boolean;
   onRefresh: () => void;
+  pagination?: PaginationMeta;
+  onPageChange?: (page: number) => void;
 }
 
 export function ClassSubjectsTable({
   assignments,
   loading,
   onRefresh,
+  pagination,
+  onPageChange,
 }: ClassSubjectsTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [removingId, setRemovingId] = useState<string | null>(null);
@@ -160,8 +171,9 @@ export function ClassSubjectsTable({
               Class ↔ Teacher ↔ Subject Assignments
             </h2>
             <p className="text-gray-600 text-sm mt-1">
-              {assignments.length} assignment
-              {assignments.length !== 1 ? 's' : ''} total
+              {pagination
+                ? `${pagination.totalCount} total • page ${pagination.page} of ${pagination.totalPages}`
+                : `${assignments.length} assignment${assignments.length !== 1 ? 's' : ''} total`}
             </p>
           </div>
 
@@ -299,6 +311,38 @@ export function ClassSubjectsTable({
                 </div>
               </div>
             )
+          )}
+
+          {/* Pagination Controls */}
+          {pagination && pagination.totalPages > 1 && (
+            <div className="flex items-center justify-between pt-2">
+              <div className="text-sm text-gray-600">
+                Showing {(pagination.page - 1) * pagination.limit + 1}
+                -
+                {Math.min(
+                  pagination.page * pagination.limit,
+                  pagination.totalCount
+                )} of {pagination.totalCount}
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onPageChange && onPageChange(pagination.page - 1)}
+                  disabled={pagination.page <= 1}
+                >
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onPageChange && onPageChange(pagination.page + 1)}
+                  disabled={pagination.page >= pagination.totalPages}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
           )}
         </div>
       )}

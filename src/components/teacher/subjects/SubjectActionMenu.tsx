@@ -2,20 +2,20 @@
 
 import { Button } from '@/components/ui/button';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
-    ClipboardList,
-    Download,
-    FileText,
-    MessageSquare,
-    MoreVertical,
-    TrendingUp,
-    Trophy,
+  ClipboardList,
+  Download,
+  FileText,
+  MessageSquare,
+  MoreVertical,
+  TrendingUp,
+  Trophy,
 } from 'lucide-react';
 
 export interface SubjectWithDetails {
@@ -115,4 +115,3 @@ export function SubjectActionMenu({
     </DropdownMenu>
   );
 }
-

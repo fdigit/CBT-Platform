@@ -164,4 +164,3 @@ export function SubjectsLoadingSkeleton({
     </div>
   );
 }
-

@@ -4,11 +4,11 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import { Filter, Search, SortAsc, X } from 'lucide-react';
 import { useState } from 'react';
@@ -37,9 +37,7 @@ export function SubjectsFiltersBar({
     onFiltersChange({ ...filters, search: value });
   };
 
-  const handlePerformanceChange = (
-    value: SubjectsFilters['performance']
-  ) => {
+  const handlePerformanceChange = (value: SubjectsFilters['performance']) => {
     onFiltersChange({ ...filters, performance: value });
   };
 
@@ -134,9 +132,7 @@ export function SubjectsFiltersBar({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Subjects</SelectItem>
-              <SelectItem value="excellent">
-                High Performing (≥80%)
-              </SelectItem>
+              <SelectItem value="excellent">High Performing (≥80%)</SelectItem>
               <SelectItem value="needs-attention">
                 Needs Attention (&lt;70%)
               </SelectItem>
@@ -182,9 +178,7 @@ export function SubjectsFiltersBar({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Subjects</SelectItem>
-              <SelectItem value="excellent">
-                High Performing (≥80%)
-              </SelectItem>
+              <SelectItem value="excellent">High Performing (≥80%)</SelectItem>
               <SelectItem value="needs-attention">
                 Needs Attention (&lt;70%)
               </SelectItem>
@@ -270,4 +264,3 @@ export function SubjectsFiltersBar({
     </div>
   );
 }
-

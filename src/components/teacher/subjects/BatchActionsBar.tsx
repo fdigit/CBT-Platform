@@ -1,30 +1,24 @@
 'use client';
 
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-    Download,
-    Mail,
-    MoreHorizontal,
-    Upload,
-    X,
-} from 'lucide-react';
+import { Download, Mail, MoreHorizontal, Upload, X } from 'lucide-react';
 import { useState } from 'react';
 
 interface BatchActionsBarProps {
@@ -141,8 +135,9 @@ export function BatchActionsBar({
           <AlertDialogHeader>
             <AlertDialogTitle>Confirm Batch Action</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to perform &quot;{pendingAction?.label}&quot; on{' '}
-              {selectedCount} selected {selectedCount === 1 ? 'subject' : 'subjects'}?
+              Are you sure you want to perform &quot;{pendingAction?.label}
+              &quot; on {selectedCount} selected{' '}
+              {selectedCount === 1 ? 'subject' : 'subjects'}?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -156,4 +151,3 @@ export function BatchActionsBar({
     </>
   );
 }
-

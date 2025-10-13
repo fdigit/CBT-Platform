@@ -1,6 +1,6 @@
 /**
  * Verification Script for API Error Fix
- * 
+ *
  * This script helps verify that the API endpoint is working correctly
  * Run this after starting your Next.js development server
  */
@@ -9,7 +9,7 @@ const readline = require('readline');
 
 const rl = readline.createInterface({
   input: process.stdin,
-  output: process.stdout
+  output: process.stdout,
 });
 
 console.log('=================================================');
@@ -19,36 +19,36 @@ console.log('=================================================\n');
 const checklist = [
   {
     task: 'Is the development server running? (npm run dev)',
-    hint: 'Open a terminal and run: npm run dev'
+    hint: 'Open a terminal and run: npm run dev',
   },
   {
     task: 'Is MongoDB/Database connected and accessible?',
-    hint: 'Run: node check-db.js to verify'
+    hint: 'Run: node check-db.js to verify',
   },
   {
     task: 'Are you logged in as a SCHOOL_ADMIN?',
-    hint: 'Check LOGIN_CREDENTIALS.md for test accounts'
+    hint: 'Check LOGIN_CREDENTIALS.md for test accounts',
   },
   {
     task: 'Open browser DevTools > Network tab',
-    hint: 'Press F12 in your browser, then click the Network tab'
+    hint: 'Press F12 in your browser, then click the Network tab',
   },
   {
     task: 'Navigate to /school/subjects page',
-    hint: 'Go to http://localhost:3000/school/subjects'
+    hint: 'Go to http://localhost:3000/school/subjects',
   },
   {
     task: 'Try creating a new subject',
-    hint: 'Fill in the form and click "Create Subject"'
+    hint: 'Fill in the form and click "Create Subject"',
   },
   {
     task: 'Check the Network tab for the API request',
-    hint: 'Look for POST request to /api/school/subjects'
+    hint: 'Look for POST request to /api/school/subjects',
   },
   {
     task: 'Check the Console tab for detailed logs',
-    hint: 'You should see "API response:" log with status and data'
-  }
+    hint: 'You should see "API response:" log with status and data',
+  },
 ];
 
 console.log('Follow these steps to verify the fix:\n');
@@ -80,7 +80,9 @@ console.log('=================================================');
 console.log('Additional Debugging:');
 console.log('=================================================\n');
 
-console.log('If you still see errors, check the terminal running "npm run dev"');
+console.log(
+  'If you still see errors, check the terminal running "npm run dev"'
+);
 console.log('for detailed server-side logs including:');
 console.log('   - Session information (userId, role, schoolId)');
 console.log('   - Request body details');
@@ -91,4 +93,3 @@ console.log('For more details, see: API_ERROR_FIX_SUMMARY.md\n');
 rl.question('Press Enter to exit...', () => {
   rl.close();
 });
-

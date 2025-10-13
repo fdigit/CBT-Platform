@@ -1,18 +1,18 @@
 'use client';
 
 import {
-    Area,
-    AreaChart,
-    Bar,
-    BarChart,
-    CartesianGrid,
-    Legend,
-    Line,
-    LineChart,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis,
-    YAxis,
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from 'recharts';
 
 export type ChartType = 'line' | 'bar' | 'area';
@@ -167,6 +167,7 @@ export function SubjectPerformanceChart({
     }
   };
 
-  return <ResponsiveContainer {...commonProps}>{renderChart()}</ResponsiveContainer>;
+  return (
+    <ResponsiveContainer {...commonProps}>{renderChart()}</ResponsiveContainer>
+  );
 }
-

@@ -5,12 +5,12 @@ import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '../ui/table';
 
 interface Result {
@@ -111,65 +111,65 @@ export function ResultsTable({
               </TableRow>
             </TableHeader>
             <TableBody>
-            {displayResults.map(result => (
-              <TableRow key={result.id} className="hover:bg-gray-50">
-                <TableCell className="font-medium">
-                  <div className="flex items-center space-x-2">
-                    {getPerformanceIcon(result.percentage)}
-                    <span>{result.examTitle}</span>
-                  </div>
-                </TableCell>
-                <TableCell>{result.subject}</TableCell>
-                <TableCell>
-                  <span className="font-mono">
-                    {result.score}/{result.totalMarks}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center space-x-2">
-                    <span
-                      className={`font-semibold ${
-                        result.percentage >= 70
-                          ? 'text-green-600'
-                          : 'text-red-600'
-                      }`}
-                    >
-                      {result.percentage}%
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  {getGradeBadge(result.grade, result.passed)}
-                </TableCell>
-                <TableCell className="text-sm text-gray-500">
-                  {new Date(result.examDate).toLocaleDateString()}
-                </TableCell>
-                {showActions && (
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end space-x-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() =>
-                          onViewDetails && onViewDetails(result.id)
-                        }
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() =>
-                          onDownloadPDF && onDownloadPDF(result.id)
-                        }
-                      >
-                        <Download className="h-4 w-4" />
-                      </Button>
+              {displayResults.map(result => (
+                <TableRow key={result.id} className="hover:bg-gray-50">
+                  <TableCell className="font-medium">
+                    <div className="flex items-center space-x-2">
+                      {getPerformanceIcon(result.percentage)}
+                      <span>{result.examTitle}</span>
                     </div>
                   </TableCell>
-                )}
-              </TableRow>
-            ))}
+                  <TableCell>{result.subject}</TableCell>
+                  <TableCell>
+                    <span className="font-mono">
+                      {result.score}/{result.totalMarks}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center space-x-2">
+                      <span
+                        className={`font-semibold ${
+                          result.percentage >= 70
+                            ? 'text-green-600'
+                            : 'text-red-600'
+                        }`}
+                      >
+                        {result.percentage}%
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    {getGradeBadge(result.grade, result.passed)}
+                  </TableCell>
+                  <TableCell className="text-sm text-gray-500">
+                    {new Date(result.examDate).toLocaleDateString()}
+                  </TableCell>
+                  {showActions && (
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end space-x-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() =>
+                            onViewDetails && onViewDetails(result.id)
+                          }
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() =>
+                            onDownloadPDF && onDownloadPDF(result.id)
+                          }
+                        >
+                          <Download className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </div>
@@ -205,7 +205,9 @@ export function ResultsTable({
                   <p className="text-xs text-gray-500">Percentage</p>
                   <p
                     className={`font-semibold ${
-                      result.percentage >= 70 ? 'text-green-600' : 'text-red-600'
+                      result.percentage >= 70
+                        ? 'text-green-600'
+                        : 'text-red-600'
                     }`}
                   >
                     {result.percentage}%

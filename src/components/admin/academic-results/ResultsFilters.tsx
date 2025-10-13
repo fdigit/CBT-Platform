@@ -3,11 +3,11 @@
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import { ChevronDown, ChevronUp, Filter, RotateCcw } from 'lucide-react';
 import { useState } from 'react';
@@ -69,7 +69,9 @@ export function ResultsFilters({
         </Button>
       </div>
 
-      <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 ${isExpanded ? 'block' : 'hidden md:grid'}`}>
+      <div
+        className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 ${isExpanded ? 'block' : 'hidden md:grid'}`}
+      >
         <div className="space-y-2">
           <Label>Class</Label>
           <Select

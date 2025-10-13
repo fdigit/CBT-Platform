@@ -100,6 +100,14 @@ export default function SubjectsPage() {
   const [classSubjectAssignments, setClassSubjectAssignments] = useState<
     ClassSubjectAssignment[]
   >([]);
+  const [classAssignmentsPage, setClassAssignmentsPage] = useState(1);
+  const [classAssignmentsLimit, setClassAssignmentsLimit] = useState(20);
+  const [classAssignmentsPagination, setClassAssignmentsPagination] = useState<{
+    page: number;
+    limit: number;
+    totalCount: number;
+    totalPages: number;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('subjects');
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
@@ -140,12 +148,16 @@ export default function SubjectsPage() {
   const fetchSubjects = async () => {
     try {
       const response = await fetch('/api/school/subjects');
-      
+
       if (!response.ok) {
-        console.error('Failed to fetch subjects:', response.status, response.statusText);
+        console.error(
+          'Failed to fetch subjects:',
+          response.status,
+          response.statusText
+        );
         return;
       }
-      
+
       let data;
       try {
         data = await response.json();
@@ -153,7 +165,7 @@ export default function SubjectsPage() {
         console.error('Failed to parse subjects JSON:', jsonError);
         return;
       }
-      
+
       setSubjects(data.subjects || []);
     } catch (error) {
       console.error('Error fetching subjects:', error);
@@ -196,12 +208,22 @@ export default function SubjectsPage() {
     }
   };
 
-  const fetchClassSubjectAssignments = async () => {
+  const fetchClassSubjectAssignments = async (
+    page: number = classAssignmentsPage,
+    limit: number = classAssignmentsLimit
+  ) => {
     try {
-      const response = await fetch('/api/school/subjects/assign-classes');
+      const response = await fetch(
+        `/api/school/subjects/assign-classes?page=${page}&limit=${limit}`
+      );
       if (response.ok) {
         const data = await response.json();
         setClassSubjectAssignments(data.assignments || []);
+        if (data.pagination) {
+          setClassAssignmentsPagination(data.pagination);
+          setClassAssignmentsPage(data.pagination.page);
+          setClassAssignmentsLimit(data.pagination.limit);
+        }
       }
     } catch (error) {
       console.error('Error fetching class-subject assignments:', error);
@@ -324,6 +346,8 @@ export default function SubjectsPage() {
               assignments={classSubjectAssignments}
               loading={false}
               onRefresh={handleAssignmentCreated}
+              pagination={classAssignmentsPagination || undefined}
+              onPageChange={page => fetchClassSubjectAssignments(page)}
             />
           </TabsContent>
         </Tabs>

@@ -3,36 +3,36 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import {
-    AlertCircle,
-    BarChart3,
-    BookOpen,
-    Calendar,
-    CheckCircle,
-    Clock,
-    Eye,
-    Filter,
-    GraduationCap,
-    Play,
-    Search,
-    Target,
-    Timer,
-    Trophy,
-    Users,
+  AlertCircle,
+  BarChart3,
+  BookOpen,
+  Calendar,
+  CheckCircle,
+  Clock,
+  Eye,
+  Filter,
+  GraduationCap,
+  Play,
+  Search,
+  Target,
+  Timer,
+  Trophy,
+  Users,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -234,7 +234,9 @@ export default function StudentExams() {
           className="bg-green-600 hover:bg-green-700 whitespace-nowrap"
         >
           <Play className="h-4 w-4 sm:mr-2" />
-          <span className="hidden sm:inline">{exam.attemptCount > 0 ? 'Retake Exam' : 'Start Exam'}</span>
+          <span className="hidden sm:inline">
+            {exam.attemptCount > 0 ? 'Retake Exam' : 'Start Exam'}
+          </span>
           <span className="sm:hidden">Start</span>
         </Button>
       );
@@ -316,7 +318,9 @@ export default function StudentExams() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">My Exams</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+              My Exams
+            </h1>
             <p className="text-sm sm:text-base text-gray-600">
               View and take your assigned examinations
             </p>
@@ -393,7 +397,9 @@ export default function StudentExams() {
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-2 mb-2">
-                          <CardTitle className="text-lg md:text-xl break-words">{exam.title}</CardTitle>
+                          <CardTitle className="text-lg md:text-xl break-words">
+                            {exam.title}
+                          </CardTitle>
                           {getStatusBadge(exam.examStatus, exam.studentStatus)}
                         </div>
                         {exam.description && (
@@ -403,7 +409,7 @@ export default function StudentExams() {
                         )}
                       </div>
                     </div>
-                    
+
                     {/* Meta info - stacks on mobile */}
                     <div className="flex flex-col space-y-2 text-sm text-gray-600">
                       <div className="flex flex-wrap gap-x-4 gap-y-2">
@@ -413,7 +419,9 @@ export default function StudentExams() {
                         </div>
                         <div className="flex items-center">
                           <BookOpen className="h-4 w-4 mr-1 flex-shrink-0" />
-                          <span className="truncate">{exam.subject?.name || 'General'}</span>
+                          <span className="truncate">
+                            {exam.subject?.name || 'General'}
+                          </span>
                         </div>
                         <div className="flex items-center">
                           <Users className="h-4 w-4 mr-1 flex-shrink-0" />
@@ -431,7 +439,8 @@ export default function StudentExams() {
                         </div>
                         <div className="flex items-center">
                           <Target className="h-4 w-4 mr-1 flex-shrink-0" />
-                          {exam.totalQuestions} questions • {exam.totalMarks} marks
+                          {exam.totalQuestions} questions • {exam.totalMarks}{' '}
+                          marks
                         </div>
                         <div className="flex items-center">
                           <Trophy className="h-4 w-4 mr-1 flex-shrink-0" />

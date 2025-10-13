@@ -5,14 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
-    BookOpen,
-    Calendar,
-    CheckCircle,
-    ClipboardList,
-    FileText,
-    TrendingUp,
-    Trophy,
-    Users
+  BookOpen,
+  Calendar,
+  CheckCircle,
+  ClipboardList,
+  FileText,
+  TrendingUp,
+  Trophy,
+  Users,
 } from 'lucide-react';
 import { SubjectActionMenu, SubjectWithDetails } from './SubjectActionMenu';
 import { SubjectPerformanceChart } from './SubjectPerformanceChart';
@@ -74,10 +74,7 @@ export function SubjectsCardsView({
   const getChartData = (baseScore: number) => {
     return Array.from({ length: 6 }).map((_, i) => ({
       name: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'][i],
-      value: Math.min(
-        100,
-        Math.max(0, baseScore + Math.random() * 10 - 5)
-      ),
+      value: Math.min(100, Math.max(0, baseScore + Math.random() * 10 - 5)),
     }));
   };
 
@@ -252,24 +249,27 @@ export function SubjectsCardsView({
             </div>
 
             {/* Recent Activity */}
-            {subject.recentActivities && subject.recentActivities.length > 0 && (
-              <div className="space-y-2">
-                <h4 className="text-sm font-medium text-gray-900">
-                  Recent Activity
-                </h4>
-                <div className="space-y-1">
-                  {subject.recentActivities.slice(0, 2).map((activity: any, index: number) => (
-                    <div
-                      key={index}
-                      className="flex items-center text-xs text-gray-600"
-                    >
-                      <CheckCircle className="h-3 w-3 mr-2 text-green-600" />
-                      <span className="truncate">{activity.title}</span>
-                    </div>
-                  ))}
+            {subject.recentActivities &&
+              subject.recentActivities.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium text-gray-900">
+                    Recent Activity
+                  </h4>
+                  <div className="space-y-1">
+                    {subject.recentActivities
+                      .slice(0, 2)
+                      .map((activity: any, index: number) => (
+                        <div
+                          key={index}
+                          className="flex items-center text-xs text-gray-600"
+                        >
+                          <CheckCircle className="h-3 w-3 mr-2 text-green-600" />
+                          <span className="truncate">{activity.title}</span>
+                        </div>
+                      ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
             {/* Quick Actions */}
             <div className="flex flex-wrap gap-2 pt-4 border-t">
@@ -307,4 +307,3 @@ export function SubjectsCardsView({
     </div>
   );
 }
-

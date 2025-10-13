@@ -70,7 +70,8 @@ export const CreateSubjectForm = forwardRef<
 
       if (!response.ok) {
         console.error('API error:', data);
-        const errorMessage = data?.message || data?.error || 'Failed to create subject';
+        const errorMessage =
+          data?.message || data?.error || 'Failed to create subject';
         throw new Error(errorMessage);
       }
 

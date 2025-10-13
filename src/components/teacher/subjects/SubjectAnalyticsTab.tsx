@@ -3,20 +3,20 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import {
-    Award,
-    BookOpen,
-    Calendar,
-    Download,
-    TrendingDown,
-    TrendingUp,
-    Users,
+  Award,
+  BookOpen,
+  Calendar,
+  Download,
+  TrendingDown,
+  TrendingUp,
+  Users,
 } from 'lucide-react';
 import type { SubjectWithDetails } from './SubjectActionMenu';
 import { SubjectPerformanceChart } from './SubjectPerformanceChart';
@@ -48,12 +48,10 @@ export function SubjectAnalyticsTab({ subjects }: SubjectAnalyticsTabProps) {
       : 0;
 
   // Prepare chart data
-  const performanceComparisonData = subjects
-    .slice(0, 6)
-    .map(s => ({
-      name: s.name.length > 15 ? s.name.substring(0, 15) + '...' : s.name,
-      value: s.averageScore || 0,
-    }));
+  const performanceComparisonData = subjects.slice(0, 6).map(s => ({
+    name: s.name.length > 15 ? s.name.substring(0, 15) + '...' : s.name,
+    value: s.averageScore || 0,
+  }));
 
   const engagementTrendData = Array.from({ length: 6 }).map((_, i) => ({
     name: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'][i],
@@ -312,7 +310,9 @@ export function SubjectAnalyticsTab({ subjects }: SubjectAnalyticsTabProps) {
                       #{index + 1}
                     </Badge>
                     <div>
-                      <p className="font-medium text-gray-900">{subject.name}</p>
+                      <p className="font-medium text-gray-900">
+                        {subject.name}
+                      </p>
                       <p className="text-xs text-gray-600">
                         {subject.totalStudents} students
                       </p>
@@ -379,4 +379,3 @@ export function SubjectAnalyticsTab({ subjects }: SubjectAnalyticsTabProps) {
     </div>
   );
 }
-

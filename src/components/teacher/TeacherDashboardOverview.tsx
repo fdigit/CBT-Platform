@@ -1,18 +1,18 @@
 'use client';
 
 import {
-    AlertCircle,
-    BookOpen,
-    Calendar,
-    ClipboardList,
-    Clock,
-    Eye,
-    FileText,
-    MessageSquare,
-    Plus,
-    TrendingUp,
-    Trophy,
-    Users,
+  AlertCircle,
+  BookOpen,
+  Calendar,
+  ClipboardList,
+  Clock,
+  Eye,
+  FileText,
+  MessageSquare,
+  Plus,
+  TrendingUp,
+  Trophy,
+  Users,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
@@ -20,11 +20,11 @@ import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '../ui/select';
 import { StatsCard } from './StatsCard';
 

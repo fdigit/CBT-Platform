@@ -3,20 +3,20 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
@@ -316,7 +316,9 @@ export function ResultsApprovalTable({
           >
             <div className="flex justify-between items-start">
               <div>
-                <p className="font-semibold text-gray-900">{result.studentName}</p>
+                <p className="font-semibold text-gray-900">
+                  {result.studentName}
+                </p>
                 <p className="text-sm text-gray-500">{result.regNumber}</p>
               </div>
               {getStatusBadge(result.status)}
@@ -354,7 +356,9 @@ export function ResultsApprovalTable({
                 </div>
                 <div>
                   <p className="text-gray-500">Total</p>
-                  <p className="font-semibold text-lg">{result.totalScore.toFixed(1)}</p>
+                  <p className="font-semibold text-lg">
+                    {result.totalScore.toFixed(1)}
+                  </p>
                 </div>
                 <div>
                   <p className="text-gray-500">Grade</p>

@@ -5,11 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { DashboardLayout } from '../../../components/dashboard/DashboardLayout';
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from '../../../components/ui/card';
 
 export default function SettingsPage() {
@@ -44,7 +44,9 @@ export default function SettingsPage() {
     <DashboardLayout>
       <div className="space-y-4 md:space-y-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Settings</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+            Settings
+          </h1>
           <p className="text-sm sm:text-base text-gray-600 mt-1">
             Configure platform settings and preferences
           </p>
@@ -52,7 +54,9 @@ export default function SettingsPage() {
 
         <Card>
           <CardHeader className="p-4 md:p-6">
-            <CardTitle className="text-lg md:text-xl">Platform Settings</CardTitle>
+            <CardTitle className="text-lg md:text-xl">
+              Platform Settings
+            </CardTitle>
             <CardDescription className="text-sm">
               Manage platform-wide settings and configurations
             </CardDescription>

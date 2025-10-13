@@ -1,13 +1,7 @@
 'use client';
 
 import { Student } from '@/types/models';
-import {
-    AlertCircle,
-    CheckCircle,
-    Copy,
-    Eye,
-    EyeOff
-} from 'lucide-react';
+import { AlertCircle, CheckCircle, Copy, Eye, EyeOff } from 'lucide-react';
 import React, { useState } from 'react';
 import { z } from 'zod';
 import { useToast } from '../../../hooks/use-toast';
@@ -15,21 +9,21 @@ import { Alert, AlertDescription } from '../../ui/alert';
 import { Button } from '../../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from '../../ui/dialog';
 import { Input } from '../../ui/input';
 import { Label } from '../../ui/label';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '../../ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
 import { Textarea } from '../../ui/textarea';
@@ -231,7 +225,10 @@ export function AddStudentModal({
         });
       } else {
         console.error('API error:', responseData);
-        const errorMessage = responseData?.message || responseData?.error || 'Failed to add student';
+        const errorMessage =
+          responseData?.message ||
+          responseData?.error ||
+          'Failed to add student';
         toast({
           title: 'Error',
           description: errorMessage,
@@ -242,7 +239,8 @@ export function AddStudentModal({
       console.error('Error adding student:', error);
       toast({
         title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to add student',
+        description:
+          error instanceof Error ? error.message : 'Failed to add student',
         variant: 'destructive',
       });
     } finally {
