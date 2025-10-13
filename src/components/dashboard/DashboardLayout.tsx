@@ -14,7 +14,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       <Sidebar />
       <div className="lg:pl-64">
         <TopNavbar />
-        <main className="p-6">{children}</main>
+        <main className="p-3 sm:p-4 md:p-6">{children}</main>
       </div>
     </div>
   );

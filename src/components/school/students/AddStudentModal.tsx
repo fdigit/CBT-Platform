@@ -1,45 +1,38 @@
 'use client';
 
+import { Student } from '@/types/models';
+import {
+    AlertCircle,
+    CheckCircle,
+    Copy,
+    Eye,
+    EyeOff
+} from 'lucide-react';
 import React, { useState } from 'react';
+import { z } from 'zod';
+import { useToast } from '../../../hooks/use-toast';
+import { Alert, AlertDescription } from '../../ui/alert';
 import { Button } from '../../ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '../../ui/dialog';
 import { Input } from '../../ui/input';
 import { Label } from '../../ui/label';
-import { Textarea } from '../../ui/textarea';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '../../ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from '../../ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
-import { Badge } from '../../ui/badge';
-import { Alert, AlertDescription } from '../../ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
-import {
-  User,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
-  Key,
-  AlertCircle,
-  CheckCircle,
-  Copy,
-  Eye,
-  EyeOff,
-} from 'lucide-react';
-import { Student } from '@/types/models';
-import { useToast } from '../../../hooks/use-toast';
-import { z } from 'zod';
+import { Textarea } from '../../ui/textarea';
 
 interface AddStudentModalProps {
   isOpen: boolean;
@@ -212,8 +205,16 @@ export function AddStudentModal({
         }),
       });
 
+      let responseData;
+      try {
+        responseData = await response.json();
+      } catch (jsonError) {
+        console.error('Failed to parse JSON response:', jsonError);
+        throw new Error('Invalid response from server');
+      }
+
       if (response.ok) {
-        const newStudent = await response.json();
+        const newStudent = responseData;
         setCreatedStudent(newStudent);
 
         // If password was auto-generated, show it to user
@@ -229,17 +230,19 @@ export function AddStudentModal({
           description: 'Student added successfully',
         });
       } else {
-        const errorData = await response.json();
+        console.error('API error:', responseData);
+        const errorMessage = responseData?.message || responseData?.error || 'Failed to add student';
         toast({
           title: 'Error',
-          description: errorData.message || 'Failed to add student',
+          description: errorMessage,
           variant: 'destructive',
         });
       }
     } catch (error) {
+      console.error('Error adding student:', error);
       toast({
         title: 'Error',
-        description: 'Failed to add student',
+        description: error instanceof Error ? error.message : 'Failed to add student',
         variant: 'destructive',
       });
     } finally {

@@ -1,27 +1,27 @@
 'use client';
 
 import {
-  ResultsApprovalTable,
-  ResultsFilters,
+    ResultsApprovalTable,
+    ResultsFilters,
 } from '@/components/admin/academic-results';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { SchoolDashboardLayout } from '@/components/school/SchoolDashboardLayout';
 import { Button } from '@/components/ui/button';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
 } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import {
-  CheckCircle,
-  FileText,
-  Send,
-  Settings,
-  TrendingUp,
-  XCircle,
+    CheckCircle,
+    FileText,
+    Send,
+    Settings,
+    TrendingUp,
+    XCircle,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -244,108 +244,117 @@ export default function AdminAcademicResultsPage() {
 
   return (
     <LayoutComponent>
-      <div className="space-y-6">
-        <div className="flex justify-between items-start">
+      <div className="space-y-4 md:space-y-6">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
               Academic Results Management
             </h1>
-            <p className="text-gray-600 mt-2">
+            <p className="text-sm sm:text-base text-gray-600 mt-2">
               Review, approve, and publish student results
             </p>
           </div>
-          <div className="flex space-x-2">
+          <div className="flex flex-wrap gap-2">
             <Button
               variant="outline"
+              size="sm"
+              className="flex-1 sm:flex-none"
               onClick={() => router.push('/admin/academic-results/settings')}
             >
-              <Settings className="h-4 w-4 mr-2" />
-              Settings
+              <Settings className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Settings</span>
             </Button>
             <Button
               variant="outline"
+              size="sm"
+              className="flex-1 sm:flex-none"
               onClick={() => router.push('/admin/academic-results/analytics')}
             >
-              <TrendingUp className="h-4 w-4 mr-2" />
-              View Analytics
+              <TrendingUp className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Analytics</span>
             </Button>
             <Button
+              size="sm"
+              className="flex-1 sm:flex-none"
               onClick={handlePublishApproved}
               disabled={publishing || !statistics || statistics.approved === 0}
             >
-              <Send className="h-4 w-4 mr-2" />
-              {publishing
-                ? 'Publishing...'
-                : `Publish ${statistics?.approved || 0} Approved`}
+              <Send className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">
+                {publishing
+                  ? 'Publishing...'
+                  : `Publish ${statistics?.approved || 0}`}
+              </span>
+              <span className="sm:hidden">Publish</span>
             </Button>
           </div>
         </div>
 
         {statistics && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 md:gap-6">
             <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center">
-                  <FileText className="h-8 w-8 text-gray-600" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-500">Total</p>
-                    <p className="text-2xl font-bold">{statistics.total}</p>
+              <CardContent className="p-4 md:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                  <FileText className="h-6 w-6 md:h-8 md:w-8 text-gray-600" />
+                  <div className="sm:ml-2 md:ml-4">
+                    <p className="text-xs md:text-sm font-medium text-gray-500">Total</p>
+                    <p className="text-xl md:text-2xl font-bold">{statistics.total}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center">
-                  <Send className="h-8 w-8 text-yellow-600" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-500">
+              <CardContent className="p-4 md:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                  <Send className="h-6 w-6 md:h-8 md:w-8 text-yellow-600" />
+                  <div className="sm:ml-2 md:ml-4">
+                    <p className="text-xs md:text-sm font-medium text-gray-500">
                       Submitted
                     </p>
-                    <p className="text-2xl font-bold">{statistics.submitted}</p>
+                    <p className="text-xl md:text-2xl font-bold">{statistics.submitted}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center">
-                  <CheckCircle className="h-8 w-8 text-green-600" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-500">
+              <CardContent className="p-4 md:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                  <CheckCircle className="h-6 w-6 md:h-8 md:w-8 text-green-600" />
+                  <div className="sm:ml-2 md:ml-4">
+                    <p className="text-xs md:text-sm font-medium text-gray-500">
                       Approved
                     </p>
-                    <p className="text-2xl font-bold">{statistics.approved}</p>
+                    <p className="text-xl md:text-2xl font-bold">{statistics.approved}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center">
-                  <XCircle className="h-8 w-8 text-red-600" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-500">
+              <CardContent className="p-4 md:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                  <XCircle className="h-6 w-6 md:h-8 md:w-8 text-red-600" />
+                  <div className="sm:ml-2 md:ml-4">
+                    <p className="text-xs md:text-sm font-medium text-gray-500">
                       Rejected
                     </p>
-                    <p className="text-2xl font-bold">{statistics.rejected}</p>
+                    <p className="text-xl md:text-2xl font-bold">{statistics.rejected}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center">
-                  <TrendingUp className="h-8 w-8 text-blue-600" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-500">
+            <Card className="col-span-2 sm:col-span-1">
+              <CardContent className="p-4 md:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                  <TrendingUp className="h-6 w-6 md:h-8 md:w-8 text-blue-600" />
+                  <div className="sm:ml-2 md:ml-4">
+                    <p className="text-xs md:text-sm font-medium text-gray-500">
                       Published
                     </p>
-                    <p className="text-2xl font-bold">{statistics.published}</p>
+                    <p className="text-xl md:text-2xl font-bold">{statistics.published}</p>
                   </div>
                 </div>
               </CardContent>

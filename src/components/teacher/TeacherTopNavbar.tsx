@@ -1,38 +1,35 @@
 'use client';
 
-import { useState } from 'react';
-import { useSession, signOut } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../ui/select';
-import { Badge } from '../ui/badge';
-import {
-  Search,
-  Bell,
-  User,
-  LogOut,
-  Settings,
-  GraduationCap,
-  BookOpen,
-  Users,
-  MessageCircle,
+    BookOpen,
+    GraduationCap,
+    LogOut,
+    Search,
+    Settings,
+    User,
+    Users,
 } from 'lucide-react';
+import { signOut, useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { Button } from '../ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '../ui/dropdown-menu';
+import { Input } from '../ui/input';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '../ui/select';
 
 interface TeacherTopNavbarProps {
   className?: string;
@@ -135,79 +132,6 @@ export function TeacherTopNavbar({ className }: TeacherTopNavbarProps) {
               <span>Assignment</span>
             </Button>
           </div>
-
-          {/* Messages */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="relative">
-                <MessageCircle className="h-5 w-5" />
-                <Badge
-                  variant="destructive"
-                  className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center"
-                >
-                  3
-                </Badge>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-80">
-              <DropdownMenuLabel>Messages</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="flex flex-col items-start p-3">
-                <div className="font-medium">Parent inquiry - John Doe</div>
-                <div className="text-sm text-gray-500">
-                  Asking about mathematics assignment submission
-                </div>
-                <div className="text-xs text-gray-400 mt-1">2 hours ago</div>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="flex flex-col items-start p-3">
-                <div className="font-medium">Admin notification</div>
-                <div className="text-sm text-gray-500">
-                  New grading guidelines for term exams
-                </div>
-                <div className="text-xs text-gray-400 mt-1">1 day ago</div>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {/* Notifications */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="relative">
-                <Bell className="h-5 w-5" />
-                <Badge
-                  variant="destructive"
-                  className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center"
-                >
-                  5
-                </Badge>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-80">
-              <DropdownMenuLabel>Notifications</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="flex flex-col items-start p-3">
-                <div className="font-medium">Assignment due reminder</div>
-                <div className="text-sm text-gray-500">
-                  Mathematics assignment due in 2 hours - 15 students pending
-                </div>
-                <div className="text-xs text-gray-400 mt-1">30 minutes ago</div>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="flex flex-col items-start p-3">
-                <div className="font-medium">Exam results ready</div>
-                <div className="text-sm text-gray-500">
-                  Physics exam for SS 2B has been auto-graded
-                </div>
-                <div className="text-xs text-gray-400 mt-1">1 hour ago</div>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="flex flex-col items-start p-3">
-                <div className="font-medium">New student enrolled</div>
-                <div className="text-sm text-gray-500">
-                  Jane Smith has been added to your SS 1A class
-                </div>
-                <div className="text-xs text-gray-400 mt-1">3 hours ago</div>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
 
           {/* Profile Dropdown */}
           <DropdownMenu>

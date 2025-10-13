@@ -3,37 +3,37 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from '@/components/ui/select';
 import {
-  AlertCircle,
-  BarChart3,
-  BookOpen,
-  Calendar,
-  CheckCircle,
-  Clock,
-  Edit,
-  Eye,
-  Filter,
-  GraduationCap,
-  Plus,
-  Search,
-  Send,
-  Trash2,
-  Users,
-  XCircle,
+    AlertCircle,
+    BarChart3,
+    BookOpen,
+    Calendar,
+    CheckCircle,
+    Clock,
+    Edit,
+    Eye,
+    Filter,
+    GraduationCap,
+    Plus,
+    Search,
+    Send,
+    Trash2,
+    Users,
+    XCircle,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -342,35 +342,37 @@ export default function TeacherExams() {
 
   return (
     <TeacherDashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">My Exams</h1>
-            <p className="text-gray-600">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">My Exams</h1>
+            <p className="text-sm sm:text-base text-gray-600">
               Create and manage your examinations. Click "Results" to view exam
               results.
             </p>
           </div>
           <Button
+            size="sm"
             onClick={() => router.push('/teacher/exams/create')}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
           >
-            <Plus className="h-4 w-4 mr-2" />
-            Create New Exam
+            <Plus className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Create New Exam</span>
+            <span className="sm:hidden">Create Exam</span>
           </Button>
         </div>
 
         {/* Filters */}
         <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center">
-              <Filter className="h-5 w-5 mr-2" />
+          <CardHeader className="p-4 md:p-6">
+            <CardTitle className="text-base md:text-lg flex items-center">
+              <Filter className="h-4 w-4 md:h-5 md:w-5 mr-2" />
               Filters
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <CardContent className="p-4 md:p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
               <div>
                 <label className="text-sm font-medium mb-2 block">Search</label>
                 <div className="relative">
@@ -443,7 +445,7 @@ export default function TeacherExams() {
         {/* Exams List */}
         {exams.length === 0 ? (
           <Card>
-            <CardContent className="text-center py-12">
+            <CardContent className="text-center py-12 p-4 md:p-6">
               <div className="mb-4">
                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <GraduationCap className="h-8 w-8 text-gray-400" />
@@ -466,64 +468,73 @@ export default function TeacherExams() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-6">
+          <div className="grid gap-4 md:gap-6">
             {exams.map(exam => (
               <Card key={exam.id} className="hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <CardTitle className="text-xl">{exam.title}</CardTitle>
-                        {getStatusBadge(exam.status, exam.dynamicStatus)}
-                        {/* Debug info */}
-                        <Badge variant="outline" className="text-xs">
-                          Attempts: {exam.studentsAttempted} | Results:{' '}
-                          {exam.studentsCompleted}
-                        </Badge>
+                <CardHeader className="p-4 md:p-6">
+                  <div className="flex flex-col space-y-4">
+                    {/* Title and status */}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                          <CardTitle className="text-lg md:text-xl break-words">{exam.title}</CardTitle>
+                          {getStatusBadge(exam.status, exam.dynamicStatus)}
+                        </div>
+                        {exam.description && (
+                          <CardDescription className="mb-2 text-sm">
+                            {exam.description}
+                          </CardDescription>
+                        )}
                       </div>
-                      {exam.description && (
-                        <CardDescription className="mb-2">
-                          {exam.description}
-                        </CardDescription>
-                      )}
-                      <div className="flex items-center space-x-4 text-sm text-gray-600">
+                    </div>
+
+                    {/* Debug info - mobile friendly */}
+                    <div className="flex flex-wrap gap-2 text-xs">
+                      <Badge variant="outline">
+                        Attempts: {exam.studentsAttempted}
+                      </Badge>
+                      <Badge variant="outline">
+                        Results: {exam.studentsCompleted}
+                      </Badge>
+                    </div>
+
+                    {/* Meta info */}
+                    <div className="flex flex-col space-y-2 text-sm text-gray-600">
+                      <div className="flex flex-wrap gap-x-4 gap-y-2">
                         <div className="flex items-center">
-                          <BookOpen className="h-4 w-4 mr-1" />
-                          {exam.subject?.name || 'General'}
+                          <BookOpen className="h-4 w-4 mr-1 flex-shrink-0" />
+                          <span className="truncate">{exam.subject?.name || 'General'}</span>
                         </div>
                         <div className="flex items-center">
-                          <GraduationCap className="h-4 w-4 mr-1" />
-                          {exam.class
-                            ? `${exam.class.name} ${exam.class.section || ''}`
-                            : 'All Classes'}
+                          <GraduationCap className="h-4 w-4 mr-1 flex-shrink-0" />
+                          <span className="truncate">
+                            {exam.class
+                              ? `${exam.class.name} ${exam.class.section || ''}`
+                              : 'All Classes'}
+                          </span>
                         </div>
                         <div className="flex items-center">
-                          <Clock className="h-4 w-4 mr-1" />
-                          {exam.duration} minutes
+                          <Clock className="h-4 w-4 mr-1 flex-shrink-0" />
+                          {exam.duration} min
                         </div>
                         <div className="flex items-center">
-                          <Users className="h-4 w-4 mr-1" />
+                          <Users className="h-4 w-4 mr-1 flex-shrink-0" />
                           {exam.studentsAttempted} attempted
                         </div>
                       </div>
                     </div>
-                    <div className="flex space-x-2">
+
+                    {/* Action buttons - wrapped for mobile */}
+                    <div className="flex flex-wrap gap-2 pt-2 border-t">
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => router.push(`/teacher/exams/${exam.id}`)}
                       >
-                        <Eye className="h-4 w-4 mr-1" />
-                        View
+                        <Eye className="h-4 w-4 sm:mr-1" />
+                        <span className="hidden sm:inline">View</span>
                       </Button>
 
-                      {/* Debug info */}
-                      <div className="text-xs text-gray-500">
-                        Debug: Attempts={exam.studentsAttempted}, Results=
-                        {exam.studentsCompleted}
-                      </div>
-
-                      {/* Show Results button for exams with student attempts */}
                       {exam.studentsAttempted > 0 && (
                         <Button
                           variant="default"
@@ -533,8 +544,9 @@ export default function TeacherExams() {
                           }
                           className="bg-purple-600 hover:bg-purple-700"
                         >
-                          <BarChart3 className="h-4 w-4 mr-1" />
-                          Results ({exam.studentsAttempted})
+                          <BarChart3 className="h-4 w-4 sm:mr-1" />
+                          <span className="hidden sm:inline">Results ({exam.studentsAttempted})</span>
+                          <span className="sm:hidden">Results</span>
                         </Button>
                       )}
                       {canEdit(exam) && (
@@ -545,8 +557,8 @@ export default function TeacherExams() {
                             router.push(`/teacher/exams/${exam.id}/edit`)
                           }
                         >
-                          <Edit className="h-4 w-4 mr-1" />
-                          Edit
+                          <Edit className="h-4 w-4 sm:mr-1" />
+                          <span className="hidden sm:inline">Edit</span>
                         </Button>
                       )}
                       {canSubmitForApproval(exam) && (
@@ -558,8 +570,8 @@ export default function TeacherExams() {
                           }
                           className="bg-green-600 hover:bg-green-700"
                         >
-                          <Send className="h-4 w-4 mr-1" />
-                          Submit for Approval
+                          <Send className="h-4 w-4 sm:mr-1" />
+                          <span className="hidden sm:inline">Submit</span>
                         </Button>
                       )}
                       {canDelete(exam) && (
@@ -568,15 +580,15 @@ export default function TeacherExams() {
                           size="sm"
                           onClick={() => handleDeleteExam(exam.id, exam.title)}
                         >
-                          <Trash2 className="h-4 w-4 mr-1" />
-                          Delete
+                          <Trash2 className="h-4 w-4 sm:mr-1" />
+                          <span className="hidden sm:inline">Delete</span>
                         </Button>
                       )}
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <div className="grid md:grid-cols-3 gap-4 text-sm">
+                <CardContent className="p-4 md:p-6 pt-0">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                     <div>
                       <p className="font-medium text-gray-700">Exam Details</p>
                       <p className="text-gray-600">
@@ -630,9 +642,10 @@ export default function TeacherExams() {
 
         {/* Pagination */}
         {pagination.pages > 1 && (
-          <div className="flex justify-center space-x-2">
+          <div className="flex flex-col sm:flex-row sm:justify-center items-center gap-2">
             <Button
               variant="outline"
+              size="sm"
               disabled={pagination.page === 1}
               onClick={() =>
                 setPagination(prev => ({ ...prev, page: prev.page - 1 }))
@@ -640,11 +653,12 @@ export default function TeacherExams() {
             >
               Previous
             </Button>
-            <span className="py-2 px-4 text-sm text-gray-600">
+            <span className="py-2 px-4 text-xs sm:text-sm text-gray-600 whitespace-nowrap">
               Page {pagination.page} of {pagination.pages}
             </span>
             <Button
               variant="outline"
+              size="sm"
               disabled={pagination.page === pagination.pages}
               onClick={() =>
                 setPagination(prev => ({ ...prev, page: prev.page + 1 }))

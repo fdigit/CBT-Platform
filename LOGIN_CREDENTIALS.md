@@ -28,7 +28,7 @@
 
 ### 👨‍🏫 Teachers (Little Teddies)
 
-- **Email**: `teacher1@littleteddies.com`
+- **Email**: `c`
 - **Password**: `admin123`
 - **Role**: TEACHER
 - **Name**: Mrs. Sarah Johnson

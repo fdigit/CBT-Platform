@@ -1,16 +1,20 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { getServerSession } from 'next-auth';
+import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
 const updateStudentSchema = z.object({
   name: z.string().min(1).optional(),
   email: z.string().email().optional(),
   gender: z.enum(['MALE', 'FEMALE']).optional(),
-  classId: z.string().optional(),
+  classId: z.string().nullable().optional(),
   parentPhone: z.string().optional(),
-  parentEmail: z.string().email().optional(),
+  parentEmail: z
+    .string()
+    .email('Valid parent email required')
+    .optional()
+    .or(z.literal('')),
   dateOfBirth: z.string().optional(),
   address: z.string().optional(),
   status: z
@@ -209,11 +213,11 @@ export async function PUT(
         where: { id },
         data: {
           gender: validatedData.gender,
-          classId: validatedData.classId,
-          parentPhone: validatedData.parentPhone,
-          parentEmail: validatedData.parentEmail,
-          dateOfBirth: validatedData.dateOfBirth,
-          address: validatedData.address,
+          classId: validatedData.classId === null ? null : validatedData.classId,
+          parentPhone: validatedData.parentPhone || undefined,
+          parentEmail: validatedData.parentEmail && validatedData.parentEmail !== '' ? validatedData.parentEmail : undefined,
+          dateOfBirth: validatedData.dateOfBirth || undefined,
+          address: validatedData.address || undefined,
           status: validatedData.status,
         },
         include: {

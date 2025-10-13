@@ -1,60 +1,60 @@
 'use client';
 
 import {
-  AcademicResultsTable,
-  GPASummaryCard,
+    AcademicResultsTable,
+    GPASummaryCard,
 } from '@/components/student/academic-results';
 import { Button } from '@/components/ui/button';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
 } from '@/components/ui/card';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getOverallGradeFromGPA } from '@/lib/grading';
 import {
-  Award,
-  BarChart3,
-  Download,
-  FileText,
-  Target,
-  TrendingUp,
+    Award,
+    BarChart3,
+    Download,
+    FileText,
+    Target,
+    TrendingUp,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  Line,
-  LineChart,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
+    Bar,
+    BarChart,
+    CartesianGrid,
+    Cell,
+    Line,
+    LineChart,
+    Pie,
+    PieChart,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
 } from 'recharts';
 import {
-  ResultsTable,
-  StatsCard,
-  StudentDashboardLayout,
+    ResultsTable,
+    StatsCard,
+    StudentDashboardLayout,
 } from '../../../components/student';
 import { useToast } from '../../../hooks/use-toast';
 import {
-  generateAllResultsPDF,
-  generateResultPDF,
+    generateAllResultsPDF,
+    generateResultPDF,
 } from '../../../lib/pdf-generator';
 
 interface Result {
@@ -389,30 +389,36 @@ function ResultsContent() {
 
   return (
     <StudentDashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         {/* Header */}
         <div className="flex justify-between items-start">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Results</h1>
-            <p className="text-gray-600 mt-2">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Results</h1>
+            <p className="text-sm sm:text-base text-gray-600 mt-2">
               Track your exam performance, academic results, and progress
             </p>
           </div>
         </div>
 
-        <Tabs defaultValue="academic" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 max-w-md">
-            <TabsTrigger value="academic">Academic Results</TabsTrigger>
-            <TabsTrigger value="exams">Exam Results (CBT)</TabsTrigger>
+        <Tabs defaultValue="academic" className="space-y-4 md:space-y-6">
+          <TabsList className="grid w-full grid-cols-2 max-w-md h-auto">
+            <TabsTrigger value="academic" className="text-xs sm:text-sm py-2">
+              <span className="hidden sm:inline">Academic Results</span>
+              <span className="sm:hidden">Academic</span>
+            </TabsTrigger>
+            <TabsTrigger value="exams" className="text-xs sm:text-sm py-2">
+              <span className="hidden sm:inline">Exam Results (CBT)</span>
+              <span className="sm:hidden">CBT Exams</span>
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="academic" className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div className="flex items-center space-x-4">
+          <TabsContent value="academic" className="space-y-4 md:space-y-6">
+            <div className="flex flex-col gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:flex md:items-center gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Term</label>
                   <Select value={selectedTerm} onValueChange={setSelectedTerm}>
-                    <SelectTrigger className="w-40">
+                    <SelectTrigger className="w-full sm:w-40">
                       <SelectValue placeholder="Select term" />
                     </SelectTrigger>
                     <SelectContent>
@@ -433,7 +439,7 @@ function ResultsContent() {
                     value={selectedSession}
                     onValueChange={setSelectedSession}
                   >
-                    <SelectTrigger className="w-40">
+                    <SelectTrigger className="w-full sm:w-40">
                       <SelectValue placeholder="Select session" />
                     </SelectTrigger>
                     <SelectContent>
@@ -453,12 +459,14 @@ function ResultsContent() {
                 selectedSession &&
                 academicResults.length > 0 && (
                   <Button
+                    size="sm"
                     onClick={handleDownloadResultSlip}
-                    className="gap-2"
+                    className="gap-2 w-full sm:w-auto"
                     disabled={loadingAcademic}
                   >
                     <Download className="h-4 w-4" />
-                    Download Result Slip
+                    <span className="hidden sm:inline">Download Result Slip</span>
+                    <span className="sm:hidden">Download</span>
                   </Button>
                 )}
             </div>
@@ -481,14 +489,14 @@ function ResultsContent() {
                 />
 
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Subject Results</CardTitle>
-                    <CardDescription>
+                  <CardHeader className="p-4 md:p-6">
+                    <CardTitle className="text-lg md:text-xl">Subject Results</CardTitle>
+                    <CardDescription className="text-sm">
                       Your CA and Exam scores for {selectedTerm},{' '}
                       {selectedSession}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="p-4 md:p-6">
                     <AcademicResultsTable results={academicResults} />
                   </CardContent>
                 </Card>
@@ -512,19 +520,21 @@ function ResultsContent() {
             )}
           </TabsContent>
 
-          <TabsContent value="exams" className="space-y-6">
+          <TabsContent value="exams" className="space-y-4 md:space-y-6">
             <div className="flex justify-end">
               <Button
+                size="sm"
                 onClick={() => handleDownloadPDF('all')}
                 className="flex items-center space-x-2"
               >
                 <Download className="h-4 w-4" />
-                <span>Download Report</span>
+                <span className="hidden sm:inline">Download Report</span>
+                <span className="sm:hidden">Download</span>
               </Button>
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
               <StatsCard
                 title="Average Score"
                 value={`${stats.avg}%`}
@@ -557,17 +567,17 @@ function ResultsContent() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Performance Over Time */}
                 <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <BarChart3 className="h-5 w-5" />
+                  <CardHeader className="p-4 md:p-6">
+                    <CardTitle className="flex items-center space-x-2 text-base md:text-lg">
+                      <BarChart3 className="h-4 w-4 md:h-5 md:w-5" />
                       <span>Performance Trend</span>
                     </CardTitle>
-                    <CardDescription>
+                    <CardDescription className="text-xs md:text-sm">
                       Your score progression over the last 6 months
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
-                    <ResponsiveContainer width="100%" height={300}>
+                  <CardContent className="p-4 md:p-6">
+                    <ResponsiveContainer width="100%" height={250}>
                       <LineChart data={performanceData}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="month" />
@@ -594,14 +604,14 @@ function ResultsContent() {
 
                 {/* Subject Performance */}
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Subject Performance</CardTitle>
-                    <CardDescription>
+                  <CardHeader className="p-4 md:p-6">
+                    <CardTitle className="text-base md:text-lg">Subject Performance</CardTitle>
+                    <CardDescription className="text-xs md:text-sm">
                       Average scores by subject area
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
-                    <ResponsiveContainer width="100%" height={300}>
+                  <CardContent className="p-4 md:p-6">
+                    <ResponsiveContainer width="100%" height={250}>
                       <BarChart data={subjectData}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="subject" />
@@ -615,14 +625,14 @@ function ResultsContent() {
 
                 {/* Grade Distribution */}
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Grade Distribution</CardTitle>
-                    <CardDescription>
+                  <CardHeader className="p-4 md:p-6">
+                    <CardTitle className="text-base md:text-lg">Grade Distribution</CardTitle>
+                    <CardDescription className="text-xs md:text-sm">
                       Breakdown of your exam grades
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
-                    <ResponsiveContainer width="100%" height={300}>
+                  <CardContent className="p-4 md:p-6">
+                    <ResponsiveContainer width="100%" height={250}>
                       <PieChart>
                         <Pie
                           data={gradeDistribution}
@@ -644,14 +654,14 @@ function ResultsContent() {
 
                 {/* Monthly Progress */}
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Monthly Progress</CardTitle>
-                    <CardDescription>
+                  <CardHeader className="p-4 md:p-6">
+                    <CardTitle className="text-base md:text-lg">Monthly Progress</CardTitle>
+                    <CardDescription className="text-xs md:text-sm">
                       Exams completed each month
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
-                    <ResponsiveContainer width="100%" height={300}>
+                  <CardContent className="p-4 md:p-6">
+                    <ResponsiveContainer width="100%" height={250}>
                       <BarChart data={performanceData}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="month" />
@@ -667,8 +677,8 @@ function ResultsContent() {
 
             {/* Results Table */}
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
+              <CardHeader className="p-4 md:p-6">
+                <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-lg md:text-xl">
                   <span>Detailed Results</span>
                   {examFilter && (
                     <Button
@@ -680,13 +690,13 @@ function ResultsContent() {
                     </Button>
                   )}
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-sm">
                   {examFilter
                     ? 'Results filtered by selected exam'
                     : 'Complete history of your exam results'}
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 md:p-6">
                 {filteredResults.length > 0 ? (
                   <ResultsTable
                     results={filteredResults}

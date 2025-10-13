@@ -1,46 +1,42 @@
 'use client';
 
+import {
+    Activity,
+    AlertTriangle,
+    BarChart3,
+    BookOpen,
+    CreditCard,
+    Download,
+    RefreshCw,
+    School,
+    Users
+} from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { ReportsActivityTable } from '../../../components/admin/ReportsActivityTable';
+import {
+    ExamsPerSchoolChart,
+    RevenueAnalyticsChart,
+    SchoolPerformanceChart,
+    UserGrowthChart,
+    UserRoleDistributionChart,
+} from '../../../components/admin/ReportsCharts';
+import {
+    ReportsFilters,
+    type ReportsFilters as ReportsFiltersType,
+} from '../../../components/admin/ReportsFilters';
 import { DashboardLayout } from '../../../components/dashboard/DashboardLayout';
 import { StatsCard } from '../../../components/dashboard/StatsCard';
-import {
-  ReportsFilters,
-  type ReportsFilters as ReportsFiltersType,
-} from '../../../components/admin/ReportsFilters';
-import {
-  UserGrowthChart,
-  ExamsPerSchoolChart,
-  UserRoleDistributionChart,
-  SchoolPerformanceChart,
-  RevenueAnalyticsChart,
-} from '../../../components/admin/ReportsCharts';
-import { ReportsActivityTable } from '../../../components/admin/ReportsActivityTable';
+import { Alert, AlertDescription } from '../../../components/ui/alert';
 import { Button } from '../../../components/ui/button';
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
 } from '../../../components/ui/tabs';
-import { Alert, AlertDescription } from '../../../components/ui/alert';
 import { useToast } from '../../../hooks/use-toast';
-import {
-  School,
-  Users,
-  BookOpen,
-  CreditCard,
-  TrendingUp,
-  Activity,
-  Download,
-  RefreshCw,
-  AlertTriangle,
-  BarChart3,
-  PieChart,
-  LineChart,
-  Calendar,
-} from 'lucide-react';
 
 interface ReportsData {
   summary: {
@@ -266,31 +262,38 @@ export default function ReportsPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
               Reports & Analytics
             </h1>
-            <p className="text-gray-600 mt-1">
+            <p className="text-sm sm:text-base text-gray-600 mt-1">
               Comprehensive insights and analytics for your platform
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button
               variant="outline"
+              size="sm"
+              className="flex-1 sm:flex-none"
               onClick={fetchReportsData}
               disabled={loading}
             >
               <RefreshCw
-                className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`}
+                className={`h-4 w-4 ${loading ? 'animate-spin' : ''} sm:mr-2`}
               />
-              Refresh
+              <span className="hidden sm:inline">Refresh</span>
             </Button>
-            <Button onClick={() => handleExport('csv')}>
-              <Download className="h-4 w-4 mr-2" />
-              Export Report
+            <Button 
+              size="sm"
+              className="flex-1 sm:flex-none"
+              onClick={() => handleExport('csv')}
+            >
+              <Download className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Export Report</span>
+              <span className="sm:hidden">Export</span>
             </Button>
           </div>
         </div>
@@ -318,7 +321,7 @@ export default function ReportsPage() {
           )}
 
         {/* Summary Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
           <StatsCard
             title="Total Schools"
             value={reportsData?.summary.totalSchools?.toString() || '0'}
@@ -356,28 +359,31 @@ export default function ReportsPage() {
         </div>
 
         {/* Charts and Analytics */}
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="overview" className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
-              Overview
+        <Tabs defaultValue="overview" className="space-y-4 md:space-y-6">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
+            <TabsTrigger value="overview" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm py-2">
+              <BarChart3 className="h-3 w-3 md:h-4 md:w-4" />
+              <span className="hidden sm:inline">Overview</span>
+              <span className="sm:hidden">View</span>
             </TabsTrigger>
-            <TabsTrigger value="users" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
+            <TabsTrigger value="users" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm py-2">
+              <Users className="h-3 w-3 md:h-4 md:w-4" />
               Users
             </TabsTrigger>
-            <TabsTrigger value="schools" className="flex items-center gap-2">
-              <School className="h-4 w-4" />
-              Schools
+            <TabsTrigger value="schools" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm py-2">
+              <School className="h-3 w-3 md:h-4 md:w-4" />
+              <span className="hidden sm:inline">Schools</span>
+              <span className="sm:hidden">Sch</span>
             </TabsTrigger>
-            <TabsTrigger value="activity" className="flex items-center gap-2">
-              <Activity className="h-4 w-4" />
-              Activity
+            <TabsTrigger value="activity" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm py-2">
+              <Activity className="h-3 w-3 md:h-4 md:w-4" />
+              <span className="hidden sm:inline">Activity</span>
+              <span className="sm:hidden">Act</span>
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <TabsContent value="overview" className="space-y-4 md:space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
               <UserGrowthChart
                 data={reportsData?.charts.userGrowth || []}
                 loading={loading}
@@ -394,7 +400,7 @@ export default function ReportsPage() {
               />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
               <UserRoleDistributionChart
                 data={reportsData?.charts.userRoleDistribution || []}
                 loading={loading}
@@ -412,7 +418,7 @@ export default function ReportsPage() {
             </div>
           </TabsContent>
 
-          <TabsContent value="users" className="space-y-6">
+          <TabsContent value="users" className="space-y-4 md:space-y-6">
             <div className="grid grid-cols-1 gap-6">
               <UserGrowthChart
                 data={reportsData?.charts.userGrowth || []}
@@ -431,7 +437,7 @@ export default function ReportsPage() {
             </div>
           </TabsContent>
 
-          <TabsContent value="schools" className="space-y-6">
+          <TabsContent value="schools" className="space-y-4 md:space-y-6">
             <div className="grid grid-cols-1 gap-6">
               <ExamsPerSchoolChart
                 data={reportsData?.charts.examsPerSchool || []}
@@ -456,7 +462,7 @@ export default function ReportsPage() {
             </div>
           </TabsContent>
 
-          <TabsContent value="activity" className="space-y-6">
+          <TabsContent value="activity" className="space-y-4 md:space-y-6">
             <ReportsActivityTable
               activities={allActivities}
               loading={loading}

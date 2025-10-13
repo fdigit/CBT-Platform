@@ -2,15 +2,15 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { DashboardLayout } from '../../../components/dashboard/DashboardLayout';
-import { SchoolsSummary } from '../../../components/dashboard/SchoolsSummary';
+import { Pagination } from '../../../components/dashboard/Pagination';
 import {
-  SchoolFilters,
-  type SchoolFilters as SchoolFiltersType,
+    SchoolFilters,
+    type SchoolFilters as SchoolFiltersType,
 } from '../../../components/dashboard/SchoolFilters';
 import { SchoolManagementTable } from '../../../components/dashboard/SchoolManagementTable';
-import { Pagination } from '../../../components/dashboard/Pagination';
+import { SchoolsSummary } from '../../../components/dashboard/SchoolsSummary';
 import { useToast } from '../../../hooks/use-toast';
 
 interface School {
@@ -214,13 +214,13 @@ export default function SchoolsPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
             Schools Management
           </h1>
-          <p className="text-gray-600 mt-1">
+          <p className="text-sm sm:text-base text-gray-600 mt-1">
             Manage and approve school registrations on the platform
           </p>
         </div>

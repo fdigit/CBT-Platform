@@ -2,26 +2,26 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SchoolDashboardLayout } from '../../../components/school/SchoolDashboardLayout';
 import {
-  SubjectsHeader,
-  CreateSubjectForm,
-  SubjectsTable,
-  EditSubjectModal,
-  AssignTeachersForm,
-  TeacherSubjectsTable,
-  AssignClassesForm,
-  ClassSubjectsTable,
+    AssignClassesForm,
+    AssignTeachersForm,
+    ClassSubjectsTable,
+    CreateSubjectForm,
+    EditSubjectModal,
+    SubjectsHeader,
+    SubjectsTable,
+    TeacherSubjectsTable,
 } from '../../../components/school/subjects';
 import type { CreateSubjectFormRef } from '../../../components/school/subjects/CreateSubjectForm';
-import { useToast } from '../../../hooks/use-toast';
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
 } from '../../../components/ui/tabs';
+import { useToast } from '../../../hooks/use-toast';
 
 interface Subject {
   id: string;
@@ -140,10 +140,21 @@ export default function SubjectsPage() {
   const fetchSubjects = async () => {
     try {
       const response = await fetch('/api/school/subjects');
-      if (response.ok) {
-        const data = await response.json();
-        setSubjects(data.subjects || []);
+      
+      if (!response.ok) {
+        console.error('Failed to fetch subjects:', response.status, response.statusText);
+        return;
       }
+      
+      let data;
+      try {
+        data = await response.json();
+      } catch (jsonError) {
+        console.error('Failed to parse subjects JSON:', jsonError);
+        return;
+      }
+      
+      setSubjects(data.subjects || []);
     } catch (error) {
       console.error('Error fetching subjects:', error);
     }

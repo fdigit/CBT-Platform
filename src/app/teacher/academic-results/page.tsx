@@ -1,35 +1,35 @@
 'use client';
 
 import {
-  BulkUploadModal,
-  ResultsEntryForm,
-  ResultsTable,
+    BulkUploadModal,
+    ResultsEntryForm,
+    ResultsTable,
 } from '@/components/teacher/academic-results';
 import { TeacherDashboardLayout } from '@/components/teacher/TeacherDashboardLayout';
 import { Button } from '@/components/ui/button';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
 } from '@/components/ui/card';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import {
-  BookOpen,
-  CheckCircle,
-  FileText,
-  PlusCircle,
-  Send,
-  Upload,
-  XCircle,
+    BookOpen,
+    CheckCircle,
+    FileText,
+    PlusCircle,
+    Send,
+    Upload,
+    XCircle,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -335,30 +335,30 @@ export default function TeacherAcademicResultsPage() {
 
   return (
     <TeacherDashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         <div className="flex justify-between items-start">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
               Academic Results
             </h1>
-            <p className="text-gray-600 mt-2">
+            <p className="text-sm sm:text-base text-gray-600 mt-2">
               Enter and manage student results for CA and Exam scores
             </p>
           </div>
         </div>
 
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <BookOpen className="h-5 w-5 mr-2" />
+          <CardHeader className="p-4 md:p-6">
+            <CardTitle className="flex items-center text-base md:text-lg">
+              <BookOpen className="h-4 w-4 md:h-5 md:w-5 mr-2" />
               Select Class, Subject, and Term
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-sm">
               Choose the class and subject you want to enter results for
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <CardContent className="p-4 md:p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="space-y-2">
                 <Label>Class</Label>
                 <Select value={selectedClass} onValueChange={setSelectedClass}>
@@ -440,56 +440,56 @@ export default function TeacherAcademicResultsPage() {
           selectedSubject &&
           selectedTerm &&
           selectedSession && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
               <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center">
-                    <FileText className="h-8 w-8 text-gray-600" />
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-500">Draft</p>
-                      <p className="text-2xl font-bold">{draftCount}</p>
+                <CardContent className="p-4 md:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                    <FileText className="h-6 w-6 md:h-8 md:w-8 text-gray-600" />
+                    <div className="sm:ml-2 md:ml-4">
+                      <p className="text-xs md:text-sm font-medium text-gray-500">Draft</p>
+                      <p className="text-xl md:text-2xl font-bold">{draftCount}</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
               <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center">
-                    <Send className="h-8 w-8 text-yellow-600" />
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-500">
+                <CardContent className="p-4 md:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                    <Send className="h-6 w-6 md:h-8 md:w-8 text-yellow-600" />
+                    <div className="sm:ml-2 md:ml-4">
+                      <p className="text-xs md:text-sm font-medium text-gray-500">
                         Submitted
                       </p>
-                      <p className="text-2xl font-bold">{submittedCount}</p>
+                      <p className="text-xl md:text-2xl font-bold">{submittedCount}</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
               <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center">
-                    <CheckCircle className="h-8 w-8 text-green-600" />
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-500">
+                <CardContent className="p-4 md:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                    <CheckCircle className="h-6 w-6 md:h-8 md:w-8 text-green-600" />
+                    <div className="sm:ml-2 md:ml-4">
+                      <p className="text-xs md:text-sm font-medium text-gray-500">
                         Approved
                       </p>
-                      <p className="text-2xl font-bold">{approvedCount}</p>
+                      <p className="text-xl md:text-2xl font-bold">{approvedCount}</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
               <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center">
-                    <XCircle className="h-8 w-8 text-blue-600" />
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-500">
+                <CardContent className="p-4 md:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                    <XCircle className="h-6 w-6 md:h-8 md:w-8 text-blue-600" />
+                    <div className="sm:ml-2 md:ml-4">
+                      <p className="text-xs md:text-sm font-medium text-gray-500">
                         Published
                       </p>
-                      <p className="text-2xl font-bold">{publishedCount}</p>
+                      <p className="text-xl md:text-2xl font-bold">{publishedCount}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -501,26 +501,38 @@ export default function TeacherAcademicResultsPage() {
           selectedSubject &&
           selectedTerm &&
           selectedSession && (
-            <div className="flex justify-end space-x-3">
+            <div className="flex flex-wrap justify-end gap-2">
               <Button
                 variant="outline"
+                size="sm"
+                className="flex-1 sm:flex-none"
                 onClick={() => setShowEntryForm(!showEntryForm)}
               >
-                <PlusCircle className="h-4 w-4 mr-2" />
-                {showEntryForm ? 'Hide Entry Form' : 'Add Single Result'}
+                <PlusCircle className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">{showEntryForm ? 'Hide Form' : 'Add Result'}</span>
+                <span className="sm:hidden">Add</span>
               </Button>
-              <Button variant="outline" onClick={() => setShowBulkUpload(true)}>
-                <Upload className="h-4 w-4 mr-2" />
-                Bulk Upload
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="flex-1 sm:flex-none"
+                onClick={() => setShowBulkUpload(true)}
+              >
+                <Upload className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Bulk Upload</span>
+                <span className="sm:hidden">Upload</span>
               </Button>
               <Button
+                size="sm"
+                className="flex-1 sm:flex-none"
                 onClick={handleSubmitForApproval}
                 disabled={draftCount === 0 || submitting}
               >
-                <Send className="h-4 w-4 mr-2" />
-                {submitting
-                  ? 'Submitting...'
-                  : `Submit ${draftCount} for Approval`}
+                <Send className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">
+                  {submitting ? 'Submitting...' : `Submit ${draftCount}`}
+                </span>
+                <span className="sm:hidden">Submit</span>
               </Button>
             </div>
           )}
@@ -549,9 +561,9 @@ export default function TeacherAcademicResultsPage() {
           selectedTerm &&
           selectedSession && (
             <Card>
-              <CardHeader>
-                <CardTitle>Results</CardTitle>
-                <CardDescription>
+              <CardHeader className="p-4 md:p-6">
+                <CardTitle className="text-lg md:text-xl">Results</CardTitle>
+                <CardDescription className="text-sm">
                   Showing results for{' '}
                   {selectedClassData
                     ? `${selectedClassData.name}${selectedClassData.section ? ` ${selectedClassData.section}` : ''}`
@@ -560,7 +572,7 @@ export default function TeacherAcademicResultsPage() {
                   {selectedSession})
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 md:p-6">
                 <ResultsTable
                   results={results}
                   onDelete={handleDelete}

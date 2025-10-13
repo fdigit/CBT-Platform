@@ -5,11 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { DashboardLayout } from '../../../components/dashboard/DashboardLayout';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
 } from '../../../components/ui/card';
 
 export default function PaymentsPage() {
@@ -42,24 +42,24 @@ export default function PaymentsPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
             Payments Management
           </h1>
-          <p className="text-gray-600 mt-1">
+          <p className="text-sm sm:text-base text-gray-600 mt-1">
             Monitor payments and subscriptions
           </p>
         </div>
 
         <Card>
-          <CardHeader>
-            <CardTitle>Payment Overview</CardTitle>
-            <CardDescription>
+          <CardHeader className="p-4 md:p-6">
+            <CardTitle className="text-lg md:text-xl">Payment Overview</CardTitle>
+            <CardDescription className="text-sm">
               Track all payments and subscription status
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 md:p-6">
             <p className="text-gray-500">
               Payment management features coming soon...
             </p>

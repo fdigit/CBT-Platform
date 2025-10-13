@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useRef, useImperativeHandle, forwardRef } from 'react';
+import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import { useToast } from '../../../hooks/use-toast';
 import { Button } from '../../ui/button';
 import { Card } from '../../ui/card';
 import { Input } from '../../ui/input';
 import { Label } from '../../ui/label';
 import { Textarea } from '../../ui/textarea';
-import { useToast } from '../../../hooks/use-toast';
 
 interface CreateSubjectFormProps {
   onSubjectCreated: (subject: any) => void;
@@ -58,12 +58,20 @@ export const CreateSubjectForm = forwardRef<
         }),
       });
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (jsonError) {
+        console.error('Failed to parse JSON response:', jsonError);
+        throw new Error('Invalid response from server');
+      }
+
       console.log('API response:', { status: response.status, data });
 
       if (!response.ok) {
         console.error('API error:', data);
-        throw new Error(data.message || 'Failed to create subject');
+        const errorMessage = data?.message || data?.error || 'Failed to create subject';
+        throw new Error(errorMessage);
       }
 
       toast({

@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { z } from 'zod';
 import bcrypt from 'bcryptjs';
+import { getServerSession } from 'next-auth';
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 
 const createStudentSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -12,7 +12,11 @@ const createStudentSchema = z.object({
   gender: z.enum(['MALE', 'FEMALE']).optional(),
   classId: z.string().optional(),
   parentPhone: z.string().optional(),
-  parentEmail: z.string().email().optional(),
+  parentEmail: z
+    .string()
+    .email('Valid parent email required')
+    .optional()
+    .or(z.literal('')),
   dateOfBirth: z.string().optional(),
   address: z.string().optional(),
   password: z
@@ -181,13 +185,38 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
+    console.log('POST /api/school/students - Session:', {
+      userId: session?.user?.id,
+      role: session?.user?.role,
+      schoolId: session?.user?.schoolId,
+    });
 
-    if (!session || session.user.role !== 'SCHOOL_ADMIN') {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    if (!session) {
+      console.log('No session found');
+      return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
     }
 
-    const body = await request.json();
+    if (session.user.role !== 'SCHOOL_ADMIN') {
+      console.log('Unauthorized access attempt - Role:', session.user.role);
+      return NextResponse.json({ message: 'Unauthorized - School admin access required' }, { status: 403 });
+    }
+
+    if (!session.user.schoolId) {
+      console.log('No school ID in session');
+      return NextResponse.json({ message: 'No school assigned to user' }, { status: 400 });
+    }
+
+    let body;
+    try {
+      body = await request.json();
+      console.log('Request body:', body);
+    } catch (parseError) {
+      console.error('Failed to parse request body:', parseError);
+      return NextResponse.json({ message: 'Invalid JSON in request body' }, { status: 400 });
+    }
+
     const validatedData = createStudentSchema.parse(body);
+    console.log('Validated data:', validatedData);
 
     // Check if email or regNumber already exists
     const existingUser = await prisma.user.findUnique({
@@ -237,10 +266,10 @@ export async function POST(request: NextRequest) {
           regNumber: validatedData.regNumber,
           gender: validatedData.gender,
           classId: validatedData.classId || undefined,
-          parentPhone: validatedData.parentPhone,
-          parentEmail: validatedData.parentEmail,
-          dateOfBirth: validatedData.dateOfBirth,
-          address: validatedData.address,
+          parentPhone: validatedData.parentPhone || undefined,
+          parentEmail: validatedData.parentEmail && validatedData.parentEmail !== '' ? validatedData.parentEmail : undefined,
+          dateOfBirth: validatedData.dateOfBirth || undefined,
+          address: validatedData.address || undefined,
           status: 'ACTIVE',
         },
         include: {
@@ -298,15 +327,28 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(transformedStudent, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
+      console.error('Validation error:', error.errors);
       return NextResponse.json(
-        { message: 'Validation error', errors: error.errors },
+        { 
+          message: 'Validation error', 
+          errors: error.errors.map(e => ({ 
+            path: e.path.join('.'), 
+            message: e.message 
+          }))
+        },
         { status: 400 }
       );
     }
 
     console.error('Error creating student:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    console.error('Error details:', errorMessage);
+    
     return NextResponse.json(
-      { message: 'Internal server error' },
+      { 
+        message: 'Internal server error',
+        error: process.env.NODE_ENV === 'development' ? errorMessage : undefined
+      },
       { status: 500 }
     );
   }

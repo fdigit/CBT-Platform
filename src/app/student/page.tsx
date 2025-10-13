@@ -2,28 +2,28 @@
 
 import { Badge } from '@/components/ui/badge';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
 } from '@/components/ui/card';
 import {
-  AlertCircle,
-  BookOpen,
-  Calendar,
-  CheckCircle,
-  Clock,
-  Target,
+    AlertCircle,
+    BookOpen,
+    Calendar,
+    CheckCircle,
+    Clock,
+    Target,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import {
-  ExamCard,
-  ResultsTable,
-  StatsCard,
-  StudentDashboardLayout,
+    ExamCard,
+    ResultsTable,
+    StatsCard,
+    StudentDashboardLayout,
 } from '../../components/student';
 import { useToast } from '../../hooks/use-toast';
 import { generateResultPDF } from '../../lib/pdf-generator';
@@ -98,21 +98,38 @@ export default function StudentDashboard() {
       if (statsResponse.ok) {
         const statsData = await statsResponse.json();
         setStats(statsData);
+      } else {
+        console.error('Failed to fetch stats:', statsResponse.status);
       }
 
       if (examsResponse.ok) {
         const examsData = await examsResponse.json();
         setExams(examsData.exams || []);
+      } else {
+        console.error('Failed to fetch exams:', examsResponse.status);
       }
 
       if (resultsResponse.ok) {
         const resultsData = await resultsResponse.json();
         setRecentResults(resultsData.slice(0, 5)); // Show only 5 recent results
+      } else {
+        console.error('Failed to fetch results:', resultsResponse.status);
+      }
+      
+      // Only show error if all requests failed
+      if (!statsResponse.ok && !examsResponse.ok && !resultsResponse.ok) {
+        toast({
+          title: 'Warning',
+          description: 'Some data could not be loaded. Please refresh the page.',
+          variant: 'destructive',
+        });
       }
     } catch (error) {
+      console.error('Error fetching student data:', error);
+      // Only show error for network failures, not for empty data
       toast({
         title: 'Error',
-        description: 'Failed to fetch student data',
+        description: 'Network error. Please check your connection and try again.',
         variant: 'destructive',
       });
     } finally {
@@ -165,23 +182,23 @@ export default function StudentDashboard() {
 
   return (
     <StudentDashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         {/* Welcome Banner */}
         <Card className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold mb-2">
+              <div className="flex-1">
+                <h1 className="text-xl sm:text-2xl font-bold mb-2">
                   Welcome back, {session?.user.name || 'Student'}!
                 </h1>
-                <p className="text-blue-100">
-                  Student ID: {session?.user.studentProfile?.regNo || 'N/A'}
+                <p className="text-blue-100 text-sm sm:text-base">
+                  Student ID: {session?.user.studentProfile?.regNumber || session?.user.studentProfile?.regNo || 'Loading...'}
                 </p>
-                <p className="text-blue-100 text-sm mt-1">
+                <p className="text-blue-100 text-xs sm:text-sm mt-1">
                   Ready to continue your learning journey?
                 </p>
               </div>
-              <div className="hidden md:block">
+              <div className="hidden md:block ml-4">
                 <div className="bg-white/10 rounded-full p-4">
                   <BookOpen className="h-8 w-8" />
                 </div>
@@ -191,7 +208,7 @@ export default function StudentDashboard() {
         </Card>
 
         {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
           <StatsCard
             title="Upcoming Exams"
             value={stats.upcomingExams}
@@ -220,17 +237,17 @@ export default function StudentDashboard() {
         {/* Active/Ongoing Exam Section */}
         {activeExam && (
           <Card className="border-green-200 bg-green-50">
-            <CardHeader>
+            <CardHeader className="p-4 md:p-6">
               <div className="flex items-center space-x-2">
                 <div className="bg-green-600 rounded-full p-1">
                   <AlertCircle className="h-4 w-4 text-white" />
                 </div>
-                <CardTitle className="text-green-800">
+                <CardTitle className="text-base sm:text-lg text-green-800">
                   Exam Available Now!
                 </CardTitle>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 md:p-6 pt-0">
               <ExamCard
                 id={activeExam.id}
                 title={activeExam.title}
@@ -277,25 +294,25 @@ export default function StudentDashboard() {
 
         {/* Available Exams Grid */}
         <Card>
-          <CardHeader>
-            <CardTitle>Available Exams</CardTitle>
-            <CardDescription>
+          <CardHeader className="p-4 md:p-6">
+            <CardTitle className="text-lg md:text-xl">Available Exams</CardTitle>
+            <CardDescription className="text-sm">
               Your assigned exams and their current status
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 md:p-6">
             {!Array.isArray(exams) || exams.length === 0 ? (
               <div className="text-center py-12">
                 <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                <h3 className="text-base md:text-lg font-medium text-gray-900 mb-2">
                   No exams available
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-sm text-gray-600">
                   Check back later for new assignments
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                 {Array.isArray(exams) &&
                   exams.map(exam => (
                     <ExamCard
@@ -320,14 +337,14 @@ export default function StudentDashboard() {
 
         {/* Quick Tips */}
         <Card>
-          <CardHeader>
-            <CardTitle>Exam Tips</CardTitle>
-            <CardDescription>
+          <CardHeader className="p-4 md:p-6">
+            <CardTitle className="text-lg md:text-xl">Exam Tips</CardTitle>
+            <CardDescription className="text-sm">
               Important guidelines for optimal exam performance
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <CardContent className="p-4 md:p-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
               <div className="flex items-start space-x-3">
                 <div className="bg-blue-100 rounded-full p-2">
                   <AlertCircle className="h-4 w-4 text-blue-600" />

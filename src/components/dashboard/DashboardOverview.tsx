@@ -1,12 +1,12 @@
 'use client';
 
+import { BookOpen, CreditCard, Plus, School, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
-import { StatsCard } from './StatsCard';
-import { StudentGrowthChart, ExamChart, SubscriptionChart } from './Charts';
-import { RecentActivities } from './RecentActivities';
 import { AddSchoolModal } from './AddSchoolModal';
-import { School, Users, BookOpen, CreditCard, Plus } from 'lucide-react';
+import { ExamChart, StudentGrowthChart, SubscriptionChart } from './Charts';
+import { RecentActivities } from './RecentActivities';
+import { StatsCard } from './StatsCard';
 
 interface AdminStats {
   totalSchools: number;
@@ -89,31 +89,31 @@ export function DashboardOverview() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Quick Actions */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
             Dashboard Overview
           </h1>
-          <p className="text-gray-600 mt-1">
+          <p className="text-sm sm:text-base text-gray-600 mt-1">
             Welcome back! Here&apos;s what&apos;s happening with your platform.
           </p>
         </div>
-        <div className="flex space-x-3">
+        <div className="flex flex-wrap gap-2 sm:gap-3">
           <Button
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-blue-600 hover:bg-blue-700 flex-1 sm:flex-none"
             onClick={() => setIsAddSchoolModalOpen(true)}
           >
-            <Plus className="h-4 w-4 mr-2" />
-            Add School
+            <Plus className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Add School</span>
           </Button>
           <Button
             variant="outline"
-            className="border-orange-500 text-orange-600 hover:bg-orange-50"
+            className="border-orange-500 text-orange-600 hover:bg-orange-50 flex-1 sm:flex-none"
           >
-            <Plus className="h-4 w-4 mr-2" />
-            Create Exam
+            <Plus className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Create Exam</span>
           </Button>
         </div>
       </div>

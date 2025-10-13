@@ -1,57 +1,69 @@
 'use client';
 
+import { Student } from '@/types/models';
+import {
+    ArrowUpDown,
+    ChevronLeft,
+    ChevronRight,
+    Edit,
+    Eye,
+    GraduationCap,
+    Mail,
+    MoreHorizontal,
+    Phone,
+    Trash2,
+    User,
+    UserCheck,
+    UserX
+} from 'lucide-react';
 import { useState } from 'react';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '../../ui/alert-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
 import { Badge } from '../../ui/badge';
 import { Button } from '../../ui/button';
-import { Checkbox } from '../../ui/checkbox';
 import { Card, CardContent } from '../../ui/card';
+import { Checkbox } from '../../ui/checkbox';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '../../ui/table';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from '../../ui/dropdown-menu';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '../../ui/alert-dialog';
-import {
-  MoreHorizontal,
-  ArrowUpDown,
-  Eye,
-  Edit,
-  UserX,
-  UserCheck,
-  GraduationCap,
-  Trash2,
-  ChevronLeft,
-  ChevronRight,
-  Phone,
-  Mail,
-  Calendar,
-  User,
-} from 'lucide-react';
-import { Student } from '@/types/models';
-import { format } from 'date-fns';
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '../../ui/table';
+
+// Extended student type with API response fields
+interface StudentWithDetails extends Student {
+  name?: string;
+  email?: string;
+  className?: string;
+  class?: string;
+  classSection?: string;
+  gender?: string;
+  parentPhone?: string;
+  parentEmail?: string;
+  status?: string;
+  performanceScore?: number;
+}
 
 interface StudentsTableProps {
-  students: Student[];
+  students: StudentWithDetails[];
   loading: boolean;
   selectedStudents: string[];
   onSelectionChange: (studentIds: string[]) => void;
@@ -67,7 +79,7 @@ interface StudentsTableProps {
 }
 
 interface SortConfig {
-  key: keyof Student | null;
+  key: keyof StudentWithDetails | null;
   direction: 'asc' | 'desc';
 }
 
@@ -85,10 +97,10 @@ export function StudentsTable({
     key: null,
     direction: 'asc',
   });
-  const [deleteStudent, setDeleteStudent] = useState<Student | null>(null);
+  const [deleteStudent, setDeleteStudent] = useState<StudentWithDetails | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleSort = (key: keyof Student) => {
+  const handleSort = (key: keyof StudentWithDetails) => {
     let direction: 'asc' | 'desc' = 'asc';
     if (sortConfig.key === key && sortConfig.direction === 'asc') {
       direction = 'desc';
@@ -112,7 +124,7 @@ export function StudentsTable({
     }
   };
 
-  const handleStudentAction = async (action: string, student: Student) => {
+  const handleStudentAction = async (action: string, student: StudentWithDetails) => {
     try {
       const response = await fetch(`/api/school/students/${student.id}`, {
         method: 'PUT',
@@ -289,17 +301,17 @@ export function StudentsTable({
                         <Avatar className="h-10 w-10">
                           <AvatarImage src={undefined} />
                           <AvatarFallback>
-                            {getInitials(student.user?.name || '')}
+                            {getInitials(student.name || student.user?.name || '')}
                           </AvatarFallback>
                         </Avatar>
                       </TableCell>
                       <TableCell>
                         <div>
                           <div className="font-medium">
-                            {student.user?.name}
+                            {student.name || student.user?.name}
                           </div>
                           <div className="text-sm text-gray-500">
-                            {student.user?.email}
+                            {student.email || student.user?.email}
                           </div>
                         </div>
                       </TableCell>
@@ -310,32 +322,38 @@ export function StudentsTable({
                       </TableCell>
                       <TableCell>
                         <div>
-                          <div className="font-medium">Not assigned</div>
+                          <div className="font-medium">
+                            {student.className || student.class || 'Not assigned'}
+                          </div>
                           <div className="text-sm text-gray-500">
-                            Section Not assigned
+                            {student.classSection ? `Section ${student.classSection}` : 'No section'}
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">Not specified</Badge>
+                        <Badge variant="outline">
+                          {student.gender || 'Not specified'}
+                        </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="space-y-1">
                           <div className="flex items-center text-sm text-gray-600">
                             <Phone className="h-3 w-3 mr-1" />
-                            Not specified
+                            {student.parentPhone || 'Not specified'}
                           </div>
                           <div className="flex items-center text-sm text-gray-600">
                             <Mail className="h-3 w-3 mr-1" />
-                            Not specified
+                            {student.parentEmail || 'Not specified'}
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">Active</Badge>
+                        {getStatusBadge(student.status || 'ACTIVE')}
                       </TableCell>
                       <TableCell>
-                        <span className="text-gray-400">N/A</span>
+                        <span className={getPerformanceColor(student.performanceScore)}>
+                          {student.performanceScore ? `${student.performanceScore}%` : 'N/A'}
+                        </span>
                       </TableCell>
                       <TableCell onClick={e => e.stopPropagation()}>
                         <DropdownMenu>
@@ -438,21 +456,21 @@ export function StudentsTable({
                     <Avatar className="h-12 w-12">
                       <AvatarImage src={undefined} />
                       <AvatarFallback>
-                        {getInitials(student.user?.name || '')}
+                        {getInitials(student.name || student.user?.name || '')}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between">
                         <div>
                           <h3 className="font-medium text-gray-900 truncate">
-                            {student.user?.name}
+                            {student.name || student.user?.name}
                           </h3>
                           <p className="text-sm text-gray-500">
                             {student.regNumber}
                           </p>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <Badge variant="outline">Active</Badge>
+                          {getStatusBadge(student.status || 'ACTIVE')}
                           <div onClick={e => e.stopPropagation()}>
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
@@ -479,13 +497,13 @@ export function StudentsTable({
                         </div>
                       </div>
                       <div className="mt-2 flex items-center space-x-4 text-sm text-gray-500">
-                        <span>Not assigned</span>
-                        <span>Section Not assigned</span>
-                        <span>Not specified</span>
+                        <span>{student.className || student.class || 'Not assigned'}</span>
+                        <span>{student.classSection ? `Section ${student.classSection}` : 'No section'}</span>
+                        <span>{student.gender || 'Not specified'}</span>
                       </div>
                       <div className="mt-2">
-                        <span className="text-sm font-medium text-gray-400">
-                          Performance: N/A
+                        <span className={`text-sm font-medium ${getPerformanceColor(student.performanceScore)}`}>
+                          Performance: {student.performanceScore ? `${student.performanceScore}%` : 'N/A'}
                         </span>
                       </div>
                     </div>

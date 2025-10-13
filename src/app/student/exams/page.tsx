@@ -1,45 +1,44 @@
 'use client';
 
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {
+    AlertCircle,
+    BarChart3,
+    BookOpen,
+    Calendar,
+    CheckCircle,
+    Clock,
+    Eye,
+    Filter,
+    GraduationCap,
+    Play,
+    Search,
+    Target,
+    Timer,
+    Trophy,
+    Users,
+} from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { StudentDashboardLayout } from '../../../components/student/StudentDashboardLayout';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '../../../hooks/use-toast';
-import {
-  Clock,
-  Users,
-  BookOpen,
-  GraduationCap,
-  Play,
-  Eye,
-  CheckCircle,
-  AlertCircle,
-  Trophy,
-  Calendar,
-  Search,
-  Filter,
-  Timer,
-  Target,
-  BarChart3,
-} from 'lucide-react';
 
 interface Exam {
   id: string;
@@ -216,11 +215,13 @@ export default function StudentExams() {
     if (exam.studentStatus === 'in_progress') {
       return (
         <Button
+          size="sm"
           onClick={() => router.push(`/student/exams/${exam.id}/take`)}
-          className="bg-blue-600 hover:bg-blue-700"
+          className="bg-blue-600 hover:bg-blue-700 whitespace-nowrap"
         >
-          <Play className="h-4 w-4 mr-2" />
-          Resume Exam
+          <Play className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Resume Exam</span>
+          <span className="sm:hidden">Resume</span>
         </Button>
       );
     }
@@ -228,11 +229,13 @@ export default function StudentExams() {
     if (exam.canTake) {
       return (
         <Button
+          size="sm"
           onClick={() => router.push(`/student/exams/${exam.id}/take`)}
-          className="bg-green-600 hover:bg-green-700"
+          className="bg-green-600 hover:bg-green-700 whitespace-nowrap"
         >
-          <Play className="h-4 w-4 mr-2" />
-          {exam.attemptCount > 0 ? 'Retake Exam' : 'Start Exam'}
+          <Play className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">{exam.attemptCount > 0 ? 'Retake Exam' : 'Start Exam'}</span>
+          <span className="sm:hidden">Start</span>
         </Button>
       );
     }
@@ -240,11 +243,12 @@ export default function StudentExams() {
     if (exam.allowPreview && exam.examStatus === 'upcoming') {
       return (
         <Button
+          size="sm"
           variant="outline"
           onClick={() => router.push(`/student/exams/${exam.id}/preview`)}
         >
-          <Eye className="h-4 w-4 mr-2" />
-          Preview
+          <Eye className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Preview</span>
         </Button>
       );
     }
@@ -252,11 +256,14 @@ export default function StudentExams() {
     if (exam.studentStatus === 'completed') {
       return (
         <Button
+          size="sm"
           variant="outline"
           onClick={() => router.push(`/student/exams/${exam.id}/result`)}
+          className="whitespace-nowrap"
         >
-          <BarChart3 className="h-4 w-4 mr-2" />
-          View Result
+          <BarChart3 className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">View Result</span>
+          <span className="sm:hidden">Result</span>
         </Button>
       );
     }
@@ -305,12 +312,12 @@ export default function StudentExams() {
 
   return (
     <StudentDashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">My Exams</h1>
-            <p className="text-gray-600">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">My Exams</h1>
+            <p className="text-sm sm:text-base text-gray-600">
               View and take your assigned examinations
             </p>
           </div>
@@ -318,14 +325,14 @@ export default function StudentExams() {
 
         {/* Filters */}
         <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center">
-              <Filter className="h-5 w-5 mr-2" />
+          <CardHeader className="p-4 md:p-6">
+            <CardTitle className="text-base md:text-lg flex items-center">
+              <Filter className="h-4 w-4 md:h-5 md:w-5 mr-2" />
               Filters
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <CardContent className="p-4 md:p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium mb-2 block">Search</label>
                 <div className="relative">
@@ -362,7 +369,7 @@ export default function StudentExams() {
         {/* Exams List */}
         {exams.length === 0 ? (
           <Card>
-            <CardContent className="text-center py-12">
+            <CardContent className="text-center py-12 p-4 md:p-6">
               <div className="mb-4">
                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Trophy className="h-8 w-8 text-gray-400" />
@@ -378,61 +385,70 @@ export default function StudentExams() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-6">
+          <div className="grid gap-4 md:gap-6">
             {exams.map(exam => (
               <Card key={exam.id} className="hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <CardTitle className="text-xl">{exam.title}</CardTitle>
-                        {getStatusBadge(exam.examStatus, exam.studentStatus)}
+                <CardHeader className="p-4 md:p-6">
+                  <div className="flex flex-col space-y-4">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                          <CardTitle className="text-lg md:text-xl break-words">{exam.title}</CardTitle>
+                          {getStatusBadge(exam.examStatus, exam.studentStatus)}
+                        </div>
+                        {exam.description && (
+                          <CardDescription className="mb-2 text-sm">
+                            {exam.description}
+                          </CardDescription>
+                        )}
                       </div>
-                      {exam.description && (
-                        <CardDescription className="mb-2">
-                          {exam.description}
-                        </CardDescription>
-                      )}
-                      <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
+                    </div>
+                    
+                    {/* Meta info - stacks on mobile */}
+                    <div className="flex flex-col space-y-2 text-sm text-gray-600">
+                      <div className="flex flex-wrap gap-x-4 gap-y-2">
                         <div className="flex items-center">
-                          <GraduationCap className="h-4 w-4 mr-1" />
-                          {exam.teacherName}
+                          <GraduationCap className="h-4 w-4 mr-1 flex-shrink-0" />
+                          <span className="truncate">{exam.teacherName}</span>
                         </div>
                         <div className="flex items-center">
-                          <BookOpen className="h-4 w-4 mr-1" />
-                          {exam.subject?.name || 'General'}
+                          <BookOpen className="h-4 w-4 mr-1 flex-shrink-0" />
+                          <span className="truncate">{exam.subject?.name || 'General'}</span>
                         </div>
                         <div className="flex items-center">
-                          <Users className="h-4 w-4 mr-1" />
-                          {exam.class
-                            ? `${exam.class.name} ${exam.class.section || ''}`
-                            : 'All Classes'}
+                          <Users className="h-4 w-4 mr-1 flex-shrink-0" />
+                          <span className="truncate">
+                            {exam.class
+                              ? `${exam.class.name} ${exam.class.section || ''}`
+                              : 'All Classes'}
+                          </span>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-4 text-sm text-gray-600">
+                      <div className="flex flex-wrap gap-x-4 gap-y-2">
                         <div className="flex items-center">
-                          <Timer className="h-4 w-4 mr-1" />
-                          {exam.duration} minutes
+                          <Timer className="h-4 w-4 mr-1 flex-shrink-0" />
+                          {exam.duration} min
                         </div>
                         <div className="flex items-center">
-                          <Target className="h-4 w-4 mr-1" />
-                          {exam.totalQuestions} questions • {exam.totalMarks}{' '}
-                          marks
+                          <Target className="h-4 w-4 mr-1 flex-shrink-0" />
+                          {exam.totalQuestions} questions • {exam.totalMarks} marks
                         </div>
                         <div className="flex items-center">
-                          <Trophy className="h-4 w-4 mr-1" />
+                          <Trophy className="h-4 w-4 mr-1 flex-shrink-0" />
                           Attempts: {exam.attemptCount}/{exam.maxAttempts}
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-4">
+
+                    {/* Score and action button */}
+                    <div className="flex items-center justify-between gap-2 pt-2 border-t">
                       {getScoreDisplay(exam)}
                       {getActionButton(exam)}
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <div className="grid md:grid-cols-3 gap-4 text-sm">
+                <CardContent className="p-4 md:p-6 pt-0">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                     <div>
                       <p className="font-medium text-gray-700">Schedule</p>
                       <p className="text-gray-600">

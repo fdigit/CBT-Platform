@@ -16,7 +16,7 @@ export function StudentDashboardLayout({
       <StudentSidebar />
       <div className="lg:pl-64">
         <StudentTopNavbar />
-        <main className="p-6">{children}</main>
+        <main className="p-3 sm:p-4 md:p-6">{children}</main>
       </div>
     </div>
   );

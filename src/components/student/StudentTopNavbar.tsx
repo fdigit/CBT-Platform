@@ -1,19 +1,17 @@
 'use client';
 
-import { useState } from 'react';
-import { useSession, signOut } from 'next-auth/react';
+import { GraduationCap, LogOut, Settings, User } from 'lucide-react';
+import { signOut, useSession } from 'next-auth/react';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Button } from '../ui/button';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { Badge } from '../ui/badge';
-import { Bell, User, Settings, LogOut, GraduationCap } from 'lucide-react';
 
 interface StudentTopNavbarProps {
   className?: string;
@@ -21,7 +19,6 @@ interface StudentTopNavbarProps {
 
 export function StudentTopNavbar({ className }: StudentTopNavbarProps) {
   const { data: session } = useSession();
-  const [notificationCount] = useState(3); // Mock notification count
 
   const handleSignOut = () => {
     signOut({ callbackUrl: '/auth/signin' });
@@ -36,21 +33,8 @@ export function StudentTopNavbar({ className }: StudentTopNavbarProps) {
           <h1 className="text-lg font-semibold text-gray-900">CBT Student</h1>
         </div>
 
-        {/* Right side - Notifications and Profile */}
+        {/* Right side - Profile */}
         <div className="flex items-center space-x-4 ml-auto">
-          {/* Notifications */}
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="h-5 w-5" />
-            {notificationCount > 0 && (
-              <Badge
-                variant="destructive"
-                className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
-              >
-                {notificationCount}
-              </Badge>
-            )}
-          </Button>
-
           {/* Profile Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

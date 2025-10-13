@@ -5,12 +5,12 @@ import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from '../ui/table';
 
 interface Result {
@@ -90,25 +90,27 @@ export function ResultsTable({
 
   return (
     <Card className={className}>
-      <CardHeader>
-        <CardTitle>Recent Results</CardTitle>
+      <CardHeader className="p-4 md:p-6">
+        <CardTitle className="text-lg md:text-xl">Recent Results</CardTitle>
       </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Exam</TableHead>
-              <TableHead>Subject</TableHead>
-              <TableHead>Score</TableHead>
-              <TableHead>Percentage</TableHead>
-              <TableHead>Grade</TableHead>
-              <TableHead>Date</TableHead>
-              {showActions && (
-                <TableHead className="text-right">Actions</TableHead>
-              )}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+      <CardContent className="p-4 md:p-6">
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Exam</TableHead>
+                <TableHead>Subject</TableHead>
+                <TableHead>Score</TableHead>
+                <TableHead>Percentage</TableHead>
+                <TableHead>Grade</TableHead>
+                <TableHead>Date</TableHead>
+                {showActions && (
+                  <TableHead className="text-right">Actions</TableHead>
+                )}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
             {displayResults.map(result => (
               <TableRow key={result.id} className="hover:bg-gray-50">
                 <TableCell className="font-medium">
@@ -168,8 +170,83 @@ export function ResultsTable({
                 )}
               </TableRow>
             ))}
-          </TableBody>
-        </Table>
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden space-y-4">
+          {displayResults.map(result => (
+            <div
+              key={result.id}
+              className="border border-gray-200 rounded-lg p-4 space-y-3 bg-white"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    {getPerformanceIcon(result.percentage)}
+                    <h3 className="font-semibold text-gray-900 text-sm break-words">
+                      {result.examTitle}
+                    </h3>
+                  </div>
+                  <p className="text-xs text-gray-500">{result.subject}</p>
+                </div>
+                {getGradeBadge(result.grade, result.passed)}
+              </div>
+
+              <div className="grid grid-cols-3 gap-2 text-sm">
+                <div>
+                  <p className="text-xs text-gray-500">Score</p>
+                  <p className="font-mono font-medium">
+                    {result.score}/{result.totalMarks}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500">Percentage</p>
+                  <p
+                    className={`font-semibold ${
+                      result.percentage >= 70 ? 'text-green-600' : 'text-red-600'
+                    }`}
+                  >
+                    {result.percentage}%
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500">Date</p>
+                  <p className="text-xs font-medium">
+                    {new Date(result.examDate).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                    })}
+                  </p>
+                </div>
+              </div>
+
+              {showActions && (
+                <div className="flex gap-2 pt-2 border-t">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => onViewDetails && onViewDetails(result.id)}
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    View
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => onDownloadPDF && onDownloadPDF(result.id)}
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    PDF
+                  </Button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </CardContent>
     </Card>
   );

@@ -1,21 +1,21 @@
 'use client';
 
+import { Download, Plus } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, useCallback } from 'react';
-import { DashboardLayout } from '../../../components/dashboard/DashboardLayout';
+import { useCallback, useEffect, useState } from 'react';
 import {
-  UserTable,
-  UserFilters,
-  UserSummaryStats,
-  UserAnalytics,
-  EditUserModal,
-  DeleteUserModal,
-  ResetPasswordModal,
-  BulkActionModal,
+    BulkActionModal,
+    DeleteUserModal,
+    EditUserModal,
+    ResetPasswordModal,
+    UserAnalytics,
+    UserFilters,
+    UserSummaryStats,
+    UserTable,
 } from '../../../components/admin';
+import { DashboardLayout } from '../../../components/dashboard/DashboardLayout';
 import { Button } from '../../../components/ui/button';
-import { Plus, Download } from 'lucide-react';
 import { useToast } from '../../../hooks/use-toast';
 
 export interface User {
@@ -433,34 +433,49 @@ export default function UsersPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6" suppressHydrationWarning>
+      <div className="space-y-4 md:space-y-6" suppressHydrationWarning>
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
               Users Management
             </h1>
-            <p className="text-gray-600 mt-1">
+            <p className="text-sm sm:text-base text-gray-600 mt-1">
               Manage all users across the platform
             </p>
           </div>
-          <div className="flex items-center space-x-2">
-            <Button variant="outline" onClick={() => handleExport('csv')}>
-              <Download className="mr-2 h-4 w-4" />
-              Export CSV
+          <div className="flex flex-wrap items-center gap-2">
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="flex-1 sm:flex-none"
+              onClick={() => handleExport('csv')}
+            >
+              <Download className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Export CSV</span>
+              <span className="sm:hidden">CSV</span>
             </Button>
-            <Button variant="outline" onClick={() => handleExport('json')}>
-              <Download className="mr-2 h-4 w-4" />
-              Export JSON
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="flex-1 sm:flex-none"
+              onClick={() => handleExport('json')}
+            >
+              <Download className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Export JSON</span>
+              <span className="sm:hidden">JSON</span>
             </Button>
             <Button
+              size="sm"
+              className="flex-1 sm:flex-none"
               onClick={() => {
                 setSelectedUser(null);
                 setEditModalOpen(true);
               }}
             >
-              <Plus className="mr-2 h-4 w-4" />
-              Add User
+              <Plus className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Add User</span>
+              <span className="sm:hidden">Add</span>
             </Button>
           </div>
         </div>
@@ -505,13 +520,13 @@ export default function UsersPage() {
 
         {/* Pagination */}
         {pagination.pages > 1 && (
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-700">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <p className="text-xs sm:text-sm text-gray-700 text-center sm:text-left">
               Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
               {Math.min(pagination.page * pagination.limit, pagination.total)}{' '}
               of {pagination.total} users
             </p>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center justify-center space-x-2">
               <Button
                 variant="outline"
                 size="sm"
@@ -522,7 +537,7 @@ export default function UsersPage() {
               >
                 Previous
               </Button>
-              <span className="text-sm">
+              <span className="text-xs sm:text-sm whitespace-nowrap">
                 Page {pagination.page} of {pagination.pages}
               </span>
               <Button

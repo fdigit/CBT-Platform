@@ -2,62 +2,62 @@
 
 import { Role } from '@/lib/auth';
 import {
-  Award,
-  BarChart3,
-  BookOpen,
-  Download,
-  FileText,
-  Filter,
-  Search,
-  Target,
-  Users,
+    Award,
+    BarChart3,
+    BookOpen,
+    Download,
+    FileText,
+    Filter,
+    Search,
+    Target,
+    Users,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  Pie,
-  PieChart as RechartsPieChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
+    Bar,
+    BarChart,
+    CartesianGrid,
+    Cell,
+    Pie,
+    PieChart as RechartsPieChart,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
 } from 'recharts';
 import { DashboardLayout } from '../../../components/dashboard';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
 } from '../../../components/ui/card';
 import { Input } from '../../../components/ui/input';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from '../../../components/ui/select';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from '../../../components/ui/table';
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
 } from '../../../components/ui/tabs';
 
 interface Result {
@@ -255,45 +255,62 @@ export default function AdminResultsPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
               Results Management
             </h1>
-            <p className="text-gray-600 mt-1">
+            <p className="text-sm sm:text-base text-gray-600 mt-1">
               View and analyze exam results across all schools
             </p>
           </div>
-          <div className="flex space-x-2">
-            <Button variant="outline" onClick={() => handleExport('pdf')}>
-              <FileText className="h-4 w-4 mr-2" />
-              Export PDF
+          <div className="flex flex-wrap gap-2">
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="flex-1 sm:flex-none"
+              onClick={() => handleExport('pdf')}
+            >
+              <FileText className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Export PDF</span>
+              <span className="sm:hidden">PDF</span>
             </Button>
-            <Button variant="outline" onClick={() => handleExport('excel')}>
-              <Download className="h-4 w-4 mr-2" />
-              Export Excel
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="flex-1 sm:flex-none"
+              onClick={() => handleExport('excel')}
+            >
+              <Download className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Excel</span>
+              <span className="sm:hidden">XLS</span>
             </Button>
-            <Button variant="outline" onClick={() => handleExport('csv')}>
-              <Download className="h-4 w-4 mr-2" />
-              Export CSV
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="flex-1 sm:flex-none"
+              onClick={() => handleExport('csv')}
+            >
+              <Download className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">CSV</span>
             </Button>
           </div>
         </div>
 
         {/* Analytics Overview */}
         {analytics && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 md:gap-6">
             <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center">
-                  <Users className="h-8 w-8 text-blue-600" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">
-                      Total Students
+              <CardContent className="p-4 md:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                  <Users className="h-6 w-6 md:h-8 md:w-8 text-blue-600" />
+                  <div className="sm:ml-2 md:ml-4">
+                    <p className="text-xs md:text-sm font-medium text-gray-600">
+                      Students
                     </p>
-                    <p className="text-2xl font-bold text-gray-900">
+                    <p className="text-xl md:text-2xl font-bold text-gray-900">
                       {analytics.overview.totalStudents}
                     </p>
                   </div>
@@ -301,14 +318,14 @@ export default function AdminResultsPage() {
               </CardContent>
             </Card>
             <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center">
-                  <BookOpen className="h-8 w-8 text-green-600" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">
-                      Total Exams
+              <CardContent className="p-4 md:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                  <BookOpen className="h-6 w-6 md:h-8 md:w-8 text-green-600" />
+                  <div className="sm:ml-2 md:ml-4">
+                    <p className="text-xs md:text-sm font-medium text-gray-600">
+                      Exams
                     </p>
-                    <p className="text-2xl font-bold text-gray-900">
+                    <p className="text-xl md:text-2xl font-bold text-gray-900">
                       {analytics.overview.totalExams}
                     </p>
                   </div>
@@ -316,14 +333,14 @@ export default function AdminResultsPage() {
               </CardContent>
             </Card>
             <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center">
-                  <Target className="h-8 w-8 text-purple-600" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">
-                      Average Score
+              <CardContent className="p-4 md:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                  <Target className="h-6 w-6 md:h-8 md:w-8 text-purple-600" />
+                  <div className="sm:ml-2 md:ml-4">
+                    <p className="text-xs md:text-sm font-medium text-gray-600">
+                      Avg Score
                     </p>
-                    <p className="text-2xl font-bold text-gray-900">
+                    <p className="text-xl md:text-2xl font-bold text-gray-900">
                       {analytics.overview.averageScore}%
                     </p>
                   </div>
@@ -331,29 +348,29 @@ export default function AdminResultsPage() {
               </CardContent>
             </Card>
             <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center">
-                  <Award className="h-8 w-8 text-orange-600" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">
+              <CardContent className="p-4 md:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                  <Award className="h-6 w-6 md:h-8 md:w-8 text-orange-600" />
+                  <div className="sm:ml-2 md:ml-4">
+                    <p className="text-xs md:text-sm font-medium text-gray-600">
                       Pass Rate
                     </p>
-                    <p className="text-2xl font-bold text-gray-900">
+                    <p className="text-xl md:text-2xl font-bold text-gray-900">
                       {analytics.overview.passRate}%
                     </p>
                   </div>
                 </div>
               </CardContent>
             </Card>
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center">
-                  <BarChart3 className="h-8 w-8 text-red-600" />
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">
-                      Total Results
+            <Card className="col-span-2 sm:col-span-1">
+              <CardContent className="p-4 md:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                  <BarChart3 className="h-6 w-6 md:h-8 md:w-8 text-red-600" />
+                  <div className="sm:ml-2 md:ml-4">
+                    <p className="text-xs md:text-sm font-medium text-gray-600">
+                      Results
                     </p>
-                    <p className="text-2xl font-bold text-gray-900">
+                    <p className="text-xl md:text-2xl font-bold text-gray-900">
                       {analytics.overview.totalResults}
                     </p>
                   </div>
@@ -363,23 +380,28 @@ export default function AdminResultsPage() {
           </div>
         )}
 
-        <Tabs defaultValue="results" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="results">Results Table</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+        <Tabs defaultValue="results" className="space-y-4 md:space-y-6">
+          <TabsList className="grid w-full grid-cols-2 max-w-md h-auto">
+            <TabsTrigger value="results" className="text-xs sm:text-sm py-2">
+              <span className="hidden sm:inline">Results Table</span>
+              <span className="sm:hidden">Results</span>
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="text-xs sm:text-sm py-2">
+              Analytics
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="results" className="space-y-6">
+          <TabsContent value="results" className="space-y-4 md:space-y-6">
             {/* Filters */}
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Filter className="h-5 w-5 mr-2" />
+              <CardHeader className="p-4 md:p-6">
+                <CardTitle className="flex items-center text-base md:text-lg">
+                  <Filter className="h-4 w-4 md:h-5 md:w-5 mr-2" />
                   Filters & Search
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <CardContent className="p-4 md:p-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Search</label>
                     <div className="flex space-x-2">
@@ -547,7 +569,7 @@ export default function AdminResultsPage() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="analytics" className="space-y-6">
+          <TabsContent value="analytics" className="space-y-4 md:space-y-6">
             {analytics && (
               <>
                 {/* Grade Distribution */}

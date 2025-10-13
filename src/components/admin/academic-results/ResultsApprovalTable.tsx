@@ -3,20 +3,20 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
@@ -215,7 +215,8 @@ export function ResultsApprovalTable({
 
   return (
     <>
-      <div className="overflow-x-auto">
+      {/* Desktop Table View */}
+      <div className="hidden md:block overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
@@ -304,6 +305,101 @@ export function ResultsApprovalTable({
             ))}
           </TableBody>
         </Table>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="md:hidden space-y-4">
+        {results.map(result => (
+          <div
+            key={result.id}
+            className="bg-white border border-gray-200 rounded-lg p-4 space-y-3"
+          >
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="font-semibold text-gray-900">{result.studentName}</p>
+                <p className="text-sm text-gray-500">{result.regNumber}</p>
+              </div>
+              {getStatusBadge(result.status)}
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <div>
+                <p className="text-gray-500">Class</p>
+                <p className="font-medium">{result.className}</p>
+              </div>
+              <div>
+                <p className="text-gray-500">Subject</p>
+                <p className="font-medium">{result.subject}</p>
+              </div>
+              <div>
+                <p className="text-gray-500">Teacher</p>
+                <p className="font-medium">{result.teacherName}</p>
+              </div>
+              <div>
+                <p className="text-gray-500">Term/Session</p>
+                <p className="font-medium">{result.term}</p>
+                <p className="text-xs text-gray-500">{result.session}</p>
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center pt-2 border-t">
+              <div className="flex gap-4 text-sm">
+                <div>
+                  <p className="text-gray-500">CA</p>
+                  <p className="font-semibold">{result.caScore.toFixed(1)}</p>
+                </div>
+                <div>
+                  <p className="text-gray-500">Exam</p>
+                  <p className="font-semibold">{result.examScore.toFixed(1)}</p>
+                </div>
+                <div>
+                  <p className="text-gray-500">Total</p>
+                  <p className="font-semibold text-lg">{result.totalScore.toFixed(1)}</p>
+                </div>
+                <div>
+                  <p className="text-gray-500">Grade</p>
+                  <Badge className={getGradeColor(result.actualGrade)}>
+                    {result.actualGrade}
+                  </Badge>
+                </div>
+              </div>
+            </div>
+
+            {result.status === 'SUBMITTED' && (
+              <div className="flex gap-2 pt-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleApproveClick(result)}
+                  className="flex-1 text-green-600 hover:bg-green-50"
+                >
+                  <CheckCircle className="h-4 w-4 mr-1" />
+                  Approve
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleRejectClick(result)}
+                  className="flex-1 text-red-600 hover:bg-red-50"
+                >
+                  <XCircle className="h-4 w-4 mr-1" />
+                  Reject
+                </Button>
+              </div>
+            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full"
+              onClick={() => {
+                setSelectedResult(result);
+              }}
+            >
+              <Eye className="h-4 w-4 mr-2" />
+              View Details
+            </Button>
+          </div>
+        ))}
       </div>
 
       <Dialog open={showApproveDialog} onOpenChange={setShowApproveDialog}>

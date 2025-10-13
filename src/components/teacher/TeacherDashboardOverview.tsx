@@ -1,20 +1,18 @@
 'use client';
 
 import {
-  AlertCircle,
-  Bell,
-  BookOpen,
-  Calendar,
-  CheckCircle,
-  ClipboardList,
-  Clock,
-  Eye,
-  FileText,
-  MessageSquare,
-  Plus,
-  TrendingUp,
-  Trophy,
-  Users,
+    AlertCircle,
+    BookOpen,
+    Calendar,
+    ClipboardList,
+    Clock,
+    Eye,
+    FileText,
+    MessageSquare,
+    Plus,
+    TrendingUp,
+    Trophy,
+    Users,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
@@ -22,11 +20,11 @@ import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from '../ui/select';
 import { StatsCard } from './StatsCard';
 
@@ -237,20 +235,20 @@ export function TeacherDashboardOverview() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Header with Context Selector */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
             Teacher Dashboard
           </h1>
-          <p className="text-gray-600 mt-1">
+          <p className="text-sm sm:text-base text-gray-600 mt-1">
             Welcome back! Here&apos;s your teaching overview.
           </p>
         </div>
-        <div className="mt-4 sm:mt-0 flex items-center space-x-4">
+        <div className="flex items-center">
           <Select value={selectedContext} onValueChange={setSelectedContext}>
-            <SelectTrigger className="w-48">
+            <SelectTrigger className="w-full sm:w-64">
               <SelectValue placeholder="Select class/subject" />
             </SelectTrigger>
             <SelectContent>
@@ -265,7 +263,7 @@ export function TeacherDashboardOverview() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         <StatsCard
           title="Total Students"
           value={stats.totalStudents}
@@ -303,15 +301,15 @@ export function TeacherDashboardOverview() {
       </div>
 
       {/* Performance Overview */}
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-4 md:gap-6 md:grid-cols-2">
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <TrendingUp className="h-5 w-5" />
+          <CardHeader className="p-4 md:p-6">
+            <CardTitle className="flex items-center space-x-2 text-base md:text-lg">
+              <TrendingUp className="h-4 w-4 md:h-5 md:w-5" />
               <span>Class Performance</span>
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 md:p-6">
             <div className="space-y-4">
               <div>
                 <div className="flex justify-between items-center mb-2">
@@ -346,38 +344,38 @@ export function TeacherDashboardOverview() {
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Bell className="h-5 w-5" />
+          <CardHeader className="p-4 md:p-6">
+            <CardTitle className="flex items-center space-x-2 text-base md:text-lg">
+              <Plus className="h-4 w-4 md:h-5 md:w-5" />
               <span>Quick Actions</span>
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-3">
-              <Button className="flex flex-col items-center space-y-2 h-auto py-4">
-                <Plus className="h-5 w-5" />
-                <span className="text-sm">Create Exam</span>
+          <CardContent className="p-4 md:p-6">
+            <div className="grid grid-cols-2 gap-2 md:gap-3">
+              <Button className="flex flex-col items-center space-y-1 md:space-y-2 h-auto py-3 md:py-4">
+                <Plus className="h-4 w-4 md:h-5 md:w-5" />
+                <span className="text-xs md:text-sm">Create Exam</span>
               </Button>
               <Button
                 variant="outline"
-                className="flex flex-col items-center space-y-2 h-auto py-4"
+                className="flex flex-col items-center space-y-1 md:space-y-2 h-auto py-3 md:py-4"
               >
-                <ClipboardList className="h-5 w-5" />
-                <span className="text-sm">New Assignment</span>
+                <ClipboardList className="h-4 w-4 md:h-5 md:w-5" />
+                <span className="text-xs md:text-sm">Assignment</span>
               </Button>
               <Button
                 variant="outline"
-                className="flex flex-col items-center space-y-2 h-auto py-4"
+                className="flex flex-col items-center space-y-1 md:space-y-2 h-auto py-3 md:py-4"
               >
-                <FileText className="h-5 w-5" />
-                <span className="text-sm">Lesson Plan</span>
+                <FileText className="h-4 w-4 md:h-5 md:w-5" />
+                <span className="text-xs md:text-sm">Lesson Plan</span>
               </Button>
               <Button
                 variant="outline"
-                className="flex flex-col items-center space-y-2 h-auto py-4"
+                className="flex flex-col items-center space-y-1 md:space-y-2 h-auto py-3 md:py-4"
               >
-                <MessageSquare className="h-5 w-5" />
-                <span className="text-sm">Send Message</span>
+                <MessageSquare className="h-4 w-4 md:h-5 md:w-5" />
+                <span className="text-xs md:text-sm">Message</span>
               </Button>
             </div>
           </CardContent>
@@ -385,16 +383,16 @@ export function TeacherDashboardOverview() {
       </div>
 
       {/* Main Dashboard Widgets */}
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-4 md:gap-6 lg:grid-cols-3">
         {/* Today's Schedule */}
         <Card className="lg:col-span-1">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Calendar className="h-5 w-5" />
+          <CardHeader className="p-4 md:p-6">
+            <CardTitle className="flex items-center space-x-2 text-base md:text-lg">
+              <Calendar className="h-4 w-4 md:h-5 md:w-5" />
               <span>Today&apos;s Schedule</span>
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 md:p-6">
             <div className="space-y-4">
               {todaySchedule.map(item => (
                 <div
@@ -424,13 +422,13 @@ export function TeacherDashboardOverview() {
 
         {/* Pending Tasks */}
         <Card className="lg:col-span-1">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <AlertCircle className="h-5 w-5" />
+          <CardHeader className="p-4 md:p-6">
+            <CardTitle className="flex items-center space-x-2 text-base md:text-lg">
+              <AlertCircle className="h-4 w-4 md:h-5 md:w-5" />
               <span>Pending Tasks</span>
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 md:p-6">
             <div className="space-y-4">
               {pendingTasks.map(task => (
                 <div
@@ -460,13 +458,13 @@ export function TeacherDashboardOverview() {
 
         {/* Recent Student Activity */}
         <Card className="lg:col-span-1">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Users className="h-5 w-5" />
+          <CardHeader className="p-4 md:p-6">
+            <CardTitle className="flex items-center space-x-2 text-base md:text-lg">
+              <Users className="h-4 w-4 md:h-5 md:w-5" />
               <span>Recent Activity</span>
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 md:p-6">
             <div className="space-y-4">
               {recentActivity.map(activity => (
                 <div key={activity.id} className="flex items-center space-x-3">
@@ -497,46 +495,6 @@ export function TeacherDashboardOverview() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Announcements */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Bell className="h-5 w-5" />
-            <span>Announcements</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <div className="flex items-start space-x-3 p-4 bg-blue-50 rounded-lg">
-              <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />
-              <div>
-                <p className="text-sm font-medium text-blue-900">
-                  New grading system implementation
-                </p>
-                <p className="text-sm text-blue-700 mt-1">
-                  The new automated grading system will be rolled out next week.
-                  Please review the guidelines.
-                </p>
-                <p className="text-xs text-blue-600 mt-2">2 hours ago</p>
-              </div>
-            </div>
-            <div className="flex items-start space-x-3 p-4 bg-green-50 rounded-lg">
-              <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
-              <div>
-                <p className="text-sm font-medium text-green-900">
-                  Term examination schedule released
-                </p>
-                <p className="text-sm text-green-700 mt-1">
-                  The examination timetable for this term has been published.
-                  Check your assigned slots.
-                </p>
-                <p className="text-xs text-green-600 mt-2">1 day ago</p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

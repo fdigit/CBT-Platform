@@ -3,13 +3,14 @@
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from '@/components/ui/select';
-import { Filter, RotateCcw } from 'lucide-react';
+import { ChevronDown, ChevronUp, Filter, RotateCcw } from 'lucide-react';
+import { useState } from 'react';
 
 interface FilterOptions {
   classId?: string;
@@ -39,6 +40,8 @@ export function ResultsFilters({
   terms = [],
   sessions = [],
 }: ResultsFiltersProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   const handleReset = () => {
     onFilterChange({});
   };
@@ -46,17 +49,27 @@ export function ResultsFilters({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-medium flex items-center">
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="flex items-center text-lg font-medium md:cursor-default"
+        >
           <Filter className="h-5 w-5 mr-2" />
           Filters
-        </h3>
+          <span className="md:hidden ml-2">
+            {isExpanded ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )}
+          </span>
+        </button>
         <Button variant="outline" size="sm" onClick={handleReset}>
-          <RotateCcw className="h-4 w-4 mr-2" />
-          Reset
+          <RotateCcw className="h-4 w-4 md:mr-2" />
+          <span className="hidden md:inline">Reset</span>
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 ${isExpanded ? 'block' : 'hidden md:grid'}`}>
         <div className="space-y-2">
           <Label>Class</Label>
           <Select

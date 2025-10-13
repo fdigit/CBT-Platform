@@ -1,21 +1,20 @@
 'use client';
 
-import { useState } from 'react';
-import { useSession, signOut } from 'next-auth/react';
+import { LogOut, Search, Settings, User } from 'lucide-react';
+import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
+import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { Button } from '../ui/button';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
-import { Badge } from '../ui/badge';
-import { Search, Bell, User, LogOut, Settings } from 'lucide-react';
+import { Input } from '../ui/input';
 import { NotificationDropdown } from './NotificationDropdown';
 
 interface TopNavbarProps {
@@ -43,10 +42,10 @@ export function TopNavbar({ className }: TopNavbarProps) {
     <header
       className={`bg-white border-b border-gray-200 px-4 py-3 ${className}`}
     >
-      <div className="flex items-center justify-between">
-        {/* Search Bar */}
-        <div className="flex-1 max-w-md">
-          <form onSubmit={handleSearch} className="relative">
+      <div className="flex items-center justify-between gap-2">
+        {/* Search Bar - Hidden on mobile */}
+        <div className="hidden md:flex flex-1 max-w-md">
+          <form onSubmit={handleSearch} className="relative w-full">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
               type="text"
@@ -58,8 +57,15 @@ export function TopNavbar({ className }: TopNavbarProps) {
           </form>
         </div>
 
+        {/* Mobile Search Icon */}
+        <div className="flex md:hidden flex-1">
+          <Button variant="ghost" size="icon">
+            <Search className="h-4 w-4 text-gray-400" />
+          </Button>
+        </div>
+
         {/* Right side items */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2 md:space-x-4">
           {/* Notifications - Only show for super admin */}
           {session?.user?.role === 'SUPER_ADMIN' && <NotificationDropdown />}
 
