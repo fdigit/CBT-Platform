@@ -13,7 +13,9 @@ export interface NotificationData {
     | 'LESSON_PLAN_NEEDS_REVISION'
     | 'SCHOOL_REGISTRATION'
     | 'SCHOOL_APPROVED'
-    | 'SCHOOL_REJECTED';
+    | 'SCHOOL_REJECTED'
+    | 'ANNOUNCEMENT_POSTED'
+    | 'ANNOUNCEMENT_COMMENT_ADDED';
   userId: string;
   metadata?: Record<string, unknown>;
 }
@@ -290,4 +292,47 @@ export async function createSchoolApprovalNotification(
       rejectionReason,
     },
   });
+}
+
+// Announcement-related notification helpers
+export async function notifyAboutNewAnnouncement(
+  announcementId: string,
+  authorName: string,
+  title: string,
+  targetUserIds: string[]
+) {
+  const notifications: NotificationData[] = targetUserIds.map(userId => ({
+    title: 'New Announcement',
+    message: `${authorName} posted a new announcement: "${title}"`,
+    type: 'ANNOUNCEMENT_POSTED',
+    userId,
+    metadata: {
+      announcementId,
+      authorName,
+      title,
+    },
+  }));
+
+  return createBulkNotifications(notifications);
+}
+
+export async function notifyAboutAnnouncementComment(
+  announcementId: string,
+  commentAuthorName: string,
+  commentContent: string,
+  targetUserIds: string[]
+) {
+  const notifications: NotificationData[] = targetUserIds.map(userId => ({
+    title: 'New Comment on Announcement',
+    message: `${commentAuthorName} commented on an announcement: "${commentContent.substring(0, 100)}${commentContent.length > 100 ? '...' : ''}"`,
+    type: 'ANNOUNCEMENT_COMMENT_ADDED',
+    userId,
+    metadata: {
+      announcementId,
+      commentAuthorName,
+      commentContent,
+    },
+  }));
+
+  return createBulkNotifications(notifications);
 }

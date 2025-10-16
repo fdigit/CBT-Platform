@@ -1,23 +1,24 @@
 'use client';
 
 import {
-  Award,
-  BarChart3,
-  BookOpen,
-  ChevronLeft,
-  ChevronRight,
-  CreditCard,
-  FileText,
-  GraduationCap,
-  Layers,
-  LayoutDashboard,
-  Library,
-  Menu,
-  School,
-  Settings,
-  Trophy,
-  Users,
-  X,
+    Award,
+    BarChart3,
+    BookOpen,
+    ChevronLeft,
+    ChevronRight,
+    CreditCard,
+    FileText,
+    GraduationCap,
+    Layers,
+    LayoutDashboard,
+    Library,
+    Megaphone,
+    Menu,
+    School,
+    Settings,
+    Trophy,
+    Users,
+    X,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -55,6 +56,11 @@ const navigationItems = [
     name: 'Subjects',
     href: '/school/subjects',
     icon: Library,
+  },
+  {
+    name: 'Announcements',
+    href: '/school/announcements',
+    icon: Megaphone,
   },
   {
     name: 'Lesson Plans',

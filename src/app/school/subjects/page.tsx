@@ -5,21 +5,21 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { SchoolDashboardLayout } from '../../../components/school/SchoolDashboardLayout';
 import {
-    AssignClassesForm,
-    AssignTeachersForm,
-    ClassSubjectsTable,
-    CreateSubjectForm,
-    EditSubjectModal,
-    SubjectsHeader,
-    SubjectsTable,
-    TeacherSubjectsTable,
+  AssignClassesForm,
+  AssignTeachersForm,
+  ClassSubjectsTable,
+  CreateSubjectForm,
+  EditSubjectModal,
+  SubjectsHeader,
+  SubjectsTable,
+  TeacherSubjectsTable,
 } from '../../../components/school/subjects';
 import type { CreateSubjectFormRef } from '../../../components/school/subjects/CreateSubjectForm';
 import {
-    Tabs,
-    TabsContent,
-    TabsList,
-    TabsTrigger,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
 } from '../../../components/ui/tabs';
 import { useToast } from '../../../hooks/use-toast';
 

@@ -258,6 +258,8 @@ export enum NotificationType {
   SCHOOL_REJECTED = 'SCHOOL_REJECTED',
   PAYMENT_RECEIVED = 'PAYMENT_RECEIVED',
   SYSTEM_ALERT = 'SYSTEM_ALERT',
+  ANNOUNCEMENT_POSTED = 'ANNOUNCEMENT_POSTED',
+  ANNOUNCEMENT_COMMENT_ADDED = 'ANNOUNCEMENT_COMMENT_ADDED',
 }
 
 export interface Notification {
@@ -478,4 +480,137 @@ export interface ResultsAnalytics {
     average: number;
     passRate: number;
   }[];
+}
+
+// ===================================
+// Announcements Module Types
+// ===================================
+
+export enum TargetAudience {
+  STUDENTS = 'STUDENTS',
+  TEACHERS = 'TEACHERS',
+  ALL = 'ALL',
+}
+
+export interface Announcement {
+  id: string;
+  title: string;
+  content: string;
+  authorId: string;
+  authorRole: Role;
+  schoolId: string;
+  targetAudience: TargetAudience;
+  classIds?: string[];
+  subjectIds?: string[];
+  recipientIds?: string[]; // Array of specific user IDs when using individual selection
+  isPinned: boolean;
+  isPublished: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  
+  // Relations (populated)
+  author?: User;
+  school?: School;
+  comments?: AnnouncementComment[];
+  _count?: {
+    comments: number;
+  };
+}
+
+export interface AnnouncementComment {
+  id: string;
+  content: string;
+  announcementId: string;
+  authorId: string;
+  parentCommentId?: string;
+  isEdited: boolean;
+  editedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  
+  // Relations (populated)
+  announcement?: Announcement;
+  author?: User;
+  parentComment?: AnnouncementComment;
+  replies?: AnnouncementComment[];
+  _count?: {
+    replies: number;
+  };
+}
+
+// ===================================
+// Announcement API Request/Response Types
+// ===================================
+
+export interface CreateAnnouncementRequest {
+  title: string;
+  content: string;
+  targetAudience: TargetAudience;
+  classIds?: string[];
+  subjectIds?: string[];
+  recipientIds?: string[]; // Specific user IDs when using individual selection
+  isPinned?: boolean;
+}
+
+export interface UpdateAnnouncementRequest {
+  title?: string;
+  content?: string;
+  targetAudience?: TargetAudience;
+  classIds?: string[];
+  subjectIds?: string[];
+  recipientIds?: string[]; // Specific user IDs when using individual selection
+  isPinned?: boolean;
+  isPublished?: boolean;
+}
+
+export interface CreateCommentRequest {
+  content: string;
+  parentCommentId?: string;
+}
+
+export interface UpdateCommentRequest {
+  content: string;
+}
+
+export interface AnnouncementListResponse {
+  announcements: Announcement[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
+
+export interface CommentListResponse {
+  comments: AnnouncementComment[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
+
+// ===================================
+// User Selection Types
+// ===================================
+
+export interface UserListItem {
+  id: string;
+  name: string;
+  email: string;
+  role: Role;
+  className?: string; // For students
+  section?: string;
+}
+
+export interface UserListResponse {
+  users: UserListItem[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
 }

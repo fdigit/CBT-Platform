@@ -1,25 +1,26 @@
 'use client';
 
-import { useState } from 'react';
+import {
+    BarChart3,
+    BookOpen,
+    ChevronLeft,
+    ChevronRight,
+    ClipboardList,
+    GraduationCap,
+    HelpCircle,
+    LayoutDashboard,
+    Megaphone,
+    Menu,
+    User,
+    X,
+} from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useState } from 'react';
 import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
 import { Separator } from '../ui/separator';
-import {
-  LayoutDashboard,
-  BookOpen,
-  BarChart3,
-  User,
-  HelpCircle,
-  Menu,
-  X,
-  ChevronLeft,
-  ChevronRight,
-  GraduationCap,
-  ClipboardList,
-} from 'lucide-react';
 
 interface StudentSidebarProps {
   className?: string;
@@ -35,6 +36,11 @@ const navigationItems = [
     name: 'Assignments & Notes',
     href: '/student/assignments',
     icon: ClipboardList,
+  },
+  {
+    name: 'Announcements',
+    href: '/student/announcements',
+    icon: Megaphone,
   },
   {
     name: 'My Exams',

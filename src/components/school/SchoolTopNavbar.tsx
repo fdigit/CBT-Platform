@@ -1,21 +1,20 @@
 'use client';
 
-import { useState } from 'react';
-import { useSession, signOut } from 'next-auth/react';
+import { LogOut, School, Search, Settings, User } from 'lucide-react';
+import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
+import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { Button } from '../ui/button';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
-import { Badge } from '../ui/badge';
-import { Search, Bell, User, LogOut, Settings, School } from 'lucide-react';
+import { Input } from '../ui/input';
 
 interface SchoolTopNavbarProps {
   className?: string;
@@ -72,39 +71,6 @@ export function SchoolTopNavbar({ className }: SchoolTopNavbarProps) {
 
         {/* Right side items */}
         <div className="flex items-center space-x-4">
-          {/* Notifications */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="relative">
-                <Bell className="h-5 w-5" />
-                <Badge
-                  variant="destructive"
-                  className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center"
-                >
-                  2
-                </Badge>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-80">
-              <DropdownMenuLabel>Notifications</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="flex flex-col items-start p-3">
-                <div className="font-medium">New student registration</div>
-                <div className="text-sm text-gray-500">
-                  John Doe has registered for the Mathematics exam
-                </div>
-                <div className="text-xs text-gray-400 mt-1">5 minutes ago</div>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="flex flex-col items-start p-3">
-                <div className="font-medium">Exam completed</div>
-                <div className="text-sm text-gray-500">
-                  English Literature exam has been completed by 25 students
-                </div>
-                <div className="text-xs text-gray-400 mt-1">1 hour ago</div>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
           {/* Profile Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

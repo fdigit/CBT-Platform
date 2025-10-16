@@ -1,55 +1,51 @@
 'use client';
 
-import { useState } from 'react';
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from '../../ui/sheet';
-import { Button } from '../../ui/button';
-import { Badge } from '../../ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
-import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
-import { Separator } from '../../ui/separator';
-import { Progress } from '../../ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '../../ui/alert-dialog';
-import {
-  Edit,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
-  GraduationCap,
-  Users,
-  BookOpen,
-  Clock,
-  Award,
-  AlertTriangle,
-  UserCheck,
-  UserX,
-  Key,
-  Settings,
-  BarChart3,
-  TrendingUp,
-  TrendingDown,
-  Activity,
-} from 'lucide-react';
-import { format } from 'date-fns';
-import { cn } from '../../../lib/utils';
 import { Teacher } from '@/types/models';
+import { format } from 'date-fns';
+import {
+    Activity,
+    BarChart3,
+    BookOpen,
+    Calendar,
+    Clock,
+    Edit,
+    GraduationCap,
+    Key,
+    Mail,
+    MapPin,
+    Phone,
+    Settings,
+    UserCheck,
+    Users,
+    UserX
+} from 'lucide-react';
+import { useState } from 'react';
+import { cn } from '../../../lib/utils';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '../../ui/alert-dialog';
+import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
+import { Badge } from '../../ui/badge';
+import { Button } from '../../ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
+import { Progress } from '../../ui/progress';
+import { Separator } from '../../ui/separator';
+import {
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle,
+} from '../../ui/sheet';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
 import { AssignClassesModal } from './AssignClassesModal';
 
 interface TeacherProfileDrawerProps {
@@ -112,12 +108,12 @@ export function TeacherProfileDrawer({
     console.log('Reset password for teacher:', teacher.id);
   };
 
-  // Mock performance data (in real app, this would come from API)
+  // Performance data will be fetched from API when needed
   const performanceData = {
-    averageStudentScore: 78.5,
-    classesManaged: 0, // Mock data - classCount not available in Teacher interface
-    studentsCount: 120, // Mock data
-    attendanceRate: 95,
+    averageStudentScore: 0,
+    classesManaged: 0,
+    studentsCount: 0,
+    attendanceRate: 0,
     lastLoginDays: teacher.lastLogin
       ? Math.floor(
           (new Date().getTime() - new Date(teacher.lastLogin).getTime()) /

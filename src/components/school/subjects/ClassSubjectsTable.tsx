@@ -7,19 +7,19 @@ import { Badge } from '../../ui/badge';
 import { Button } from '../../ui/button';
 import { Card } from '../../ui/card';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from '../../ui/dropdown-menu';
 import { Input } from '../../ui/input';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '../../ui/table';
 
 interface ClassSubjectAssignment {
@@ -317,18 +317,20 @@ export function ClassSubjectsTable({
           {pagination && pagination.totalPages > 1 && (
             <div className="flex items-center justify-between pt-2">
               <div className="text-sm text-gray-600">
-                Showing {(pagination.page - 1) * pagination.limit + 1}
-                -
+                Showing {(pagination.page - 1) * pagination.limit + 1}-
                 {Math.min(
                   pagination.page * pagination.limit,
                   pagination.totalCount
-                )} of {pagination.totalCount}
+                )}{' '}
+                of {pagination.totalCount}
               </div>
               <div className="flex gap-2">
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => onPageChange && onPageChange(pagination.page - 1)}
+                  onClick={() =>
+                    onPageChange && onPageChange(pagination.page - 1)
+                  }
                   disabled={pagination.page <= 1}
                 >
                   Previous
@@ -336,7 +338,9 @@ export function ClassSubjectsTable({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => onPageChange && onPageChange(pagination.page + 1)}
+                  onClick={() =>
+                    onPageChange && onPageChange(pagination.page + 1)
+                  }
                   disabled={pagination.page >= pagination.totalPages}
                 >
                   Next
