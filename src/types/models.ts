@@ -18,6 +18,8 @@ export enum QuestionType {
   MCQ = 'MCQ',
   TRUE_FALSE = 'TRUE_FALSE',
   ESSAY = 'ESSAY',
+  SHORT_ANSWER = 'SHORT_ANSWER',
+  FILL_IN_BLANK = 'FILL_IN_BLANK',
 }
 
 export enum PaymentStatus {

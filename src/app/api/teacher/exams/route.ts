@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
 import { getDynamicStatus } from '@/lib/exam-status';
+import { prisma } from '@/lib/prisma';
+import { getServerSession } from 'next-auth';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   try {
@@ -270,6 +270,19 @@ export async function POST(request: NextRequest) {
         {
           message:
             'Missing required fields: title, startTime, endTime, duration, questions',
+        },
+        { status: 400 }
+      );
+    }
+
+    // Validate question types
+    const validQuestionTypes = ['MCQ', 'TRUE_FALSE', 'ESSAY', 'SHORT_ANSWER', 'FILL_IN_BLANK'];
+    const invalidQuestions = questions.filter((q: any) => !validQuestionTypes.includes(q.type));
+    
+    if (invalidQuestions.length > 0) {
+      return NextResponse.json(
+        { 
+          error: `Invalid question types found: ${invalidQuestions.map((q: any) => q.type).join(', ')}. Valid types are: ${validQuestionTypes.join(', ')}` 
         },
         { status: 400 }
       );
