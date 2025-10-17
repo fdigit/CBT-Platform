@@ -6,7 +6,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
 const createCommentSchema = z.object({
-  content: z.string().min(1, 'Comment content is required').max(1000, 'Comment too long'),
+  content: z
+    .string()
+    .min(1, 'Comment content is required')
+    .max(1000, 'Comment too long'),
   parentCommentId: z.string().optional(),
 });
 
@@ -96,20 +99,30 @@ export async function POST(
       // Apply application-level filtering for targeted announcements
       if (announcement && announcement.targetAudience !== 'ALL') {
         const announcementAny = announcement as any;
-        
+
         // Check if student is in targeted classes
-        if (announcementAny.classIds && Array.isArray(announcementAny.classIds)) {
+        if (
+          announcementAny.classIds &&
+          Array.isArray(announcementAny.classIds)
+        ) {
           if (!announcementAny.classIds.includes(student.classId)) {
             announcement = null;
           }
         }
 
         // Check if student's subjects are in targeted subjects
-        if (announcement && announcementAny.subjectIds && Array.isArray(announcementAny.subjectIds) &&
-            student.class?.subjects && student.class.subjects.length > 0) {
-          const studentSubjectIds = student.class.subjects.map(cs => cs.subjectId);
-          const hasMatchingSubject = announcementAny.subjectIds.some((subjectId: any) =>
-            studentSubjectIds.includes(subjectId)
+        if (
+          announcement &&
+          announcementAny.subjectIds &&
+          Array.isArray(announcementAny.subjectIds) &&
+          student.class?.subjects &&
+          student.class.subjects.length > 0
+        ) {
+          const studentSubjectIds = student.class.subjects.map(
+            cs => cs.subjectId
+          );
+          const hasMatchingSubject = announcementAny.subjectIds.some(
+            (subjectId: any) => studentSubjectIds.includes(subjectId)
           );
           if (!hasMatchingSubject) {
             announcement = null;
@@ -117,7 +130,11 @@ export async function POST(
         }
 
         // Check if student is in recipientIds
-        if (announcement && announcementAny.recipientIds && Array.isArray(announcementAny.recipientIds)) {
+        if (
+          announcement &&
+          announcementAny.recipientIds &&
+          Array.isArray(announcementAny.recipientIds)
+        ) {
           if (!announcementAny.recipientIds.includes(student.userId)) {
             announcement = null;
           }
@@ -247,7 +264,7 @@ export async function POST(
     });
   } catch (error) {
     console.error('Error creating comment:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Validation error', details: error.errors },
@@ -340,20 +357,30 @@ export async function GET(
       // Apply application-level filtering for targeted announcements
       if (announcement && announcement.targetAudience !== 'ALL') {
         const announcementAny = announcement as any;
-        
+
         // Check if student is in targeted classes
-        if (announcementAny.classIds && Array.isArray(announcementAny.classIds)) {
+        if (
+          announcementAny.classIds &&
+          Array.isArray(announcementAny.classIds)
+        ) {
           if (!announcementAny.classIds.includes(student.classId)) {
             announcement = null;
           }
         }
 
         // Check if student's subjects are in targeted subjects
-        if (announcement && announcementAny.subjectIds && Array.isArray(announcementAny.subjectIds) &&
-            student.class?.subjects && student.class.subjects.length > 0) {
-          const studentSubjectIds = student.class.subjects.map(cs => cs.subjectId);
-          const hasMatchingSubject = announcementAny.subjectIds.some((subjectId: any) =>
-            studentSubjectIds.includes(subjectId)
+        if (
+          announcement &&
+          announcementAny.subjectIds &&
+          Array.isArray(announcementAny.subjectIds) &&
+          student.class?.subjects &&
+          student.class.subjects.length > 0
+        ) {
+          const studentSubjectIds = student.class.subjects.map(
+            cs => cs.subjectId
+          );
+          const hasMatchingSubject = announcementAny.subjectIds.some(
+            (subjectId: any) => studentSubjectIds.includes(subjectId)
           );
           if (!hasMatchingSubject) {
             announcement = null;
@@ -361,7 +388,11 @@ export async function GET(
         }
 
         // Check if student is in recipientIds
-        if (announcement && announcementAny.recipientIds && Array.isArray(announcementAny.recipientIds)) {
+        if (
+          announcement &&
+          announcementAny.recipientIds &&
+          Array.isArray(announcementAny.recipientIds)
+        ) {
           if (!announcementAny.recipientIds.includes(student.userId)) {
             announcement = null;
           }
@@ -480,6 +511,3 @@ export async function GET(
     );
   }
 }
-
-
-

@@ -5,8 +5,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
 const updateAnnouncementSchema = z.object({
-  title: z.string().min(1, 'Title is required').max(200, 'Title too long').optional(),
-  content: z.string().min(1, 'Content is required').max(5000, 'Content too long').optional(),
+  title: z
+    .string()
+    .min(1, 'Title is required')
+    .max(200, 'Title too long')
+    .optional(),
+  content: z
+    .string()
+    .min(1, 'Content is required')
+    .max(5000, 'Content too long')
+    .optional(),
   targetAudience: z.enum(['STUDENTS', 'TEACHERS', 'ALL']).optional(),
   classIds: z.array(z.string()).optional(),
   subjectIds: z.array(z.string()).optional(),
@@ -167,7 +175,10 @@ export async function PATCH(
 
       if (invalidClassIds.length > 0) {
         return NextResponse.json(
-          { error: 'You are not authorized to target some of the specified classes' },
+          {
+            error:
+              'You are not authorized to target some of the specified classes',
+          },
           { status: 403 }
         );
       }
@@ -189,7 +200,10 @@ export async function PATCH(
 
       if (invalidSubjectIds.length > 0) {
         return NextResponse.json(
-          { error: 'You are not authorized to target some of the specified subjects' },
+          {
+            error:
+              'You are not authorized to target some of the specified subjects',
+          },
           { status: 403 }
         );
       }
@@ -224,7 +238,7 @@ export async function PATCH(
     });
   } catch (error) {
     console.error('Error updating announcement:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Validation error', details: error.errors },
@@ -296,6 +310,3 @@ export async function DELETE(
     );
   }
 }
-
-
-

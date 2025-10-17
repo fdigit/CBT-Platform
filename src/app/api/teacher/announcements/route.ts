@@ -7,7 +7,10 @@ import { z } from 'zod';
 
 const createAnnouncementSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200, 'Title too long'),
-  content: z.string().min(1, 'Content is required').max(5000, 'Content too long'),
+  content: z
+    .string()
+    .min(1, 'Content is required')
+    .max(5000, 'Content too long'),
   targetAudience: z.enum(['STUDENTS', 'TEACHERS', 'ALL']),
   classIds: z.array(z.string()).optional(),
   subjectIds: z.array(z.string()).optional(),
@@ -54,7 +57,10 @@ export async function POST(request: NextRequest) {
 
       if (invalidClassIds.length > 0) {
         return NextResponse.json(
-          { error: 'You are not authorized to post announcements to some of the specified classes' },
+          {
+            error:
+              'You are not authorized to post announcements to some of the specified classes',
+          },
           { status: 403 }
         );
       }
@@ -76,7 +82,10 @@ export async function POST(request: NextRequest) {
 
       if (invalidSubjectIds.length > 0) {
         return NextResponse.json(
-          { error: 'You are not authorized to post announcements to some of the specified subjects' },
+          {
+            error:
+              'You are not authorized to post announcements to some of the specified subjects',
+          },
           { status: 403 }
         );
       }
@@ -91,7 +100,7 @@ export async function POST(request: NextRequest) {
       });
 
       const classIds = teacherClassIds.map(tc => tc.classId);
-      
+
       if (classIds.length === 0) {
         return NextResponse.json(
           { error: 'You are not assigned to any classes' },
@@ -116,7 +125,10 @@ export async function POST(request: NextRequest) {
 
       if (invalidRecipientIds.length > 0) {
         return NextResponse.json(
-          { error: 'You can only send announcements to students in your assigned classes' },
+          {
+            error:
+              'You can only send announcements to students in your assigned classes',
+          },
           { status: 403 }
         );
       }
@@ -160,7 +172,10 @@ export async function POST(request: NextRequest) {
       targetUserIds = validatedData.recipientIds;
     } else {
       // Otherwise use the existing class/subject/audience logic
-      if (validatedData.targetAudience === 'STUDENTS' || validatedData.targetAudience === 'ALL') {
+      if (
+        validatedData.targetAudience === 'STUDENTS' ||
+        validatedData.targetAudience === 'ALL'
+      ) {
         const studentWhere: any = {
           schoolId: teacher.schoolId,
           status: 'ACTIVE',
@@ -178,7 +193,10 @@ export async function POST(request: NextRequest) {
         targetUserIds.push(...students.map(s => s.userId));
       }
 
-      if (validatedData.targetAudience === 'TEACHERS' || validatedData.targetAudience === 'ALL') {
+      if (
+        validatedData.targetAudience === 'TEACHERS' ||
+        validatedData.targetAudience === 'ALL'
+      ) {
         const teachers = await prisma.teacher.findMany({
           where: {
             schoolId: teacher.schoolId,
@@ -207,7 +225,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error creating announcement:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Validation error', details: error.errors },
@@ -311,10 +329,7 @@ export async function GET(request: NextRequest) {
             },
           },
         },
-        orderBy: [
-          { isPinned: 'desc' },
-          { createdAt: 'desc' },
-        ],
+        orderBy: [{ isPinned: 'desc' }, { createdAt: 'desc' }],
         skip: offset,
         take: limit,
       }),
@@ -339,6 +354,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-
-
-

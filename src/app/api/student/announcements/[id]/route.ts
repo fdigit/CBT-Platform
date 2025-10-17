@@ -38,10 +38,7 @@ export async function GET(
 
     // Helper function to handle both null and empty arrays
     const nullOrEmpty = (field: string) => ({
-      OR: [
-        { [field]: { equals: null } },
-        { [field]: { equals: [] } },
-      ],
+      OR: [{ [field]: { equals: null } }, { [field]: { equals: [] } }],
     });
 
     // Build where clause for announcements the student should see
@@ -53,10 +50,7 @@ export async function GET(
         // Announcements targeted to all students (no specific targeting)
         {
           targetAudience: 'STUDENTS',
-          AND: [
-            nullOrEmpty('classIds'),
-            nullOrEmpty('subjectIds'),
-          ],
+          AND: [nullOrEmpty('classIds'), nullOrEmpty('subjectIds')],
         },
         // Announcements targeted to all users
         {
@@ -135,10 +129,12 @@ export async function GET(
       }
 
       // Show announcements targeted to STUDENTS with no specific targeting
-      if (announcement.targetAudience === 'STUDENTS' &&
-          !announcement.classIds &&
-          !announcement.subjectIds &&
-          !announcement.recipientIds) {
+      if (
+        announcement.targetAudience === 'STUDENTS' &&
+        !announcement.classIds &&
+        !announcement.subjectIds &&
+        !announcement.recipientIds
+      ) {
         return true;
       }
 
@@ -150,11 +146,17 @@ export async function GET(
       }
 
       // Check if student's subjects are in targeted subjects
-      if (announcement.subjectIds && Array.isArray(announcement.subjectIds) &&
-          student.class?.subjects && student.class.subjects.length > 0) {
-        const studentSubjectIds = student.class.subjects.map(cs => cs.subjectId);
-        const hasMatchingSubject = announcement.subjectIds.some((subjectId: any) =>
-          studentSubjectIds.includes(subjectId)
+      if (
+        announcement.subjectIds &&
+        Array.isArray(announcement.subjectIds) &&
+        student.class?.subjects &&
+        student.class.subjects.length > 0
+      ) {
+        const studentSubjectIds = student.class.subjects.map(
+          cs => cs.subjectId
+        );
+        const hasMatchingSubject = announcement.subjectIds.some(
+          (subjectId: any) => studentSubjectIds.includes(subjectId)
         );
         if (hasMatchingSubject) {
           return true;
@@ -162,7 +164,10 @@ export async function GET(
       }
 
       // Check if student is in recipientIds
-      if (announcement.recipientIds && Array.isArray(announcement.recipientIds)) {
+      if (
+        announcement.recipientIds &&
+        Array.isArray(announcement.recipientIds)
+      ) {
         if (announcement.recipientIds.includes(student.userId)) {
           return true;
         }
@@ -190,6 +195,3 @@ export async function GET(
     );
   }
 }
-
-
-

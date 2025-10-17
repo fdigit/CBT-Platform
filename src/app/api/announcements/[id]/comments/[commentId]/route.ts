@@ -5,7 +5,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
 const updateCommentSchema = z.object({
-  content: z.string().min(1, 'Comment content is required').max(1000, 'Comment too long'),
+  content: z
+    .string()
+    .min(1, 'Comment content is required')
+    .max(1000, 'Comment too long'),
 });
 
 export async function PATCH(
@@ -70,7 +73,7 @@ export async function PATCH(
     });
   } catch (error) {
     console.error('Error updating comment:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Validation error', details: error.errors },
@@ -131,6 +134,3 @@ export async function DELETE(
     );
   }
 }
-
-
-

@@ -28,7 +28,7 @@ export function CommentForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!content.trim()) {
       toast({
         title: 'Error',
@@ -41,16 +41,19 @@ export function CommentForm({
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`/api/announcements/${announcementId}/comments`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          content: content.trim(),
-          parentCommentId,
-        }),
-      });
+      const response = await fetch(
+        `/api/announcements/${announcementId}/comments`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            content: content.trim(),
+            parentCommentId,
+          }),
+        }
+      );
 
       const data = await response.json();
 
@@ -60,7 +63,7 @@ export function CommentForm({
 
       setContent('');
       onCommentAdded();
-      
+
       toast({
         title: 'Success',
         description: 'Comment added successfully',
@@ -69,7 +72,8 @@ export function CommentForm({
       console.error('Error adding comment:', error);
       toast({
         title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to add comment',
+        description:
+          error instanceof Error ? error.message : 'Failed to add comment',
         variant: 'destructive',
       });
     } finally {
@@ -89,21 +93,21 @@ export function CommentForm({
           Replying to <span className="font-medium">{replyTo}</span>
         </div>
       )}
-      
+
       <Textarea
         value={content}
-        onChange={(e) => setContent(e.target.value)}
+        onChange={e => setContent(e.target.value)}
         placeholder={placeholder}
         className="min-h-[80px] resize-none border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         maxLength={1000}
         disabled={isSubmitting}
       />
-      
+
       <div className="flex items-center justify-between">
         <div className="text-xs text-gray-500">
           {content.length}/1000 characters
         </div>
-        
+
         <div className="flex items-center space-x-2">
           {onCancel && (
             <Button
@@ -116,7 +120,7 @@ export function CommentForm({
               Cancel
             </Button>
           )}
-          
+
           <Button
             type="submit"
             size="sm"
@@ -124,7 +128,11 @@ export function CommentForm({
             className="bg-blue-600 hover:bg-blue-700"
           >
             <Send className="h-4 w-4 mr-2" />
-            {isSubmitting ? 'Posting...' : parentCommentId ? 'Reply' : 'Comment'}
+            {isSubmitting
+              ? 'Posting...'
+              : parentCommentId
+                ? 'Reply'
+                : 'Comment'}
           </Button>
         </div>
       </div>

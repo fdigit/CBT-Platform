@@ -1,18 +1,18 @@
 'use client';
 
 import {
-    BarChart3,
-    BookOpen,
-    ChevronLeft,
-    ChevronRight,
-    ClipboardList,
-    GraduationCap,
-    HelpCircle,
-    LayoutDashboard,
-    Megaphone,
-    Menu,
-    User,
-    X,
+  BarChart3,
+  BookOpen,
+  ChevronLeft,
+  ChevronRight,
+  ClipboardList,
+  GraduationCap,
+  HelpCircle,
+  LayoutDashboard,
+  Megaphone,
+  Menu,
+  User,
+  X,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';

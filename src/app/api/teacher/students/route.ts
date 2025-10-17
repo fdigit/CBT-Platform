@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user || session.user.role !== 'TEACHER') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -23,7 +23,10 @@ export async function GET(request: NextRequest) {
     const schoolId = session.user.schoolId;
 
     if (!schoolId) {
-      return NextResponse.json({ error: 'School ID not found' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'School ID not found' },
+        { status: 400 }
+      );
     }
 
     // Get teacher's assigned classes and subjects
@@ -40,7 +43,10 @@ export async function GET(request: NextRequest) {
     });
 
     if (!teacherProfile) {
-      return NextResponse.json({ error: 'Teacher profile not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Teacher profile not found' },
+        { status: 404 }
+      );
     }
 
     // Get class IDs that teacher is assigned to
@@ -72,7 +78,7 @@ export async function GET(request: NextRequest) {
       const subjectClassIds = teacherProfile.classSubjects
         .filter(cs => cs.subjectId === subjectId)
         .map(cs => cs.classId);
-      
+
       if (subjectClassIds.length > 0) {
         where.StudentProfile.classId = { in: subjectClassIds };
       } else {
@@ -88,7 +94,11 @@ export async function GET(request: NextRequest) {
       where.OR = [
         { name: { contains: search, mode: 'insensitive' } },
         { email: { contains: search, mode: 'insensitive' } },
-        { StudentProfile: { regNumber: { contains: search, mode: 'insensitive' } } },
+        {
+          StudentProfile: {
+            regNumber: { contains: search, mode: 'insensitive' },
+          },
+        },
       ];
     }
 

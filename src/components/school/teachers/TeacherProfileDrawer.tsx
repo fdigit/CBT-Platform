@@ -3,34 +3,34 @@
 import { Teacher } from '@/types/models';
 import { format } from 'date-fns';
 import {
-    Activity,
-    BarChart3,
-    BookOpen,
-    Calendar,
-    Clock,
-    Edit,
-    GraduationCap,
-    Key,
-    Mail,
-    MapPin,
-    Phone,
-    Settings,
-    UserCheck,
-    Users,
-    UserX
+  Activity,
+  BarChart3,
+  BookOpen,
+  Calendar,
+  Clock,
+  Edit,
+  GraduationCap,
+  Key,
+  Mail,
+  MapPin,
+  Phone,
+  Settings,
+  UserCheck,
+  Users,
+  UserX,
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '../../../lib/utils';
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from '../../ui/alert-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
 import { Badge } from '../../ui/badge';
@@ -39,11 +39,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { Progress } from '../../ui/progress';
 import { Separator } from '../../ui/separator';
 import {
-    Sheet,
-    SheetContent,
-    SheetDescription,
-    SheetHeader,
-    SheetTitle,
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
 } from '../../ui/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
 import { AssignClassesModal } from './AssignClassesModal';

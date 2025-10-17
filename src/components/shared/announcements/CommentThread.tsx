@@ -9,10 +9,10 @@ import { toast } from '../../../hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
 import { Button } from '../../ui/button';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from '../../ui/dropdown-menu';
 import { CommentForm } from './CommentForm';
 
@@ -77,7 +77,7 @@ export function CommentThread({
 
       setIsEditing(false);
       onCommentUpdated();
-      
+
       toast({
         title: 'Success',
         description: 'Comment updated successfully',
@@ -86,7 +86,8 @@ export function CommentThread({
       console.error('Error updating comment:', error);
       toast({
         title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to update comment',
+        description:
+          error instanceof Error ? error.message : 'Failed to update comment',
         variant: 'destructive',
       });
     }
@@ -112,7 +113,7 @@ export function CommentThread({
       }
 
       onCommentDeleted();
-      
+
       toast({
         title: 'Success',
         description: 'Comment deleted successfully',
@@ -121,7 +122,8 @@ export function CommentThread({
       console.error('Error deleting comment:', error);
       toast({
         title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to delete comment',
+        description:
+          error instanceof Error ? error.message : 'Failed to delete comment',
         variant: 'destructive',
       });
     }
@@ -142,24 +144,28 @@ export function CommentThread({
             {authorName.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
-        
+
         <div className="flex-1 min-w-0">
           <div className="bg-white border border-gray-200 rounded-lg p-4">
             <div className="flex items-center space-x-2 mb-2">
-              <span className="font-medium text-sm text-gray-900">{authorName}</span>
+              <span className="font-medium text-sm text-gray-900">
+                {authorName}
+              </span>
               <span className="text-xs text-gray-500">
-                {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
+                {formatDistanceToNow(new Date(comment.createdAt), {
+                  addSuffix: true,
+                })}
               </span>
               {comment.isEdited && (
                 <span className="text-xs text-gray-400">(edited)</span>
               )}
             </div>
-            
+
             {isEditing ? (
               <div className="space-y-3">
                 <textarea
                   value={editContent}
-                  onChange={(e) => setEditContent(e.target.value)}
+                  onChange={e => setEditContent(e.target.value)}
                   className="w-full p-3 border border-gray-300 rounded-md resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   rows={3}
                   maxLength={1000}
@@ -192,7 +198,7 @@ export function CommentThread({
                 </p>
               </div>
             )}
-            
+
             <div className="flex items-center space-x-4">
               <Button
                 variant="ghost"
@@ -203,20 +209,30 @@ export function CommentThread({
                 <Reply className="h-3 w-3 mr-1" />
                 Reply
               </Button>
-              
+
               {isAuthor && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600"
+                    >
                       <MoreHorizontal className="h-3 w-3" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuItem onClick={() => setIsEditing(true)} className="cursor-pointer">
+                    <DropdownMenuItem
+                      onClick={() => setIsEditing(true)}
+                      className="cursor-pointer"
+                    >
                       <Edit className="h-3 w-3 mr-2" />
                       Edit
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleDelete} className="text-red-600 cursor-pointer">
+                    <DropdownMenuItem
+                      onClick={handleDelete}
+                      className="text-red-600 cursor-pointer"
+                    >
                       <Trash2 className="h-3 w-3 mr-2" />
                       Delete
                     </DropdownMenuItem>
@@ -245,7 +261,7 @@ export function CommentThread({
       {/* Replies */}
       {comment.replies && comment.replies.length > 0 && (
         <div className="ml-11 space-y-4">
-          {comment.replies.map((reply) => (
+          {comment.replies.map(reply => (
             <CommentThread
               key={reply.id}
               comment={reply}

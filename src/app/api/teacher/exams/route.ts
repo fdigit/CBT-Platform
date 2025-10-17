@@ -276,13 +276,21 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate question types
-    const validQuestionTypes = ['MCQ', 'TRUE_FALSE', 'ESSAY', 'SHORT_ANSWER', 'FILL_IN_BLANK'];
-    const invalidQuestions = questions.filter((q: any) => !validQuestionTypes.includes(q.type));
-    
+    const validQuestionTypes = [
+      'MCQ',
+      'TRUE_FALSE',
+      'ESSAY',
+      'SHORT_ANSWER',
+      'FILL_IN_BLANK',
+    ];
+    const invalidQuestions = questions.filter(
+      (q: any) => !validQuestionTypes.includes(q.type)
+    );
+
     if (invalidQuestions.length > 0) {
       return NextResponse.json(
-        { 
-          error: `Invalid question types found: ${invalidQuestions.map((q: any) => q.type).join(', ')}. Valid types are: ${validQuestionTypes.join(', ')}` 
+        {
+          error: `Invalid question types found: ${invalidQuestions.map((q: any) => q.type).join(', ')}. Valid types are: ${validQuestionTypes.join(', ')}`,
         },
         { status: 400 }
       );

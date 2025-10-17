@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user || session.user.role !== 'SCHOOL_ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -20,7 +20,10 @@ export async function GET(request: NextRequest) {
 
     const schoolId = session.user.schoolId;
     if (!schoolId) {
-      return NextResponse.json({ error: 'School ID not found' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'School ID not found' },
+        { status: 400 }
+      );
     }
 
     // Build where clause

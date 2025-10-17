@@ -5,11 +5,11 @@ import { StudentDashboardLayout } from '@/components/student/StudentDashboardLay
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from '@/hooks/use-toast';
@@ -45,19 +45,19 @@ export default function StudentAnnouncementsPage() {
   const fetchAnnouncements = async () => {
     try {
       setLoading(true);
-       const params = new URLSearchParams({
-         page: page.toString(),
-         limit: '20',
-         ...(search && { search }),
-         ...(authorRole !== 'all' && { authorRole }),
-       });
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: '20',
+        ...(search && { search }),
+        ...(authorRole !== 'all' && { authorRole }),
+      });
 
       const response = await fetch(`/api/student/announcements?${params}`);
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch announcements');
       }
-      
+
       const data: AnnouncementListResponse = await response.json();
 
       setAnnouncements(data.announcements);
@@ -66,7 +66,10 @@ export default function StudentAnnouncementsPage() {
       console.error('Error fetching announcements:', error);
       toast({
         title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to fetch announcements',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'Failed to fetch announcements',
         variant: 'destructive',
       });
     } finally {
@@ -110,14 +113,17 @@ export default function StudentAnnouncementsPage() {
       <StudentDashboardLayout>
         <div className="space-y-6">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Announcements</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+              Announcements
+            </h1>
             <p className="text-sm sm:text-base text-gray-600 mt-1">
-              Stay updated with the latest announcements from your school and teachers
+              Stay updated with the latest announcements from your school and
+              teachers
             </p>
           </div>
-          
+
           <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3].map(i => (
               <div key={i} className="border rounded-lg p-6">
                 <Skeleton className="h-6 w-3/4 mb-2" />
                 <Skeleton className="h-4 w-1/2 mb-4" />
@@ -134,9 +140,12 @@ export default function StudentAnnouncementsPage() {
     <StudentDashboardLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Announcements</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+            Announcements
+          </h1>
           <p className="text-sm sm:text-base text-gray-600 mt-1">
-            Stay updated with the latest announcements from your school and teachers
+            Stay updated with the latest announcements from your school and
+            teachers
           </p>
         </div>
 
@@ -146,36 +155,36 @@ export default function StudentAnnouncementsPage() {
             <Input
               placeholder="Search announcements..."
               value={search}
-              onChange={(e) => handleSearch(e.target.value)}
+              onChange={e => handleSearch(e.target.value)}
               className="border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
-          
-           <Select value={authorRole} onValueChange={handleFilterChange}>
-             <SelectTrigger className="w-full sm:w-[180px] border-gray-300">
-               <SelectValue placeholder="From" />
-             </SelectTrigger>
-             <SelectContent>
-               <SelectItem value="all">All Sources</SelectItem>
-               <SelectItem value="teacher">Teachers</SelectItem>
-               <SelectItem value="school_admin">School Admin</SelectItem>
-             </SelectContent>
-           </Select>
+
+          <Select value={authorRole} onValueChange={handleFilterChange}>
+            <SelectTrigger className="w-full sm:w-[180px] border-gray-300">
+              <SelectValue placeholder="From" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Sources</SelectItem>
+              <SelectItem value="teacher">Teachers</SelectItem>
+              <SelectItem value="school_admin">School Admin</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Announcements List */}
         {announcements.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-500 text-lg">No announcements found</p>
-             <p className="text-gray-400 mt-2">
-               {search || authorRole !== 'all'
-                 ? 'Try adjusting your search or filters'
-                 : 'No announcements have been posted yet'}
-             </p>
+            <p className="text-gray-400 mt-2">
+              {search || authorRole !== 'all'
+                ? 'Try adjusting your search or filters'
+                : 'No announcements have been posted yet'}
+            </p>
           </div>
         ) : (
           <div className="space-y-4">
-            {announcements.map((announcement) => (
+            {announcements.map(announcement => (
               <AnnouncementCard
                 key={announcement.id}
                 announcement={announcement}
@@ -199,11 +208,11 @@ export default function StudentAnnouncementsPage() {
             >
               Previous
             </Button>
-            
+
             <span className="text-sm text-gray-500">
               Page {pagination.page} of {pagination.pages}
             </span>
-            
+
             <Button
               variant="outline"
               size="sm"

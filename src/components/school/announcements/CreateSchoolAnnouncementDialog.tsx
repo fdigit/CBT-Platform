@@ -5,11 +5,11 @@ import { toast } from '../../../hooks/use-toast';
 import { UserSelector } from '../../shared/announcements/UserSelector';
 import { Button } from '../../ui/button';
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from '../../ui/dialog';
 import { Input } from '../../ui/input';
 import { Label } from '../../ui/label';
@@ -24,7 +24,12 @@ interface CreateSchoolAnnouncementDialogProps {
   onSuccess: () => void;
 }
 
-type TargetType = 'all-teachers' | 'all-students' | 'specific-teachers' | 'specific-students' | 'custom-mix';
+type TargetType =
+  | 'all-teachers'
+  | 'all-students'
+  | 'specific-teachers'
+  | 'specific-students'
+  | 'custom-mix';
 
 export function CreateSchoolAnnouncementDialog({
   trigger,
@@ -34,7 +39,7 @@ export function CreateSchoolAnnouncementDialog({
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  
+
   // Form state
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -49,7 +54,7 @@ export function CreateSchoolAnnouncementDialog({
       setTitle(announcement.title || '');
       setContent(announcement.content || '');
       setIsPinned(announcement.isPinned || false);
-      
+
       // Determine target type based on announcement data
       if (announcement.recipientIds && announcement.recipientIds.length > 0) {
         // This is a specific user announcement - we'd need to determine if it's teachers, students, or mixed
@@ -76,7 +81,7 @@ export function CreateSchoolAnnouncementDialog({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!title.trim() || !content.trim()) {
       toast({
         title: 'Error',
@@ -105,7 +110,11 @@ export function CreateSchoolAnnouncementDialog({
       return;
     }
 
-    if (targetType === 'custom-mix' && selectedTeacherIds.length === 0 && selectedStudentIds.length === 0) {
+    if (
+      targetType === 'custom-mix' &&
+      selectedTeacherIds.length === 0 &&
+      selectedStudentIds.length === 0
+    ) {
       toast({
         title: 'Error',
         description: 'Please select at least one teacher or student',
@@ -137,13 +146,16 @@ export function CreateSchoolAnnouncementDialog({
         requestData.recipientIds = selectedStudentIds;
       } else if (targetType === 'custom-mix') {
         requestData.targetAudience = 'ALL';
-        requestData.recipientIds = [...selectedTeacherIds, ...selectedStudentIds];
+        requestData.recipientIds = [
+          ...selectedTeacherIds,
+          ...selectedStudentIds,
+        ];
       }
 
-      const url = announcement 
+      const url = announcement
         ? `/api/school/announcements/${announcement.id}`
         : '/api/school/announcements';
-      
+
       const method = announcement ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
@@ -162,7 +174,9 @@ export function CreateSchoolAnnouncementDialog({
 
       toast({
         title: 'Success',
-        description: announcement ? 'Announcement updated successfully' : 'Announcement created successfully',
+        description: announcement
+          ? 'Announcement updated successfully'
+          : 'Announcement created successfully',
       });
 
       setOpen(false);
@@ -171,7 +185,10 @@ export function CreateSchoolAnnouncementDialog({
       console.error('Error saving announcement:', error);
       toast({
         title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to save announcement',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'Failed to save announcement',
         variant: 'destructive',
       });
     } finally {
@@ -221,7 +238,7 @@ export function CreateSchoolAnnouncementDialog({
               <Input
                 id="title"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={e => setTitle(e.target.value)}
                 placeholder="Enter announcement title"
                 className="border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
@@ -233,7 +250,7 @@ export function CreateSchoolAnnouncementDialog({
               <Textarea
                 id="content"
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
+                onChange={e => setContent(e.target.value)}
                 placeholder="Enter announcement content"
                 rows={6}
                 className="border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -254,7 +271,10 @@ export function CreateSchoolAnnouncementDialog({
           {/* Target Selection */}
           <div className="space-y-4">
             <Label>Target Audience</Label>
-            <RadioGroup value={targetType} onValueChange={(value) => setTargetType(value as TargetType)}>
+            <RadioGroup
+              value={targetType}
+              onValueChange={value => setTargetType(value as TargetType)}
+            >
               <div className="space-y-3">
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="all-teachers" id="all-teachers" />
@@ -265,26 +285,36 @@ export function CreateSchoolAnnouncementDialog({
                   <Label htmlFor="all-students">All Students</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="specific-teachers" id="specific-teachers" />
+                  <RadioGroupItem
+                    value="specific-teachers"
+                    id="specific-teachers"
+                  />
                   <Label htmlFor="specific-teachers">Specific Teachers</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="specific-students" id="specific-students" />
+                  <RadioGroupItem
+                    value="specific-students"
+                    id="specific-students"
+                  />
                   <Label htmlFor="specific-students">Specific Students</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="custom-mix" id="custom-mix" />
-                  <Label htmlFor="custom-mix">Custom Mix (Teachers & Students)</Label>
+                  <Label htmlFor="custom-mix">
+                    Custom Mix (Teachers & Students)
+                  </Label>
                 </div>
               </div>
             </RadioGroup>
           </div>
 
           {/* User Selection */}
-          {(targetType === 'specific-teachers' || targetType === 'specific-students' || targetType === 'custom-mix') && (
+          {(targetType === 'specific-teachers' ||
+            targetType === 'specific-students' ||
+            targetType === 'custom-mix') && (
             <div className="space-y-4">
               <Label>Select Recipients</Label>
-              
+
               {targetType === 'custom-mix' ? (
                 <Tabs defaultValue="teachers" className="w-full">
                   <TabsList className="grid w-full grid-cols-2">
@@ -332,7 +362,9 @@ export function CreateSchoolAnnouncementDialog({
 
           {/* Summary */}
           <div className="p-4 bg-gray-50 rounded-lg border">
-            <h4 className="font-medium text-gray-900 mb-2">Announcement Summary</h4>
+            <h4 className="font-medium text-gray-900 mb-2">
+              Announcement Summary
+            </h4>
             <p className="text-sm text-gray-600">
               <strong>Title:</strong> {title || 'Untitled'}
             </p>
@@ -359,7 +391,7 @@ export function CreateSchoolAnnouncementDialog({
               disabled={submitting}
               className="bg-blue-600 hover:bg-blue-700"
             >
-              {submitting ? 'Saving...' : (announcement ? 'Update' : 'Create')}
+              {submitting ? 'Saving...' : announcement ? 'Update' : 'Create'}
             </Button>
           </div>
         </form>

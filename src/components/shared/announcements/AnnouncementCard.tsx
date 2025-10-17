@@ -57,11 +57,12 @@ export function AnnouncementCard({
 }: AnnouncementCardProps) {
   const authorName = announcement.author?.name || 'Unknown User';
   const commentCount = announcement._count?.comments || 0;
-  
+
   // Truncate content for preview
-  const contentPreview = announcement.content.length > 150
-    ? `${announcement.content.substring(0, 150)}...`
-    : announcement.content;
+  const contentPreview =
+    announcement.content.length > 150
+      ? `${announcement.content.substring(0, 150)}...`
+      : announcement.content;
 
   return (
     <Card className="hover:shadow-md transition-all duration-200 border border-gray-200">
@@ -73,12 +74,15 @@ export function AnnouncementCard({
                 <Pin className="h-4 w-4 text-yellow-500 flex-shrink-0" />
               )}
               <h3 className="font-semibold text-lg text-gray-900 line-clamp-2 leading-tight">
-                <Link href={href} className="hover:text-blue-600 transition-colors">
+                <Link
+                  href={href}
+                  className="hover:text-blue-600 transition-colors"
+                >
                   {announcement.title}
                 </Link>
               </h3>
             </div>
-            
+
             <div className="flex items-center space-x-4 text-sm text-gray-600">
               {showAuthor && (
                 <div className="flex items-center space-x-1">
@@ -86,33 +90,39 @@ export function AnnouncementCard({
                   <span className="font-medium">{authorName}</span>
                 </div>
               )}
-              
+
               <span className="text-gray-500">
-                {formatDistanceToNow(new Date(announcement.createdAt), { addSuffix: true })}
+                {formatDistanceToNow(new Date(announcement.createdAt), {
+                  addSuffix: true,
+                })}
               </span>
-              
+
               {commentCount > 0 && (
                 <div className="flex items-center space-x-1">
                   <MessageCircle className="h-4 w-4" />
-                  <span>{commentCount} comment{commentCount !== 1 ? 's' : ''}</span>
+                  <span>
+                    {commentCount} comment{commentCount !== 1 ? 's' : ''}
+                  </span>
                 </div>
               )}
             </div>
           </div>
-          
+
           {showAudience && (
-            <Badge className={`${getAudienceColor(announcement.targetAudience)} ml-2 flex-shrink-0`}>
+            <Badge
+              className={`${getAudienceColor(announcement.targetAudience)} ml-2 flex-shrink-0`}
+            >
               {getAudienceLabel(announcement.targetAudience)}
             </Badge>
           )}
         </div>
       </CardHeader>
-      
+
       <CardContent className="pt-0">
         <p className="text-gray-700 text-sm leading-relaxed mb-3">
           {contentPreview}
         </p>
-        
+
         {announcement.content.length > 150 && (
           <div className="flex justify-end">
             <Link

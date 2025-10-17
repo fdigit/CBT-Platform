@@ -142,15 +142,23 @@ async function parseExcelFile(buffer: ArrayBuffer): Promise<any[]> {
             break;
           case 'type':
             // Validate and sanitize question type
-            const validTypes = ['MCQ', 'TRUE_FALSE', 'ESSAY', 'SHORT_ANSWER', 'FILL_IN_BLANK'];
+            const validTypes = [
+              'MCQ',
+              'TRUE_FALSE',
+              'ESSAY',
+              'SHORT_ANSWER',
+              'FILL_IN_BLANK',
+            ];
             const upperValue = value.toUpperCase();
-            
+
             if (validTypes.includes(upperValue)) {
               question.type = upperValue;
             } else {
               // Default to MCQ for invalid types
               question.type = 'MCQ';
-              console.warn(`Invalid question type "${value}" found, defaulting to MCQ`);
+              console.warn(
+                `Invalid question type "${value}" found, defaulting to MCQ`
+              );
             }
             break;
           case 'option1':
@@ -192,13 +200,15 @@ async function parseExcelFile(buffer: ArrayBuffer): Promise<any[]> {
             // Validate and sanitize difficulty
             const validDifficulties = ['EASY', 'MEDIUM', 'HARD'];
             const upperDifficulty = value.toUpperCase();
-            
+
             if (validDifficulties.includes(upperDifficulty)) {
               question.difficulty = upperDifficulty;
             } else {
               // Default to MEDIUM for invalid difficulties
               question.difficulty = 'MEDIUM';
-              console.warn(`Invalid difficulty "${value}" found, defaulting to MEDIUM`);
+              console.warn(
+                `Invalid difficulty "${value}" found, defaulting to MEDIUM`
+              );
             }
             break;
           case 'explanation':
@@ -378,15 +388,23 @@ async function parseCSVFile(buffer: ArrayBuffer): Promise<any[]> {
             break;
           case 'type':
             // Validate and sanitize question type
-            const validTypes = ['MCQ', 'TRUE_FALSE', 'ESSAY', 'SHORT_ANSWER', 'FILL_IN_BLANK'];
+            const validTypes = [
+              'MCQ',
+              'TRUE_FALSE',
+              'ESSAY',
+              'SHORT_ANSWER',
+              'FILL_IN_BLANK',
+            ];
             const upperValue = value.toUpperCase();
-            
+
             if (validTypes.includes(upperValue)) {
               question.type = upperValue;
             } else {
               // Default to MCQ for invalid types
               question.type = 'MCQ';
-              console.warn(`Invalid question type "${value}" found, defaulting to MCQ`);
+              console.warn(
+                `Invalid question type "${value}" found, defaulting to MCQ`
+              );
             }
             break;
           case 'option1':
@@ -428,13 +446,15 @@ async function parseCSVFile(buffer: ArrayBuffer): Promise<any[]> {
             // Validate and sanitize difficulty
             const validDifficulties = ['EASY', 'MEDIUM', 'HARD'];
             const upperDifficulty = value.toUpperCase();
-            
+
             if (validDifficulties.includes(upperDifficulty)) {
               question.difficulty = upperDifficulty;
             } else {
               // Default to MEDIUM for invalid difficulties
               question.difficulty = 'MEDIUM';
-              console.warn(`Invalid difficulty "${value}" found, defaulting to MEDIUM`);
+              console.warn(
+                `Invalid difficulty "${value}" found, defaulting to MEDIUM`
+              );
             }
             break;
           case 'explanation':

@@ -36,44 +36,49 @@ export function UserSelector({
   const [hasMore, setHasMore] = useState(true);
   const [total, setTotal] = useState(0);
 
-  const fetchUsers = useCallback(async (reset = false) => {
-    try {
-      setLoading(true);
-      const currentPage = reset ? 1 : page;
-      
-      const params = new URLSearchParams({
-        page: currentPage.toString(),
-        limit: '20',
-        ...(search && { search }),
-        ...(role && { role }),
-        ...(filterOptions?.classId && { classId: filterOptions.classId }),
-        ...(filterOptions?.subjectId && { subjectId: filterOptions.subjectId }),
-      });
+  const fetchUsers = useCallback(
+    async (reset = false) => {
+      try {
+        setLoading(true);
+        const currentPage = reset ? 1 : page;
 
-      const response = await fetch(`${fetchUrl}?${params}`);
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch users');
+        const params = new URLSearchParams({
+          page: currentPage.toString(),
+          limit: '20',
+          ...(search && { search }),
+          ...(role && { role }),
+          ...(filterOptions?.classId && { classId: filterOptions.classId }),
+          ...(filterOptions?.subjectId && {
+            subjectId: filterOptions.subjectId,
+          }),
+        });
+
+        const response = await fetch(`${fetchUrl}?${params}`);
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch users');
+        }
+
+        const data: UserListResponse = await response.json();
+
+        if (reset) {
+          setUsers(data.users);
+          setPage(2);
+        } else {
+          setUsers(prev => [...prev, ...data.users]);
+          setPage(prev => prev + 1);
+        }
+
+        setHasMore(data.pagination.page < data.pagination.pages);
+        setTotal(data.pagination.total);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      } finally {
+        setLoading(false);
       }
-      
-      const data: UserListResponse = await response.json();
-
-      if (reset) {
-        setUsers(data.users);
-        setPage(2);
-      } else {
-        setUsers(prev => [...prev, ...data.users]);
-        setPage(prev => prev + 1);
-      }
-
-      setHasMore(data.pagination.page < data.pagination.pages);
-      setTotal(data.pagination.total);
-    } catch (error) {
-      console.error('Error fetching users:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchUrl, search, page, role, filterOptions]);
+    },
+    [fetchUrl, search, page, role, filterOptions]
+  );
 
   // Initial load
   useEffect(() => {
@@ -96,15 +101,19 @@ export function UserSelector({
   const handleSelectAll = () => {
     const allVisibleIds = users.map(user => user.id);
     const allSelected = allVisibleIds.every(id => selectedIds.includes(id));
-    
+
     if (allSelected) {
       // Deselect all visible users
-      const newSelection = selectedIds.filter(id => !allVisibleIds.includes(id));
+      const newSelection = selectedIds.filter(
+        id => !allVisibleIds.includes(id)
+      );
       onSelectionChange(newSelection);
     } else {
       // Select all visible users
       const combinedIds = [...selectedIds, ...allVisibleIds];
-      const uniqueIds = combinedIds.filter((id, index) => combinedIds.indexOf(id) === index);
+      const uniqueIds = combinedIds.filter(
+        (id, index) => combinedIds.indexOf(id) === index
+      );
       onSelectionChange(uniqueIds);
     }
   };
@@ -123,7 +132,8 @@ export function UserSelector({
     }
   };
 
-  const allVisibleSelected = users.length > 0 && users.every(user => selectedIds.includes(user.id));
+  const allVisibleSelected =
+    users.length > 0 && users.every(user => selectedIds.includes(user.id));
   const someVisibleSelected = users.some(user => selectedIds.includes(user.id));
 
   return (
@@ -134,7 +144,7 @@ export function UserSelector({
         <Input
           placeholder={placeholder}
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={e => setSearch(e.target.value)}
           className="pl-10 border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
       </div>
@@ -145,11 +155,12 @@ export function UserSelector({
           <Checkbox
             id="select-all"
             checked={allVisibleSelected}
-            ref={(el) => {
+            ref={el => {
               if (el) {
                 // Cast to HTMLInputElement to access indeterminate property
                 const inputEl = el as any;
-                inputEl.indeterminate = someVisibleSelected && !allVisibleSelected;
+                inputEl.indeterminate =
+                  someVisibleSelected && !allVisibleSelected;
               }
             }}
             onCheckedChange={handleSelectAll}
@@ -164,7 +175,7 @@ export function UserSelector({
       <div className="max-h-96 overflow-y-auto border border-gray-200 rounded-lg">
         {loading && users.length === 0 ? (
           <div className="p-4 space-y-3">
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3].map(i => (
               <div key={i} className="flex items-center space-x-3">
                 <Skeleton className="h-4 w-4" />
                 <Skeleton className="h-4 w-32" />
@@ -180,7 +191,7 @@ export function UserSelector({
           </div>
         ) : (
           <div className="divide-y divide-gray-200">
-            {users.map((user) => (
+            {users.map(user => (
               <div key={user.id} className="p-3 hover:bg-gray-50">
                 <div className="flex items-center space-x-3">
                   <Checkbox
@@ -190,11 +201,16 @@ export function UserSelector({
                   />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <Label htmlFor={user.id} className="text-sm font-medium text-gray-900 cursor-pointer">
+                      <Label
+                        htmlFor={user.id}
+                        className="text-sm font-medium text-gray-900 cursor-pointer"
+                      >
                         {user.name}
                       </Label>
                     </div>
-                    <p className="text-sm text-gray-500 truncate">{user.email}</p>
+                    <p className="text-sm text-gray-500 truncate">
+                      {user.email}
+                    </p>
                     {user.className && (
                       <p className="text-xs text-gray-400">
                         {user.className}
@@ -228,7 +244,8 @@ export function UserSelector({
       {selectedIds.length > 0 && (
         <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
           <p className="text-sm text-blue-800">
-            <strong>{selectedIds.length}</strong> {role.toLowerCase()}{selectedIds.length === 1 ? '' : 's'} selected
+            <strong>{selectedIds.length}</strong> {role.toLowerCase()}
+            {selectedIds.length === 1 ? '' : 's'} selected
           </p>
         </div>
       )}

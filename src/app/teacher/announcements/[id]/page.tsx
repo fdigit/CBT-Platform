@@ -6,10 +6,10 @@ import { CreateAnnouncementDialog } from '@/components/teacher/announcements/Cre
 import { TeacherDashboardLayout } from '@/components/teacher/TeacherDashboardLayout';
 import { Button } from '@/components/ui/button';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from '@/hooks/use-toast';
@@ -32,7 +32,9 @@ export default function TeacherAnnouncementDetailPage() {
   const fetchAnnouncement = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/teacher/announcements/${announcementId}`);
+      const response = await fetch(
+        `/api/teacher/announcements/${announcementId}`
+      );
       const data = await response.json();
 
       if (!response.ok) {
@@ -45,7 +47,10 @@ export default function TeacherAnnouncementDetailPage() {
       console.error('Error fetching announcement:', error);
       toast({
         title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to fetch announcement',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'Failed to fetch announcement',
         variant: 'destructive',
       });
     } finally {
@@ -59,9 +64,12 @@ export default function TeacherAnnouncementDetailPage() {
     }
 
     try {
-      const response = await fetch(`/api/teacher/announcements/${announcementId}`, {
-        method: 'DELETE',
-      });
+      const response = await fetch(
+        `/api/teacher/announcements/${announcementId}`,
+        {
+          method: 'DELETE',
+        }
+      );
 
       const data = await response.json();
 
@@ -79,7 +87,10 @@ export default function TeacherAnnouncementDetailPage() {
       console.error('Error deleting announcement:', error);
       toast({
         title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to delete announcement',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'Failed to delete announcement',
         variant: 'destructive',
       });
     }
@@ -128,7 +139,10 @@ export default function TeacherAnnouncementDetailPage() {
       <TeacherDashboardLayout>
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">Announcement not found</p>
-          <Button onClick={() => router.push('/teacher/announcements')} className="mt-4">
+          <Button
+            onClick={() => router.push('/teacher/announcements')}
+            className="mt-4"
+          >
             Back to Announcements
           </Button>
         </div>
@@ -150,12 +164,14 @@ export default function TeacherAnnouncementDetailPage() {
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back
             </Button>
-            
+
             <div className="flex items-center space-x-2">
               {announcement.isPinned && (
                 <Pin className="h-5 w-5 text-yellow-500" />
               )}
-              <h1 className="text-2xl font-bold text-gray-900">{announcement.title}</h1>
+              <h1 className="text-2xl font-bold text-gray-900">
+                {announcement.title}
+              </h1>
             </div>
           </div>
 
@@ -170,7 +186,7 @@ export default function TeacherAnnouncementDetailPage() {
               announcement={announcement}
               onSuccess={handleEditSuccess}
             />
-            
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm">
@@ -178,7 +194,10 @@ export default function TeacherAnnouncementDetailPage() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={handleDelete} className="text-red-600">
+                <DropdownMenuItem
+                  onClick={handleDelete}
+                  className="text-red-600"
+                >
                   <Trash2 className="h-4 w-4 mr-2" />
                   Delete
                 </DropdownMenuItem>
@@ -193,14 +212,16 @@ export default function TeacherAnnouncementDetailPage() {
             <div className="flex items-center space-x-4 text-sm text-gray-500">
               <span>By {announcement.author?.name || 'Unknown User'}</span>
               <span>
-                {formatDistanceToNow(new Date(announcement.createdAt), { addSuffix: true })}
+                {formatDistanceToNow(new Date(announcement.createdAt), {
+                  addSuffix: true,
+                })}
               </span>
               {announcement.updatedAt !== announcement.createdAt && (
                 <span>(edited)</span>
               )}
             </div>
           </div>
-          
+
           <div className="prose max-w-none">
             <p className="whitespace-pre-wrap text-gray-700 leading-relaxed">
               {announcement.content}
@@ -230,7 +251,7 @@ export default function TeacherAnnouncementDetailPage() {
             </div>
           ) : (
             <div className="space-y-6">
-              {comments.map((comment) => (
+              {comments.map(comment => (
                 <CommentThread
                   key={comment.id}
                   comment={comment}

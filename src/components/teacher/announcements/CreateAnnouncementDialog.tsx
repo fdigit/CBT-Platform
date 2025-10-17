@@ -6,21 +6,21 @@ import { toast } from '../../../hooks/use-toast';
 import { UserSelector } from '../../shared/announcements/UserSelector';
 import { Button } from '../../ui/button';
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from '../../ui/dialog';
 import { Input } from '../../ui/input';
 import { Label } from '../../ui/label';
 import { RadioGroup, RadioGroupItem } from '../../ui/radio-group';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '../../ui/select';
 import { Switch } from '../../ui/switch';
 import { Textarea } from '../../ui/textarea';
@@ -46,17 +46,21 @@ export function CreateAnnouncementDialog({
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  
+
   // Form state
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [targetAudience, setTargetAudience] = useState<TargetAudience>(TargetAudience.STUDENTS);
+  const [targetAudience, setTargetAudience] = useState<TargetAudience>(
+    TargetAudience.STUDENTS
+  );
   const [selectedClasses, setSelectedClasses] = useState<string[]>([]);
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
   const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
-  const [targetType, setTargetType] = useState<'all-students' | 'specific-students'>('all-students');
+  const [targetType, setTargetType] = useState<
+    'all-students' | 'specific-students'
+  >('all-students');
   const [isPinned, setIsPinned] = useState(false);
-  
+
   // Available classes/subjects
   const [availableClasses, setAvailableClasses] = useState<ClassSubject[]>([]);
 
@@ -133,7 +137,11 @@ export function CreateAnnouncementDialog({
       return;
     }
 
-    if (targetType === 'all-students' && selectedClasses.length === 0 && selectedSubjects.length === 0) {
+    if (
+      targetType === 'all-students' &&
+      selectedClasses.length === 0 &&
+      selectedSubjects.length === 0
+    ) {
       toast({
         title: 'Error',
         description: 'Please select at least one class or subject',
@@ -148,7 +156,7 @@ export function CreateAnnouncementDialog({
       const url = announcement
         ? `/api/teacher/announcements/${announcement.id}`
         : '/api/teacher/announcements';
-      
+
       const method = announcement ? 'PATCH' : 'POST';
 
       const response = await fetch(url, {
@@ -161,8 +169,10 @@ export function CreateAnnouncementDialog({
           content: content.trim(),
           targetAudience,
           classIds: targetType === 'all-students' ? selectedClasses : undefined,
-          subjectIds: targetType === 'all-students' ? selectedSubjects : undefined,
-          recipientIds: targetType === 'specific-students' ? selectedStudentIds : undefined,
+          subjectIds:
+            targetType === 'all-students' ? selectedSubjects : undefined,
+          recipientIds:
+            targetType === 'specific-students' ? selectedStudentIds : undefined,
           isPinned,
         }),
       });
@@ -170,21 +180,30 @@ export function CreateAnnouncementDialog({
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || `Failed to ${announcement ? 'update' : 'create'} announcement`);
+        throw new Error(
+          data.error ||
+            `Failed to ${announcement ? 'update' : 'create'} announcement`
+        );
       }
 
       setOpen(false);
       onSuccess();
-      
+
       toast({
         title: 'Success',
         description: `Announcement ${announcement ? 'updated' : 'created'} successfully`,
       });
     } catch (error) {
-      console.error(`Error ${announcement ? 'updating' : 'creating'} announcement:`, error);
+      console.error(
+        `Error ${announcement ? 'updating' : 'creating'} announcement:`,
+        error
+      );
       toast({
         title: 'Error',
-        description: error instanceof Error ? error.message : `Failed to ${announcement ? 'update' : 'create'} announcement`,
+        description:
+          error instanceof Error
+            ? error.message
+            : `Failed to ${announcement ? 'update' : 'create'} announcement`,
         variant: 'destructive',
       });
     } finally {
@@ -215,27 +234,23 @@ export function CreateAnnouncementDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {trigger || (
-          <Button>
-            New Announcement
-          </Button>
-        )}
+        {trigger || <Button>New Announcement</Button>}
       </DialogTrigger>
-      
+
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {announcement ? 'Edit Announcement' : 'Create New Announcement'}
           </DialogTitle>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="title">Title *</Label>
             <Input
               id="title"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={e => setTitle(e.target.value)}
               placeholder="Enter announcement title..."
               maxLength={200}
               required
@@ -247,7 +262,7 @@ export function CreateAnnouncementDialog({
             <Textarea
               id="content"
               value={content}
-              onChange={(e) => setContent(e.target.value)}
+              onChange={e => setContent(e.target.value)}
               placeholder="Enter announcement content..."
               className="min-h-[120px]"
               maxLength={5000}
@@ -260,7 +275,12 @@ export function CreateAnnouncementDialog({
 
           <div className="space-y-2">
             <Label htmlFor="targetAudience">Target Audience *</Label>
-            <Select value={targetAudience} onValueChange={(value: TargetAudience) => setTargetAudience(value)}>
+            <Select
+              value={targetAudience}
+              onValueChange={(value: TargetAudience) =>
+                setTargetAudience(value)
+              }
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -276,14 +296,24 @@ export function CreateAnnouncementDialog({
           {targetAudience === 'STUDENTS' && (
             <div className="space-y-3">
               <Label>How would you like to target students?</Label>
-              <RadioGroup value={targetType} onValueChange={(value) => setTargetType(value as 'all-students' | 'specific-students')}>
+              <RadioGroup
+                value={targetType}
+                onValueChange={value =>
+                  setTargetType(value as 'all-students' | 'specific-students')
+                }
+              >
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="all-students" id="all-students" />
-                    <Label htmlFor="all-students">All Students in Selected Classes</Label>
+                    <Label htmlFor="all-students">
+                      All Students in Selected Classes
+                    </Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="specific-students" id="specific-students" />
+                    <RadioGroupItem
+                      value="specific-students"
+                      id="specific-students"
+                    />
                     <Label htmlFor="specific-students">Specific Students</Label>
                   </div>
                 </div>
@@ -292,25 +322,28 @@ export function CreateAnnouncementDialog({
           )}
 
           {/* Student Selection */}
-          {targetAudience === 'STUDENTS' && targetType === 'specific-students' && (
-            <div className="space-y-3">
-              <Label>Select Students</Label>
-              <UserSelector
-                role="STUDENT"
-                selectedIds={selectedStudentIds}
-                onSelectionChange={setSelectedStudentIds}
-                fetchUrl="/api/teacher/students"
-                placeholder="Search students..."
-              />
-            </div>
-          )}
+          {targetAudience === 'STUDENTS' &&
+            targetType === 'specific-students' && (
+              <div className="space-y-3">
+                <Label>Select Students</Label>
+                <UserSelector
+                  role="STUDENT"
+                  selectedIds={selectedStudentIds}
+                  onSelectionChange={setSelectedStudentIds}
+                  fetchUrl="/api/teacher/students"
+                  placeholder="Search students..."
+                />
+              </div>
+            )}
 
           {loading ? (
             <div className="space-y-2">
               <Label>Your Classes & Subjects</Label>
               <div className="text-sm text-gray-500">Loading...</div>
             </div>
-          ) : availableClasses.length > 0 && targetAudience === 'STUDENTS' && targetType === 'all-students' ? (
+          ) : availableClasses.length > 0 &&
+            targetAudience === 'STUDENTS' &&
+            targetType === 'all-students' ? (
             <div className="space-y-4">
               <div>
                 <Label>Target Specific Classes (Optional)</Label>
@@ -318,8 +351,11 @@ export function CreateAnnouncementDialog({
                   Select specific classes to target this announcement to
                 </p>
                 <div className="grid grid-cols-1 gap-2 max-h-32 overflow-y-auto border rounded p-2">
-                  {availableClasses.map((classSubject) => (
-                    <label key={classSubject.id} className="flex items-center space-x-2 text-sm">
+                  {availableClasses.map(classSubject => (
+                    <label
+                      key={classSubject.id}
+                      className="flex items-center space-x-2 text-sm"
+                    >
                       <input
                         type="checkbox"
                         checked={selectedClasses.includes(classSubject.id)}
@@ -328,7 +364,9 @@ export function CreateAnnouncementDialog({
                       />
                       <span>
                         {classSubject.name}
-                        {classSubject.section && ` ${classSubject.section}`} - {classSubject.subjectName}
+                        {classSubject.section &&
+                          ` ${classSubject.section}`} -{' '}
+                        {classSubject.subjectName}
                       </span>
                     </label>
                   ))}
@@ -341,8 +379,13 @@ export function CreateAnnouncementDialog({
                   Select specific subjects to target this announcement to
                 </p>
                 <div className="grid grid-cols-1 gap-2 max-h-32 overflow-y-auto border rounded p-2">
-                  {Array.from(new Set(availableClasses.map(cs => cs.subjectName))).map((subjectName) => (
-                    <label key={subjectName} className="flex items-center space-x-2 text-sm">
+                  {Array.from(
+                    new Set(availableClasses.map(cs => cs.subjectName))
+                  ).map(subjectName => (
+                    <label
+                      key={subjectName}
+                      className="flex items-center space-x-2 text-sm"
+                    >
                       <input
                         type="checkbox"
                         checked={selectedSubjects.includes(subjectName)}
@@ -383,7 +426,7 @@ export function CreateAnnouncementDialog({
               Cancel
             </Button>
             <Button type="submit" disabled={submitting}>
-              {submitting ? 'Saving...' : (announcement ? 'Update' : 'Create')}
+              {submitting ? 'Saving...' : announcement ? 'Update' : 'Create'}
             </Button>
           </div>
         </form>

@@ -24,7 +24,9 @@ export default function StudentAnnouncementDetailPage() {
   const fetchAnnouncement = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/student/announcements/${announcementId}`);
+      const response = await fetch(
+        `/api/student/announcements/${announcementId}`
+      );
       const data = await response.json();
 
       if (!response.ok) {
@@ -37,7 +39,10 @@ export default function StudentAnnouncementDetailPage() {
       console.error('Error fetching announcement:', error);
       toast({
         title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to fetch announcement',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'Failed to fetch announcement',
         variant: 'destructive',
       });
     } finally {
@@ -83,7 +88,10 @@ export default function StudentAnnouncementDetailPage() {
       <StudentDashboardLayout>
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">Announcement not found</p>
-          <Button onClick={() => router.push('/student/announcements')} className="mt-4">
+          <Button
+            onClick={() => router.push('/student/announcements')}
+            className="mt-4"
+          >
             Back to Announcements
           </Button>
         </div>
@@ -105,12 +113,14 @@ export default function StudentAnnouncementDetailPage() {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </Button>
-          
+
           <div className="flex items-center space-x-2">
             {announcement.isPinned && (
               <Pin className="h-5 w-5 text-yellow-500" />
             )}
-            <h1 className="text-2xl font-bold text-gray-900">{announcement.title}</h1>
+            <h1 className="text-2xl font-bold text-gray-900">
+              {announcement.title}
+            </h1>
           </div>
         </div>
 
@@ -120,14 +130,16 @@ export default function StudentAnnouncementDetailPage() {
             <div className="flex items-center space-x-4 text-sm text-gray-500">
               <span>By {announcement.author?.name || 'Unknown User'}</span>
               <span>
-                {formatDistanceToNow(new Date(announcement.createdAt), { addSuffix: true })}
+                {formatDistanceToNow(new Date(announcement.createdAt), {
+                  addSuffix: true,
+                })}
               </span>
               {announcement.updatedAt !== announcement.createdAt && (
                 <span>(edited)</span>
               )}
             </div>
           </div>
-          
+
           <div className="prose max-w-none">
             <p className="whitespace-pre-wrap text-gray-700 leading-relaxed">
               {announcement.content}
@@ -157,7 +169,7 @@ export default function StudentAnnouncementDetailPage() {
             </div>
           ) : (
             <div className="space-y-6">
-              {comments.map((comment) => (
+              {comments.map(comment => (
                 <CommentThread
                   key={comment.id}
                   comment={comment}

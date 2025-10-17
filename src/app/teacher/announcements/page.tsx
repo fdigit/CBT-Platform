@@ -57,11 +57,11 @@ export default function TeacherAnnouncementsPage() {
           </div>
         </div>
 
-        <AnnouncementList onCreateNew={handleCreateNew} refreshTrigger={refreshTrigger} />
+        <AnnouncementList
+          onCreateNew={handleCreateNew}
+          refreshTrigger={refreshTrigger}
+        />
       </div>
     </TeacherDashboardLayout>
   );
 }
-
-
-

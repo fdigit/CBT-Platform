@@ -509,7 +509,7 @@ export interface Announcement {
   isPublished: boolean;
   createdAt: Date;
   updatedAt: Date;
-  
+
   // Relations (populated)
   author?: User;
   school?: School;
@@ -529,7 +529,7 @@ export interface AnnouncementComment {
   editedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
-  
+
   // Relations (populated)
   announcement?: Announcement;
   author?: User;
